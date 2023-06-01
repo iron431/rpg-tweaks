@@ -2,6 +2,7 @@ package io.redspace.ironsrpgtweaks;
 
 import com.mojang.logging.LogUtils;
 import io.redspace.ironsrpgtweaks.config.CommonConfigs;
+import io.redspace.ironsrpgtweaks.setup.ModSetup;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.eventbus.api.IEventBus;
@@ -29,6 +30,7 @@ public class IronsRpgTweaks
         ModLoadingContext.get().registerConfig(ModConfig.Type.COMMON, CommonConfigs.SPEC, String.format("%s-common.toml", IronsRpgTweaks.MODID));
 
         // Register the commonSetup method for modloading
+        modEventBus.addListener(ModSetup::init);
 
         MinecraftForge.EVENT_BUS.register(this);
     }

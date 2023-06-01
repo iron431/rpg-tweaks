@@ -35,7 +35,7 @@ public class DamageServerEvents {
         if (player.level.isClientSide)
             return;
         if (player.getAttackStrengthScale(0) < CommonConfigs.MINIMUM_ATTACK_STRENGTH.get()) {
-            IronsRpgTweaks.LOGGER.debug("DamageServerEvents.onPlayerAttack: cancelling");
+            //IronsRpgTweaks.LOGGER.debug("DamageServerEvents.onPlayerAttack: cancelling");
 
             event.setCanceled(true);
         }

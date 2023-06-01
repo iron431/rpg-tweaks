@@ -16,11 +16,15 @@ public class CommonConfigs {
     public static final ForgeConfigSpec.ConfigValue<Boolean> ALLOW_NON_FULL_STRENGTH_ATTACKS;
     public static final ForgeConfigSpec.ConfigValue<Double> MINIMUM_ATTACK_STRENGTH;
 
+    public static final ForgeConfigSpec.ConfigValue<Boolean> DURABILITY_MODULE_ENABLED;
+    public static final ForgeConfigSpec.ConfigValue<Boolean> TAKE_DURABILITY_DAMAGE;
+    public static final ForgeConfigSpec.ConfigValue<Double> DURABILITY_LOST_ON_DEATH;
+
     static {
 
         BUILDER.push("Damage-Module");
         BUILDER.comment("The purpose of the damage module is to remove the invulnerability ticks after an entity is damaged to better suit gameplay where entities are going to be ignoring too much damage if left unchecked.");
-        DAMAGE_MODULE_ENABLED = BUILDER.define("enabled", true);
+        DAMAGE_MODULE_ENABLED = BUILDER.define("damageModuleEnabled", true);
         BUILDER.comment("Some entities or damage sources rely on damage ticks to time their attacks. In these cases, we want to let them initiate i-frames.");
         BUILDER.comment("entityBlacklist default: " + getDefaultEntries(DamageServerEvents.BLACKLIST_ENTITY_TYPES));
         DAMAGE_MODULE_ENTITY_BLACKLIST = BUILDER.defineList("entityBlacklist", DamageServerEvents.BLACKLIST_ENTITY_TYPES, (x) -> true);
@@ -30,6 +34,15 @@ public class CommonConfigs {
         MINIMUM_ATTACK_STRENGTH = BUILDER.define("minimumAttackStrength", 0.75);
         BUILDER.comment("Whether or not a player is allowed to even swing if the threshold is not met. Default: false");
         ALLOW_NON_FULL_STRENGTH_ATTACKS = BUILDER.worldRestart() .define("allowNonFullStrengthAttacks", false);
+        BUILDER.pop();
+
+        BUILDER.push("Durability-Module");
+        BUILDER.comment("The purpose of the durability module is to rework how durability damage is applied to better emulate an rpg setting.");
+        DURABILITY_MODULE_ENABLED = BUILDER.define("durabilityModuleEnabled", true);
+        BUILDER.comment("Whether or not tools and armor should take regular durability damage while in use. Default: false");
+        TAKE_DURABILITY_DAMAGE = BUILDER.define("takeDurabilityDamage", false);
+        BUILDER.comment("The percent of durability damage equipment should take on player dying. Set to 0 to disabled. Default: 0.15 (15%)");
+        DURABILITY_LOST_ON_DEATH = BUILDER.define("durabilityLostOnDeath", 0.15);
         BUILDER.pop();
 
         SPEC = BUILDER.build();

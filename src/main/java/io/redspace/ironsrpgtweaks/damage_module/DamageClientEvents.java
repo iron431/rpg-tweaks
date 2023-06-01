@@ -15,7 +15,7 @@ public class DamageClientEvents {
     public static void onPlayerAttack(InputEvent.InteractionKeyMappingTriggered event) {
         var player = Minecraft.getInstance().player;
         if (CommonConfigs.DAMAGE_MODULE_ENABLED.get()  && !CommonConfigs.ALLOW_NON_FULL_STRENGTH_ATTACKS.get() && player != null && event.isAttack() && player.getAttackStrengthScale(0) < CommonConfigs.MINIMUM_ATTACK_STRENGTH.get()) {
-            IronsRpgTweaks.LOGGER.debug("DamageClientEvents.onPlayerAttack: cancelling");
+            //IronsRpgTweaks.LOGGER.debug("DamageClientEvents.onPlayerAttack: cancelling");
             event.setSwingHand(false);
             event.setCanceled(true);
         }

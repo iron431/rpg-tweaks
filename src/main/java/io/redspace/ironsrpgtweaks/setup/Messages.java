@@ -1,7 +1,6 @@
 package io.redspace.ironsrpgtweaks.setup;
 
 import io.redspace.ironsrpgtweaks.IronsRpgTweaks;
-import io.redspace.ironsrpgtweaks.network.ClientboundSyncConfig;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Entity;
@@ -30,11 +29,11 @@ public class Messages {
 
         INSTANCE = net;
 
-        net.messageBuilder(ClientboundSyncConfig.class, id(), NetworkDirection.PLAY_TO_CLIENT)
-                .decoder(ClientboundSyncConfig::new)
-                .encoder(ClientboundSyncConfig::toBytes)
-                .consumer(ClientboundSyncConfig::handle)
-                .add();
+//        net.messageBuilder(ClientboundSyncConfig.class, id(), NetworkDirection.PLAY_TO_CLIENT)
+//                .decoder(ClientboundSyncConfig::new)
+//                .encoder(ClientboundSyncConfig::toBytes)
+//                .consumer(ClientboundSyncConfig::handle)
+//                .add();
     }
 
     public static <MSG> void sendToServer(MSG message) {

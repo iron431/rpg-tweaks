@@ -2,7 +2,6 @@ package io.redspace.ironsrpgtweaks.damage_module;
 
 import io.redspace.ironsrpgtweaks.IronsRpgTweaks;
 import io.redspace.ironsrpgtweaks.config.CommonConfigs;
-import io.redspace.ironsrpgtweaks.network.ClientboundSyncConfig;
 import io.redspace.ironsrpgtweaks.setup.Messages;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.damagesource.DamageSource;
@@ -60,11 +59,11 @@ public class DamageServerEvents {
 
     }
 
-    @SubscribeEvent
-    public static void onPlayerLoggedIn(PlayerEvent.PlayerLoggedInEvent event) {
-        IronsRpgTweaks.LOGGER.debug("onPlayerLoggedIn");
-        if (event.getEntity() instanceof ServerPlayer serverPlayer) {
-            Messages.sendToPlayer(new ClientboundSyncConfig(CommonConfigs.DAMAGE_MODULE_ENABLED.get(), CommonConfigs.ALLOW_NON_FULL_STRENGTH_ATTACKS.get(), CommonConfigs.MINIMUM_ATTACK_STRENGTH.get()), serverPlayer);
-        }
-    }
+//    @SubscribeEvent
+//    public static void onPlayerLoggedIn(PlayerEvent.PlayerLoggedInEvent event) {
+//        IronsRpgTweaks.LOGGER.debug("onPlayerLoggedIn");
+//        if (event.getEntity() instanceof ServerPlayer serverPlayer) {
+//            Messages.sendToPlayer(new ClientboundSyncConfig(CommonConfigs.DAMAGE_MODULE_ENABLED.get(), CommonConfigs.ALLOW_NON_FULL_STRENGTH_ATTACKS.get(), CommonConfigs.MINIMUM_ATTACK_STRENGTH.get()), serverPlayer);
+//        }
+//    }
 }

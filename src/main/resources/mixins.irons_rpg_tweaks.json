@@ -7,7 +7,6 @@
     "ItemStackMixin"
   ],
   "client": [
-    "TestMixin"
   ],
   "injectors": {
     "defaultRequire": 1

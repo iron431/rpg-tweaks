@@ -20,6 +20,11 @@ public class CommonConfigs {
     public static final ForgeConfigSpec.ConfigValue<Boolean> TAKE_DURABILITY_DAMAGE;
     public static final ForgeConfigSpec.ConfigValue<Double> DURABILITY_LOST_ON_DEATH;
 
+    public static final ForgeConfigSpec.ConfigValue<Boolean> XP_MODULE_ENABLED;
+    public static final ForgeConfigSpec.ConfigValue<Boolean> XP_RESPECT_KEEPINVENTORY;
+    public static final ForgeConfigSpec.ConfigValue<Boolean> XP_ONLY_ALLOW_OWNER;
+//    public static final ForgeConfigSpec.ConfigValue<Boolean> XP_DROP_REWARD_XP;
+
     static {
 
         BUILDER.push("Damage-Module");
@@ -43,6 +48,17 @@ public class CommonConfigs {
         TAKE_DURABILITY_DAMAGE = BUILDER.define("takeDurabilityDamage", false);
         BUILDER.comment("The percent of durability damage equipment should take on player dying. Set to 0 to disabled. Default: 0.15 (15%)");
         DURABILITY_LOST_ON_DEATH = BUILDER.define("durabilityLostOnDeath", 0.15);
+        BUILDER.pop();
+
+        BUILDER.push("XP-Module");
+        BUILDER.comment("The purpose of the xp module is to rework how experience is dropped on a player's death.");
+        XP_MODULE_ENABLED = BUILDER.define("xpModuleEnabled", true);
+        BUILDER.comment("Whether or not the keepInventory gamerule will prevent the player from losing xp Default: false, meaning even though you keep your items, your xp is still dropped.");
+        XP_RESPECT_KEEPINVENTORY = BUILDER.define("respectKeepInventory", false);
+        BUILDER.comment("Whether or not the player who dropped the xp is the only player allow to collect the xp. Default: true");
+        XP_ONLY_ALLOW_OWNER = BUILDER.define("onlyAllowOwnerPickup", true);
+//        BUILDER.comment("Whether or not \"reward xp\" is dropped, meaning a portion of the killed player's experience points. Useful as a reward for pvp. Default: false");
+//        XP_DROP_REWARD_XP = BUILDER.define("dropRewardXp", false);
         BUILDER.pop();
 
         SPEC = BUILDER.build();

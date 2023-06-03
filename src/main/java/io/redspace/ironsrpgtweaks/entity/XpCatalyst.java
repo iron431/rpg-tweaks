@@ -7,12 +7,14 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.protocol.Packet;
 import net.minecraft.network.protocol.game.ClientboundAddEntityPacket;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.util.Mth;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
+import net.minecraftforge.fluids.FluidType;
 
 import javax.annotation.Nullable;
 import java.util.UUID;
@@ -45,7 +47,7 @@ public class XpCatalyst extends Entity {
             xpCatalyst.storedXp += xpCatalyst.getXpNeededForLevel(i);
         }
         xpCatalyst.ownerUUID = deadPlayer.getUUID();
-        xpCatalyst.setPos(deadPlayer.position());
+        xpCatalyst.setPos(deadPlayer.position().add(0, .75, 0));
         deadPlayer.level.addFreshEntity(xpCatalyst);
         return xpCatalyst;
     }
@@ -56,6 +58,10 @@ public class XpCatalyst extends Entity {
         } else {
             return level >= 15 ? 37 + (level - 15) * 5 : 7 + level * 2;
         }
+    }
+
+    public float getVisualYOffset(float partialTick) {
+        return Mth.sin((tickCount + partialTick) * .08f) * .25f;
     }
 
     @Override
@@ -83,6 +89,11 @@ public class XpCatalyst extends Entity {
         }
         return super.interact(player, hand);
 
+    }
+
+    @Override
+    public boolean isPushedByFluid(FluidType type) {
+        return false;
     }
 
     @Override

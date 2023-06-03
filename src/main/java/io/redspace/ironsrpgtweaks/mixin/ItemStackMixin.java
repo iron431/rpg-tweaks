@@ -11,6 +11,8 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 @Mixin(ItemStack.class)
 public class ItemStackMixin {
 
+
+    //todo: this won't work if we want to deal damage on death
     @Inject(method = "hurt", at = @At(value = "HEAD"), cancellable = true)
     public void cancelDurabilityUsage(CallbackInfoReturnable<Boolean> cir) {
         IronsRpgTweaks.LOGGER.debug("MIXING WORKED");

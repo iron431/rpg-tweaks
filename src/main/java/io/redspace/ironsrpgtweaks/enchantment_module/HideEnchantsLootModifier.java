@@ -24,7 +24,7 @@ public class HideEnchantsLootModifier extends LootModifier {
     @Override
     protected @NotNull ObjectArrayList<ItemStack> doApply(ObjectArrayList<ItemStack> generatedLoot, LootContext context) {
         //TODO: blacklist loot tables config
-        IronsRpgTweaks.LOGGER.debug("HideEnchantsLootModifier: RUNNING");
+        //IronsRpgTweaks.LOGGER.debug("HideEnchantsLootModifier: RUNNING");
         for (ItemStack itemStack : generatedLoot) {
             var enchants = EnchantmentClientEvents.getEnchantments(itemStack);
             if (enchants != null)
@@ -35,7 +35,7 @@ public class HideEnchantsLootModifier extends LootModifier {
 
     @Override
     public Codec<? extends IGlobalLootModifier> codec() {
-        IronsRpgTweaks.LOGGER.debug("HideEnchantsLootModifier: accessing codec");
+        //IronsRpgTweaks.LOGGER.debug("HideEnchantsLootModifier: accessing codec");
         return CODEC.get();
     }
 }

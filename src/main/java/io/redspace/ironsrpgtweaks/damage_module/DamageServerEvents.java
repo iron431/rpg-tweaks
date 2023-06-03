@@ -8,6 +8,7 @@ import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.damagesource.EntityDamageSource;
 import net.minecraft.world.entity.EntityType;
 import net.minecraftforge.event.entity.living.LivingDamageEvent;
+import net.minecraftforge.event.entity.living.LivingKnockBackEvent;
 import net.minecraftforge.event.entity.player.AttackEntityEvent;
 import net.minecraftforge.event.entity.player.PlayerEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
@@ -41,6 +42,12 @@ public class DamageServerEvents {
         }
     }
 
+    @SubscribeEvent
+    public static void modifyKnockback(LivingKnockBackEvent event) {
+        if (CommonConfigs.DAMAGE_MODULE_ENABLED.get()) {
+            event.setStrength((float) (event.getStrength() * CommonConfigs.KNOCKBACK_MODIFIER.get()));
+        }
+    }
 
     private static boolean testDamageSource(DamageSource source) {
 

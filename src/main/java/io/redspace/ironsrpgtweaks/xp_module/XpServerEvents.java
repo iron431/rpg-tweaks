@@ -11,6 +11,7 @@ import net.minecraft.world.level.Level;
 import net.minecraftforge.event.entity.living.LivingDeathEvent;
 import net.minecraftforge.event.entity.living.LivingExperienceDropEvent;
 import net.minecraftforge.event.entity.player.PlayerEvent;
+import net.minecraftforge.event.entity.player.PlayerXpEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 
@@ -50,6 +51,13 @@ public class XpServerEvents {
                 event.setCanceled(true);
             }
         }
+    }
+
+    @SubscribeEvent
+    public static void modifyXp(PlayerXpEvent.XpChange event) {
+        //TODO: this affects everything, including xp catalyst restoration amount
+        if (CommonConfigs.XP_MODULE_ENABLED.get())
+            event.setAmount((int) (event.getAmount() * CommonConfigs.XP_MODIFIER.get()));
     }
 
     public static int getVanillaXpReward(ServerPlayer serverPlayer) {

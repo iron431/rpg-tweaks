@@ -26,12 +26,17 @@ public class CommonConfigs {
     public static final ForgeConfigSpec.ConfigValue<Boolean> XP_ONLY_ALLOW_OWNER;
     public static final ForgeConfigSpec.ConfigValue<Double> XP_MODIFIER;
 
+    public static final ForgeConfigSpec.ConfigValue<Boolean> ENCHANT_MODULE_ENABLED;
+    public static final ForgeConfigSpec.ConfigValue<Boolean> IDENTIFY_ON_EQUIP;
+    public static final ForgeConfigSpec.ConfigValue<Boolean> DISABLE_ENCHANTING_TABLE;
+
+
 //    public static final ForgeConfigSpec.ConfigValue<Boolean> XP_DROP_REWARD_XP;
 
     static {
 
         BUILDER.push("Damage-Module");
-        BUILDER.comment("The purpose of the damage module is to remove the invulnerability ticks after an entity is damaged to better suit gameplay where entities are going to be ignoring too much damage if left unchecked. Disabling will disable every feature listed under this module.");
+        BUILDER.comment("The purpose of the damage module is to remove the invulnerability ticks after an entity is damaged to better suit gameplay where entities are going to be ignoring too much damage if left unchecked. Disabling will nullify every feature listed under this module.");
         DAMAGE_MODULE_ENABLED = BUILDER.define("damageModuleEnabled", true);
         BUILDER.comment("Some entities or damage sources rely on damage ticks to time their attacks. In these cases, we want to let them initiate i-frames.");
         BUILDER.comment("entityBlacklist default: " + getDefaultEntries(DamageServerEvents.BLACKLIST_ENTITY_TYPES));
@@ -47,16 +52,16 @@ public class CommonConfigs {
         BUILDER.pop();
 
         BUILDER.push("Durability-Module");
-        BUILDER.comment("The purpose of the durability module is to rework how durability damage is applied to better emulate an rpg setting.  Disabling will disable every feature listed under this module.");
+        BUILDER.comment("The purpose of the durability module is to rework how durability damage is applied to better emulate an rpg setting.  Disabling will nullify every feature listed under this module.");
         DURABILITY_MODULE_ENABLED = BUILDER.define("durabilityModuleEnabled", true);
         BUILDER.comment("Whether or not tools and armor should take regular durability damage while in use. Default: false");
         TAKE_DURABILITY_DAMAGE = BUILDER.define("takeDurabilityDamage", false);
-        BUILDER.comment("The percent of durability damage equipment should take on player dying. Set to 0 to disabled. Default: 0.15 (15%)");
+        BUILDER.comment("The percent of durability damage equipment should take on player dying. Set to 0 to disable. Default: 0.15 (15%)");
         DURABILITY_LOST_ON_DEATH = BUILDER.define("durabilityLostOnDeath", 0.15);
         BUILDER.pop();
 
         BUILDER.push("XP-Module");
-        BUILDER.comment("The purpose of the xp module is to rework how experience is dropped on a player's death. Disabling will disable every feature listed under this module.");
+        BUILDER.comment("The purpose of the xp module is to rework how experience is dropped on a player's death by creating a souls-like xp catalyst instead. Disabling will nullify every feature listed under this module.");
         XP_MODULE_ENABLED = BUILDER.define("xpModuleEnabled", true);
         BUILDER.comment("Whether or not the keepInventory gamerule will prevent the player from losing xp Default: false, meaning even though you keep your items, your xp is still dropped.");
         XP_RESPECT_KEEPINVENTORY = BUILDER.define("respectKeepInventory", false);
@@ -66,6 +71,15 @@ public class CommonConfigs {
         XP_MODIFIER = BUILDER.worldRestart() .define("globalXpMultiplier", 1.0);
 //        BUILDER.comment("Whether or not \"reward xp\" is dropped, meaning a portion of the killed player's experience points. Useful as a reward for pvp. Default: false");
 //        XP_DROP_REWARD_XP = BUILDER.define("dropRewardXp", false);
+        BUILDER.pop();
+
+        BUILDER.push("Enchantment-Module");
+        BUILDER.comment("The purpose of the enchantment module is to mystify enchantments and add an additional challenge to game by obscuring the description of enchanted and cursed items found through looting. Disabling will nullify every feature listed under this module.");
+        ENCHANT_MODULE_ENABLED = BUILDER.define("enchantmentModuleEnabled", true);
+        BUILDER.comment("Whether or not armor should be automatically identified when equipped.");
+        IDENTIFY_ON_EQUIP = BUILDER.define("identifyOnEquip", true);
+        BUILDER.comment("Whether or not the enchanting table should be disabled, making looting or trading the only way to get enchanted items.");
+        DISABLE_ENCHANTING_TABLE = BUILDER.define("disableEnchantingTable", false);
         BUILDER.pop();
 
         SPEC = BUILDER.build();

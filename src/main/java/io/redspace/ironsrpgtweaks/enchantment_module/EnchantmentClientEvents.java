@@ -1,5 +1,6 @@
 package io.redspace.ironsrpgtweaks.enchantment_module;
 
+import io.redspace.ironsrpgtweaks.config.CommonConfigs;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.Registry;
 import net.minecraft.nbt.CompoundTag;
@@ -24,10 +25,13 @@ public class EnchantmentClientEvents {
 
     @SubscribeEvent
     public static void modifyTooltip(ItemTooltipEvent event) {
+        //TODO... client can just disable it :skull:
+        if (!CommonConfigs.ENCHANT_MODULE_ENABLED.get())
+            return;
         ItemStack stack = event.getItemStack();
         ListTag enchants = getEnchantments(stack);
         var tooltipComponents = event.getToolTip();
-        //TODO: checks for performance
+        //TODO: checks for performance. Mixin would probably be way more performant
         if (enchants != null) {
             if (shouldHideEnchantments(stack))
                 for (int i = 0; i < enchants.size(); i++) {
@@ -41,19 +45,6 @@ public class EnchantmentClientEvents {
                 }
         }
     }
-
-//    public static void replaceEnchantmentNames(int firstIndex, List<Component> tooltipComponents, ListTag enchantments) {
-//        for (int i = 0; i < enchantments.size(); i++) {
-//            CompoundTag compoundtag = enchantments.getCompound(i);
-//            Registry.ENCHANTMENT.getOptional(EnchantmentHelper.getEnchantmentId(compoundtag)).ifPresent((enchant) -> {
-//                var component = enchant.getFullname(EnchantmentHelper.getEnchantmentLevel(compoundtag));
-//                tooltipComponents.ind
-//                for (int j = firstIndex; j < tooltipComponents.size(); j++) {
-//
-//                }
-//            });
-//        }
-//    }
 
     public static boolean shouldHideEnchantments(ItemStack stack) {
         CompoundTag compoundtag = stack.getTag();

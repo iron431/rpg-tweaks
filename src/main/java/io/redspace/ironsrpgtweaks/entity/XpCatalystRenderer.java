@@ -67,7 +67,7 @@ public class XpCatalystRenderer extends EntityRenderer<XpCatalyst> {
         float visualOffset = entity.getVisualYOffset(partialTicks);
         poseStack.translate(0, entity.getBoundingBox().getYsize() * .5f + visualOffset, 0);
         poseStack.scale(1.25f, 1.25f, 1.25f);
-        poseStack.scale(visualOffset, visualOffset, visualOffset);
+        poseStack.scale(1 + visualOffset, 1 + visualOffset, 1 + visualOffset);
 
         PoseStack.Pose pose = poseStack.last();
         Matrix4f poseMatrix = pose.pose();

@@ -29,11 +29,11 @@ public class EnchantmentClientEvents {
         if (!CommonConfigs.ENCHANT_MODULE_ENABLED.get())
             return;
         ItemStack stack = event.getItemStack();
-        ListTag enchants = getEnchantments(stack);
+        ListTag enchants = EnchantHelper.getEnchantments(stack);
         var tooltipComponents = event.getToolTip();
         //TODO: checks for performance. Mixin would probably be way more performant
         if (enchants != null) {
-            if (shouldHideEnchantments(stack))
+            if (EnchantHelper.shouldHideEnchantments(stack))
                 for (int i = 0; i < enchants.size(); i++) {
                     CompoundTag compoundtag = enchants.getCompound(i);
                     Registry.ENCHANTMENT.getOptional(EnchantmentHelper.getEnchantmentId(compoundtag)).ifPresent((enchant) -> {
@@ -46,24 +46,4 @@ public class EnchantmentClientEvents {
         }
     }
 
-    public static boolean shouldHideEnchantments(ItemStack stack) {
-        CompoundTag compoundtag = stack.getTag();
-        if (compoundtag == null)
-            return false;
-        else if (compoundtag.contains("hideEnchantments"))
-            return compoundtag.getBoolean("hideEnchantments");
-        else return false;
-    }
-
-    @Nullable
-    public static ListTag getEnchantments(ItemStack stack) {
-        CompoundTag compoundtag = stack.getTag();
-        if (compoundtag == null)
-            return null;
-        if (compoundtag.contains("StoredEnchantments")) {
-            return compoundtag.getList("StoredEnchantments", 10);
-        } else if (compoundtag.contains("Enchantments"))
-            return compoundtag.getList("Enchantments", 10);
-        return null;
-    }
 }

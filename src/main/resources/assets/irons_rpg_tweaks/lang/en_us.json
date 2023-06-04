@@ -1,0 +1,7 @@
+{
+  "item.irons_rpg_tweaks.identification_scroll": "Scroll of Identification",
+  "item.irons_rpg_tweaks.identification_scroll.description": "Use over unidentified item in inventory, or in offhand.",
+
+  "ui.irons_rpg_tweaks.enchanting_table_error": "Enchanting Tables are disabled.",
+  "ui.irons_rpg_tweaks.shift_tooltip": "[Shift+]"
+}

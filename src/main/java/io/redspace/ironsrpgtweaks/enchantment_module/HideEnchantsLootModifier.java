@@ -26,9 +26,10 @@ public class HideEnchantsLootModifier extends LootModifier {
         //TODO: blacklist loot tables config
         //IronsRpgTweaks.LOGGER.debug("HideEnchantsLootModifier: RUNNING");
         for (ItemStack itemStack : generatedLoot) {
-            var enchants = EnchantmentClientEvents.getEnchantments(itemStack);
-            if (enchants != null)
-                itemStack.getTag().putBoolean("hideEnchantments", true);
+            var enchants = EnchantHelper.getEnchantments(itemStack);
+            if (enchants != null){
+                EnchantHelper.hideEnchantments(itemStack);
+            }
         }
         return generatedLoot;
     }

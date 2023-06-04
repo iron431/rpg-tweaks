@@ -76,9 +76,9 @@ public class CommonConfigs {
         BUILDER.push("Enchantment-Module");
         BUILDER.comment("The purpose of the enchantment module is to mystify enchantments and add an additional challenge to game by obscuring the description of enchanted and cursed items found through looting. Disabling will nullify every feature listed under this module.");
         ENCHANT_MODULE_ENABLED = BUILDER.define("enchantmentModuleEnabled", true);
-        BUILDER.comment("Whether or not armor should be automatically identified when equipped.");
+        BUILDER.comment("Whether or not armor should be automatically identified when equipped. Default: true");
         IDENTIFY_ON_EQUIP = BUILDER.define("identifyOnEquip", true);
-        BUILDER.comment("Whether or not the enchanting table should be disabled, making looting or trading the only way to get enchanted items.");
+        BUILDER.comment("Whether or not the enchanting table should be disabled, making looting or trading the only way to get enchanted items. Default: false");
         DISABLE_ENCHANTING_TABLE = BUILDER.define("disableEnchantingTable", false);
         BUILDER.pop();
 

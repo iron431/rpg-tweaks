@@ -1,6 +1,9 @@
 package io.redspace.ironsrpgtweaks.enchantment_module;
 
 import io.redspace.ironsrpgtweaks.config.CommonConfigs;
+import net.minecraft.ChatFormatting;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.protocol.game.ClientboundSetActionBarTextPacket;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.damagesource.EntityDamageSource;
@@ -28,16 +31,17 @@ public class EnchantmentServerEvents {
             return;
         var slot = event.getSlot();
         if (slot == EquipmentSlot.HEAD || slot == EquipmentSlot.CHEST || slot == EquipmentSlot.LEGS || slot == EquipmentSlot.FEET) {
-            if (EnchantmentClientEvents.shouldHideEnchantments(event.getTo()))
-                event.getTo().getOrCreateTag().putBoolean("hideEnchantments", false);
+            EnchantHelper.unhideEnchantments(event.getTo());
         }
     }
 
     @SubscribeEvent
     public static void disableEnchantmentTableInteract(PlayerInteractEvent.RightClickBlock event) {
         if (CommonConfigs.ENCHANT_MODULE_ENABLED.get() && CommonConfigs.DISABLE_ENCHANTING_TABLE.get())
-            if (event.getEntity().level.getBlockState(event.getHitVec().getBlockPos()).is(Blocks.ENCHANTING_TABLE))
+            if (event.getEntity().level.getBlockState(event.getHitVec().getBlockPos()).is(Blocks.ENCHANTING_TABLE)) {
                 event.setCanceled(true);
+                if (event.getEntity() instanceof ServerPlayer serverPlayer)
+                    serverPlayer.connection.send(new ClientboundSetActionBarTextPacket(Component.translatable("ui.irons_rpg_tweaks.enchanting_table_error").withStyle(ChatFormatting.RED)));
+            }
     }
-
 }

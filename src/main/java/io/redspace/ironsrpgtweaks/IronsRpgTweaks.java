@@ -3,6 +3,7 @@ package io.redspace.ironsrpgtweaks;
 import com.mojang.logging.LogUtils;
 import io.redspace.ironsrpgtweaks.config.CommonConfigs;
 import io.redspace.ironsrpgtweaks.registry.EntityRegistry;
+import io.redspace.ironsrpgtweaks.registry.ItemRegistry;
 import io.redspace.ironsrpgtweaks.registry.LootRegistry;
 import io.redspace.ironsrpgtweaks.setup.ModSetup;
 import net.minecraft.resources.ResourceLocation;
@@ -34,6 +35,7 @@ public class IronsRpgTweaks
         // Register the commonSetup method for modloading
         modEventBus.addListener(ModSetup::init);
         EntityRegistry.register(modEventBus);
+        ItemRegistry.register(modEventBus);
         LootRegistry.register(modEventBus);
 
         MinecraftForge.EVENT_BUS.register(this);

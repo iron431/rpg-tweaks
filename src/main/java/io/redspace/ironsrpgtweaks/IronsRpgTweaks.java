@@ -5,6 +5,7 @@ import io.redspace.ironsrpgtweaks.config.CommonConfigs;
 import io.redspace.ironsrpgtweaks.registry.EntityRegistry;
 import io.redspace.ironsrpgtweaks.registry.ItemRegistry;
 import io.redspace.ironsrpgtweaks.registry.LootRegistry;
+import io.redspace.ironsrpgtweaks.registry.SoundRegistry;
 import io.redspace.ironsrpgtweaks.setup.ModSetup;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraftforge.common.MinecraftForge;
@@ -36,6 +37,7 @@ public class IronsRpgTweaks
         modEventBus.addListener(ModSetup::init);
         EntityRegistry.register(modEventBus);
         ItemRegistry.register(modEventBus);
+        SoundRegistry.register(modEventBus);
         LootRegistry.register(modEventBus);
 
         MinecraftForge.EVENT_BUS.register(this);

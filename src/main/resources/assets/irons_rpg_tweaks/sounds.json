@@ -1,0 +1,7 @@
+{
+  "entity.xp_catalyst.retrieve": {
+    "sounds": [
+      "irons_rpg_tweaks:retrieve_xp"
+    ]
+  }
+}

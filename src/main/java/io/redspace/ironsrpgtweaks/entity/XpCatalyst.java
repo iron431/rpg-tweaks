@@ -2,6 +2,8 @@ package io.redspace.ironsrpgtweaks.entity;
 
 import io.redspace.ironsrpgtweaks.config.CommonConfigs;
 import io.redspace.ironsrpgtweaks.registry.EntityRegistry;
+import io.redspace.ironsrpgtweaks.registry.SoundRegistry;
+import net.minecraft.client.resources.sounds.Sound;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.protocol.Packet;
@@ -61,14 +63,14 @@ public class XpCatalyst extends Entity {
     }
 
     public float getVisualYOffset(float partialTick) {
-        return Mth.sin((tickCount + partialTick) * .08f) * .25f;
+        return Mth.sin((tickCount + partialTick) * .04f) * .25f;
     }
 
     @Override
     public void tick() {
         super.tick();
         if (level.isClientSide)
-            level.addParticle(ParticleTypes.TOTEM_OF_UNDYING, getRandomX(.25f), getRandomY(), getRandomZ(.25f), 0, 0.07, 0);
+            level.addParticle(ParticleTypes.TOTEM_OF_UNDYING, getRandomX(.125f), getRandomY(), getRandomZ(.125f), 0, 0.07, 0);
 //        if (this.tickCount % 20 == 1) {
 //            this.scanForEntities();
 //        }
@@ -82,6 +84,7 @@ public class XpCatalyst extends Entity {
             if (player.getUUID().equals(ownerUUID) || !CommonConfigs.XP_ONLY_ALLOW_OWNER.get()) {
                 //player.giveExperienceLevels(storedLevels);
                 player.giveExperiencePoints(storedXp);
+                this.playSound(SoundRegistry.RETRIEVE_XP.get());
                 this.discard();
                 return InteractionResult.SUCCESS;
             }

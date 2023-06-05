@@ -20,7 +20,7 @@ public class EntityRegistry {
 
     public static final RegistryObject<EntityType<XpCatalyst>> XP_CATALYST =
             ENTITIES.register("xp_catalyst", () -> EntityType.Builder.<XpCatalyst>of(XpCatalyst::new, MobCategory.MISC)
-                    .sized(.8f, .8f)
+                    .sized(.6f, .6f)
                     .clientTrackingRange(64)
                     .build(new ResourceLocation(IronsRpgTweaks.MODID, "xp_catalyst").toString()));
 

@@ -3,5 +3,8 @@
   "item.irons_rpg_tweaks.identification_scroll.description": "Use over unidentified item in inventory, or in offhand.",
 
   "ui.irons_rpg_tweaks.enchanting_table_error": "Enchanting Tables are disabled.",
-  "ui.irons_rpg_tweaks.shift_tooltip": "[Shift+]"
+  "ui.irons_rpg_tweaks.shift_tooltip": "[Shift+]",
+  "ui.irons_rpg_tweaks.item_broken": "Your %s has broken!",
+  "ui.irons_rpg_tweaks.item_damaged": "Your %s has taken %d damage.",
+  "ui.irons_rpg_tweaks.item_damaged_critical": "Your %s has taken %d damage and is at critical durability!"
 }

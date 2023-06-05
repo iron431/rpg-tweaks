@@ -64,10 +64,10 @@ public class XpCatalystRenderer extends EntityRenderer<XpCatalyst> {
     @Override
     public void render(XpCatalyst entity, float yaw, float partialTicks, PoseStack poseStack, MultiBufferSource bufferSource, int light) {
         poseStack.pushPose();
-        float visualOffset = entity.getVisualYOffset(partialTicks);
-        poseStack.translate(0, entity.getBoundingBox().getYsize() * .5f + visualOffset, 0);
+        poseStack.translate(0, entity.getBoundingBox().getYsize() * .5f + entity.getVisualYOffset(partialTicks), 0);
         poseStack.scale(1.25f, 1.25f, 1.25f);
-        poseStack.scale(1 + visualOffset, 1 + visualOffset, 1 + visualOffset);
+        float scale = 1 + Mth.sin((entity.tickCount + partialTicks) * .12f) * .125f;
+        poseStack.scale(scale, scale, scale);
 
         PoseStack.Pose pose = poseStack.last();
         Matrix4f poseMatrix = pose.pose();
@@ -80,21 +80,26 @@ public class XpCatalystRenderer extends EntityRenderer<XpCatalyst> {
         VertexConsumer consumer = bufferSource.getBuffer(RenderType.entityCutoutNoCull(getTextureLocation(entity)));
 
         float f = entity.tickCount + partialTicks;
-        float swirlX = Mth.cos(.08f * f) * 90;
-        float swirlY = Mth.sin(.08f * f) * 90;
-        float swirlZ = Mth.cos(.08f * f + 5464) * 90;
+        float swirlX = Mth.cos(.07f * f) * 90;
+        float swirlY = Mth.sin(.07f * f) * 90;
+        float swirlZ = Mth.cos(.07f * f + 5464) * 90;
         poseStack.mulPose(Vector3f.XP.rotationDegrees(swirlX));
         poseStack.mulPose(Vector3f.YP.rotationDegrees(swirlY));
         poseStack.mulPose(Vector3f.ZP.rotationDegrees(swirlZ));
-        this.orb.render(poseStack, consumer, light, OverlayTexture.NO_OVERLAY);
+        Vec3 green = new Vec3(.15f, 1f, .2f);
+        Vec3 yellow = new Vec3(.5f, 1f, .2f);
+        float colorPeriod = (Mth.sin(f * .15f) + 1) * .5f;
+        Vec3 color1 = green.add((yellow.subtract(green)).scale(colorPeriod));
+        Vec3 color2 = green.add((yellow.subtract(green)).scale(1 - colorPeriod));
+        this.orb.render(poseStack, consumer, light, OverlayTexture.NO_OVERLAY, (float) color1.x, (float) color1.y, (float) color1.z, 1f);
 
-        poseStack.mulPose(Vector3f.XP.rotationDegrees(swirlX));
-        poseStack.mulPose(Vector3f.YP.rotationDegrees(swirlY));
-        poseStack.mulPose(Vector3f.ZP.rotationDegrees(swirlZ));
+        poseStack.mulPose(Vector3f.XP.rotationDegrees(swirlZ));
+        poseStack.mulPose(Vector3f.YP.rotationDegrees(swirlX));
+        poseStack.mulPose(Vector3f.ZP.rotationDegrees(swirlY));
 
         consumer = bufferSource.getBuffer(RenderType.entityCutoutNoCull(getSwirlTextureLocation(entity)));
         poseStack.scale(1.25f, 1.25f, 1.25f);
-        this.swirl.render(poseStack, consumer, light, OverlayTexture.NO_OVERLAY);
+        this.swirl.render(poseStack, consumer, light, OverlayTexture.NO_OVERLAY, (float) color2.x, (float) color2.y, (float) color2.z, 1f);
 
         poseStack.mulPose(Vector3f.XP.rotationDegrees(swirlX * -2.5345f));
         poseStack.mulPose(Vector3f.YP.rotationDegrees(swirlY * -3.5345f));

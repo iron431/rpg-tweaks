@@ -3,5 +3,13 @@
     "sounds": [
       "irons_rpg_tweaks:retrieve_xp"
     ]
+  },
+  "item.identification_scroll.identify": {
+    "sounds": [
+      "irons_rpg_tweaks:identify_1",
+      "irons_rpg_tweaks:identify_2",
+      "irons_rpg_tweaks:identify_3",
+      "irons_rpg_tweaks:identify_4"
+    ]
   }
 }

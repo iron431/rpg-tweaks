@@ -33,7 +33,7 @@ public class IdentificationScroll extends Item {
     public boolean overrideStackedOnOther(ItemStack stackMe, Slot pSlot, ClickAction pAction, Player pPlayer) {
         var other = pSlot.getItem();
         if (pAction == ClickAction.SECONDARY) {
-            if (attemptIdentifyItem(other)) {
+            if (attemptIdentifyItem(other, pPlayer)) {
                 stackMe.shrink(1);
                 return true;
             }
@@ -41,20 +41,20 @@ public class IdentificationScroll extends Item {
         return super.overrideStackedOnOther(stackMe, pSlot, pAction, pPlayer);
     }
 
-    @Override
-    public InteractionResultHolder<ItemStack> use(Level level, Player player, InteractionHand useHand) {
-        var otherhand = player.getItemInHand(useHand == InteractionHand.MAIN_HAND ? InteractionHand.OFF_HAND : InteractionHand.MAIN_HAND);
-        if (!level.isClientSide && attemptIdentifyItem(otherhand)) {
-            //TODO: shrink not working?
-            player.getItemInHand(useHand).shrink(1);
-            return InteractionResultHolder.success(player.getItemInHand(useHand));
-        }
-        return super.use(level, player, useHand);
-    }
+//    @Override
+//    public InteractionResultHolder<ItemStack> use(Level level, Player player, InteractionHand useHand) {
+//        var otherhand = player.getItemInHand(useHand == InteractionHand.MAIN_HAND ? InteractionHand.OFF_HAND : InteractionHand.MAIN_HAND);
+//        if (!level.isClientSide && attemptIdentifyItem(otherhand)) {
+//            //TODO: shrink not working?
+//            player.getItemInHand(useHand).shrink(1);
+//            return InteractionResultHolder.success(player.getItemInHand(useHand));
+//        }
+//        return super.use(level, player, useHand);
+//    }
 
-    private boolean attemptIdentifyItem(ItemStack itemStack) {
+    private boolean attemptIdentifyItem(ItemStack itemStack, Player player) {
         if (EnchantHelper.shouldHideEnchantments(itemStack)) {
-            EnchantHelper.unhideEnchantments(itemStack);
+            EnchantHelper.unhideEnchantments(itemStack, player);
             return true;
         }
         return false;

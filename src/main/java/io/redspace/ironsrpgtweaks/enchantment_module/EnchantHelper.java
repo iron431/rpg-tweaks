@@ -1,7 +1,10 @@
 package io.redspace.ironsrpgtweaks.enchantment_module;
 
+import io.redspace.ironsrpgtweaks.registry.SoundRegistry;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 
 import javax.annotation.Nullable;
@@ -28,9 +31,14 @@ public class EnchantHelper {
         return null;
     }
 
-    public static void unhideEnchantments(ItemStack stack) {
-        if (shouldHideEnchantments(stack))
+    public static void unhideEnchantments(ItemStack stack, @Nullable Entity entity) {
+        if (shouldHideEnchantments(stack)) {
             stack.getOrCreateTag().putBoolean("hideEnchantments", false);
+            if (entity != null) {
+                entity.playSound(SoundRegistry.IDENTIFY.get());
+            }
+        }
+
     }
 
     public static void hideEnchantments(ItemStack stack) {

@@ -3,11 +3,14 @@ package io.redspace.ironsrpgtweaks.entity;
 import io.redspace.ironsrpgtweaks.config.CommonConfigs;
 import io.redspace.ironsrpgtweaks.registry.EntityRegistry;
 import io.redspace.ironsrpgtweaks.registry.SoundRegistry;
+import net.minecraft.ChatFormatting;
 import net.minecraft.client.resources.sounds.Sound;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.chat.Component;
 import net.minecraft.network.protocol.Packet;
 import net.minecraft.network.protocol.game.ClientboundAddEntityPacket;
+import net.minecraft.network.protocol.game.ClientboundSetActionBarTextPacket;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.util.Mth;
 import net.minecraft.world.InteractionHand;
@@ -80,13 +83,15 @@ public class XpCatalyst extends Entity {
     public InteractionResult interact(Player player, InteractionHand hand) {
         //if (!player.level.isClientSide && (player.getUUID().equals(ownerUUID) || !CommonConfigs.XP_ONLY_ALLOW_OWNER.get())) {
 
-        if (!player.level.isClientSide) {
+        if (player instanceof ServerPlayer serverPlayer) {
             if (player.getUUID().equals(ownerUUID) || !CommonConfigs.XP_ONLY_ALLOW_OWNER.get()) {
                 //player.giveExperienceLevels(storedLevels);
                 player.giveExperiencePoints(storedXp);
                 this.playSound(SoundRegistry.RETRIEVE_XP.get());
                 this.discard();
                 return InteractionResult.SUCCESS;
+            } else {
+                serverPlayer.connection.send(new ClientboundSetActionBarTextPacket(Component.translatable("ui.irons_rpg_tweaks.xp_retrieve_error").withStyle(ChatFormatting.RED)));
             }
 
         }
@@ -104,7 +109,12 @@ public class XpCatalyst extends Entity {
         return true;
     }
 
-    //
+    @Override
+    public boolean shouldBeSaved() {
+        return true;
+    }
+
+//
 //    private void scanForEntities() {
 //        if (this.followingPlayer == null || this.followingPlayer.distanceToSqr(this) > 64.0D) {
 //            this.followingPlayer = this.level.getNearestPlayer(this, 8.0D);

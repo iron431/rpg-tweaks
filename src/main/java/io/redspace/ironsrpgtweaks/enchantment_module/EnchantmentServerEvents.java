@@ -31,7 +31,7 @@ public class EnchantmentServerEvents {
             return;
         var slot = event.getSlot();
         if (slot == EquipmentSlot.HEAD || slot == EquipmentSlot.CHEST || slot == EquipmentSlot.LEGS || slot == EquipmentSlot.FEET) {
-            EnchantHelper.unhideEnchantments(event.getTo());
+            EnchantHelper.unhideEnchantments(event.getTo(), event.getEntity());
         }
     }
 

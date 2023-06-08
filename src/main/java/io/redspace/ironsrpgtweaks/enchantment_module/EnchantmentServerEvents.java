@@ -31,25 +31,23 @@ public class EnchantmentServerEvents {
         if (event.getEntity() instanceof ServerPlayer serverPlayer && event.getEntity().getLevel().getBlockState(event.getHitVec().getBlockPos()).is(Blocks.ENCHANTING_TABLE) && ServerConfigs.ENCHANT_MODULE_ENABLED.get()) {
 
             boolean canceled = ServerConfigs.DISABLE_ENCHANTING_TABLE.get();
-            boolean sendErrorMessage = true;
-            String errorMessage = "ui.irons_rpg_tweaks.enchanting_table_error.disabled";
+            Component message = Component.translatable("ui.irons_rpg_tweaks.enchanting_table_error.disabled").withStyle(ChatFormatting.RED);
 
             if (ServerConfigs.IDENTIFY_ON_ENCHANTING_TABLE.get() && !event.getEntity().getItemInHand(event.getHand()).isEmpty()) {
                 var itemStack = event.getEntity().getItemInHand(event.getHand());
                 var enchanted = EnchantHelper.getEnchantments(itemStack) != null;
                 var identified = !EnchantHelper.shouldHideEnchantments(itemStack);
                 if (enchanted && identified)
-                    errorMessage = "ui.irons_rpg_tweaks.enchanting_table_error.identified";
+                    message = Component.translatable("ui.irons_rpg_tweaks.enchanting_table_error.identified").withStyle(ChatFormatting.LIGHT_PURPLE);
                 else if (enchanted && !identified){
                     EnchantHelper.unhideEnchantments(itemStack, serverPlayer);
-                    sendErrorMessage = false;
+                    message = Component.translatable("ui.irons_rpg_tweaks.enchanting_table_success", itemStack.getHoverName().getString()).withStyle(ChatFormatting.GREEN);
                     canceled = true;
                 }
             }
             if (canceled) {
                 event.setCanceled(true);
-                if (sendErrorMessage)
-                    serverPlayer.connection.send(new ClientboundSetActionBarTextPacket(Component.translatable(errorMessage).withStyle(ChatFormatting.RED)));
+                serverPlayer.connection.send(new ClientboundSetActionBarTextPacket(message));
 
             }
         }

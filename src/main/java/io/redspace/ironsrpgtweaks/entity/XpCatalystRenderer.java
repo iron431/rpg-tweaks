@@ -30,19 +30,7 @@ public class XpCatalystRenderer extends EntityRenderer<XpCatalyst> {
 
     public static final ModelLayerLocation MODEL_LAYER_LOCATION = new ModelLayerLocation(new ResourceLocation(IronsRpgTweaks.MODID, "xp_catalyst_model"), "main");
     private static ResourceLocation ORB_TEXTURE = IronsRpgTweaks.id("textures/entity/xp_catalyst/xp_catalyst_orb.png");
-    private static ResourceLocation SWIRL_TEXTURES[] = {
-            IronsRpgTweaks.id("textures/entity/xp_catalyst/swirl_0.png"),
-            IronsRpgTweaks.id("textures/entity/xp_catalyst/swirl_1.png"),
-            IronsRpgTweaks.id("textures/entity/xp_catalyst/swirl_2.png"),
-            IronsRpgTweaks.id("textures/entity/xp_catalyst/swirl_3.png"),
-            IronsRpgTweaks.id("textures/entity/xp_catalyst/swirl_4.png"),
-            IronsRpgTweaks.id("textures/entity/xp_catalyst/swirl_5.png"),
-            IronsRpgTweaks.id("textures/entity/xp_catalyst/swirl_6.png"),
-            IronsRpgTweaks.id("textures/entity/xp_catalyst/swirl_7.png"),
-            IronsRpgTweaks.id("textures/entity/xp_catalyst/swirl_8.png"),
-            IronsRpgTweaks.id("textures/entity/xp_catalyst/swirl_9.png"),
-            IronsRpgTweaks.id("textures/entity/xp_catalyst/swirl_10.png")
-    };
+    private static ResourceLocation SOLID_TEXTURE = IronsRpgTweaks.id("textures/entity/xp_catalyst/solid.png");
 
     private final ModelPart orb;
     private final ModelPart swirl;
@@ -65,12 +53,17 @@ public class XpCatalystRenderer extends EntityRenderer<XpCatalyst> {
         return LayerDefinition.create(meshdefinition, 8, 8);
     }
 
+    static final Vec3 green = new Vec3(.15f, 1f, .2f);
+    static final Vec3 yellow = new Vec3(0.9f, 0.9f, .2f);
+    static final Vec3 white = new Vec3(1f, 1f, 1f);
+    static final Vec3 purple = new Vec3(1f, .63f, 1f);
+
     @Override
     public void render(XpCatalyst entity, float yaw, float partialTicks, PoseStack poseStack, MultiBufferSource bufferSource, int light) {
         poseStack.pushPose();
         poseStack.translate(0, entity.getBoundingBox().getYsize() * .5f + entity.getVisualYOffset(partialTicks), 0);
         float scale = 1 + Mth.sin((entity.tickCount + partialTicks) * .06f) * .05f;
-        renderXpOrb(poseStack, bufferSource, entity.tickCount, partialTicks);
+        //renderXpOrb(poseStack, bufferSource, entity.tickCount, partialTicks);
         poseStack.scale(scale, scale, scale);
         poseStack.scale(.6f, .6f, .6f);
 
@@ -80,29 +73,43 @@ public class XpCatalystRenderer extends EntityRenderer<XpCatalyst> {
         float yRot = -((float) (Mth.atan2(motion.z, motion.x) * (double) (180F / (float) Math.PI)) + 90.0F);
         poseStack.mulPose(Vector3f.YP.rotationDegrees(yRot));
         poseStack.mulPose(Vector3f.XP.rotationDegrees(xRot));
-        VertexConsumer consumer = bufferSource.getBuffer(RenderType.entityCutoutNoCull(getTextureLocation(entity)));
 
         float f = entity.tickCount + partialTicks;
+        poseStack.pushPose();
+        poseStack.scale(.4f, .4f, .4f);
+        float orbColorPeriod = (Mth.sin(f * .04f) + 1) * .5f;
+        float colorPeriod = (Mth.sin(f * .08f) + 1) * .5f;
         float swirlX = Mth.cos(.05f * f) * 90;
         float swirlY = Mth.sin(.05f * f) * 90;
         float swirlZ = Mth.cos(.05f * f + 5464) * 90;
-        poseStack.mulPose(Vector3f.XP.rotationDegrees(swirlX));
-        poseStack.mulPose(Vector3f.YP.rotationDegrees(swirlY));
-        poseStack.mulPose(Vector3f.ZP.rotationDegrees(swirlZ));
-        Vec3 green = new Vec3(.15f, 1f, .2f);
-        Vec3 yellow = new Vec3(0.9f, 0.9f, .2f);
-        float colorPeriod = (Mth.sin(f * .08f) + 1) * .5f;
-        Vec3 color1 = green.add((yellow.subtract(green)).scale(colorPeriod));
-        Vec3 color2 = green.add((yellow.subtract(green)).scale(1 - colorPeriod));
-        this.orb.render(poseStack, consumer, LightTexture.FULL_BRIGHT, OverlayTexture.NO_OVERLAY, (float) color1.x, (float) color1.y, (float) color1.z, 1f);
+
+        Vec3 orbGradient1 = green.add((yellow.subtract(green)).scale(orbColorPeriod));
+        Vec3 orbGradient2 = white.add((purple.subtract(white)).scale(orbColorPeriod));
+        Vec3 orbGradient3 = orbGradient1.add((orbGradient2.subtract(orbGradient1)).scale(colorPeriod));
+        poseStack.mulPose(Vector3f.XP.rotationDegrees(swirlX * .45f));
+        poseStack.mulPose(Vector3f.YP.rotationDegrees(swirlY * .45f));
+        poseStack.mulPose(Vector3f.ZP.rotationDegrees(swirlZ * .45f));
+        VertexConsumer consumer = bufferSource.getBuffer(RenderType.entityCutoutNoCull(SOLID_TEXTURE));
+        this.orb.render(poseStack, consumer, LightTexture.FULL_BRIGHT, OverlayTexture.NO_OVERLAY, (float) orbGradient3.x, (float) orbGradient3.y, (float) orbGradient3.z, 1f);
+        poseStack.popPose();
+
+
+        consumer = bufferSource.getBuffer(RenderType.entityCutoutNoCull(getTextureLocation(entity)));
 
         poseStack.mulPose(Vector3f.XP.rotationDegrees(swirlZ));
         poseStack.mulPose(Vector3f.YP.rotationDegrees(swirlX));
         poseStack.mulPose(Vector3f.ZP.rotationDegrees(swirlY));
 
-        consumer = bufferSource.getBuffer(RenderType.entityCutoutNoCull(getSwirlTextureLocation(entity)));
+        Vec3 rimGradient = green.add((yellow.subtract(green)).scale(colorPeriod));
+        Vec3 rimGradientInverted = green.add((yellow.subtract(green)).scale(1 - colorPeriod));
+        this.orb.render(poseStack, consumer, LightTexture.FULL_BRIGHT, OverlayTexture.NO_OVERLAY, (float) rimGradient.x, (float) rimGradient.y, (float) rimGradient.z, 1f);
+
+        poseStack.mulPose(Vector3f.XP.rotationDegrees(swirlZ));
+        poseStack.mulPose(Vector3f.YP.rotationDegrees(swirlX));
+        poseStack.mulPose(Vector3f.ZP.rotationDegrees(swirlY));
+
         poseStack.scale(1.5f, 1.5f, 1.5f);
-        this.swirl.render(poseStack, consumer, LightTexture.FULL_BRIGHT, OverlayTexture.NO_OVERLAY, (float) color2.x, (float) color2.y, (float) color2.z, 1f);
+        this.swirl.render(poseStack, consumer, LightTexture.FULL_BRIGHT, OverlayTexture.NO_OVERLAY, (float) rimGradientInverted.x, (float) rimGradientInverted.y, (float) rimGradientInverted.z, 1f);
 
         poseStack.popPose();
 
@@ -112,13 +119,6 @@ public class XpCatalystRenderer extends EntityRenderer<XpCatalyst> {
     @Override
     public ResourceLocation getTextureLocation(XpCatalyst entity) {
         return ORB_TEXTURE;
-    }
-
-    private ResourceLocation getSwirlTextureLocation(XpCatalyst entity) {
-        if (true)
-            return getTextureLocation(entity);
-        int frame = (entity.tickCount / 2) % SWIRL_TEXTURES.length;
-        return SWIRL_TEXTURES[frame];
     }
 
     private void renderXpOrb(PoseStack pMatrixStack, MultiBufferSource pBuffer, float tickCount, float pPartialTicks) {

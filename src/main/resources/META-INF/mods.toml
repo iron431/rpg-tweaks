@@ -27,7 +27,7 @@ displayName="Iron's RPG Tweaks" #mandatory
 # A URL for the "homepage" for this mod, displayed in the mod UI
 #displayURL="https://change.me.to.your.mods.homepage.example.invalid/" #optional
 # A file name (in the root of the mod JAR) containing a logo for display
-logoFile="logo.png" #optional
+logoFile="irons_rpg_logo_downscale.png" #optional
 # A text field displayed in the mod UI
 authors="Iron431" #optional
 # Display Test controls the display for your mod in the server connection screen

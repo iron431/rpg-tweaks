@@ -4,11 +4,11 @@ import io.redspace.ironsrpgtweaks.config.CommonConfigs;
 import io.redspace.ironsrpgtweaks.registry.EntityRegistry;
 import io.redspace.ironsrpgtweaks.registry.SoundRegistry;
 import net.minecraft.ChatFormatting;
-import net.minecraft.client.resources.sounds.Sound;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.protocol.Packet;
+import net.minecraft.network.protocol.game.ClientGamePacketListener;
 import net.minecraft.network.protocol.game.ClientboundAddEntityPacket;
 import net.minecraft.network.protocol.game.ClientboundSetActionBarTextPacket;
 import net.minecraft.server.level.ServerPlayer;
@@ -43,7 +43,7 @@ public class XpCatalyst extends Entity {
     public static XpCatalyst createXpCatalyst(ServerPlayer deadPlayer) {
         if (deadPlayer.experienceLevel == 0 && deadPlayer.experienceProgress == 0)
             return null;
-        XpCatalyst xpCatalyst = new XpCatalyst(deadPlayer.level);
+        XpCatalyst xpCatalyst = new XpCatalyst(deadPlayer.getLevel());
         //xpCatalyst.storedLevels = deadPlayer.experienceLevel;
         //xpCatalyst.storedPoints = (int) (deadPlayer.experienceProgress * deadPlayer.getXpNeededForNextLevel());
         xpCatalyst.storedXp = (int) (deadPlayer.experienceProgress * deadPlayer.getXpNeededForNextLevel());
@@ -53,7 +53,7 @@ public class XpCatalyst extends Entity {
         }
         xpCatalyst.ownerUUID = deadPlayer.getUUID();
         xpCatalyst.setPos(deadPlayer.position().add(0, .75, 0));
-        deadPlayer.level.addFreshEntity(xpCatalyst);
+        deadPlayer.getLevel().addFreshEntity(xpCatalyst);
         return xpCatalyst;
     }
 
@@ -72,8 +72,8 @@ public class XpCatalyst extends Entity {
     @Override
     public void tick() {
         super.tick();
-        if (level.isClientSide)
-            level.addParticle(ParticleTypes.TOTEM_OF_UNDYING, getRandomX(.125f), getRandomY(), getRandomZ(.125f), 0, 0.07, 0);
+        if (getLevel().isClientSide)
+            getLevel().addParticle(ParticleTypes.TOTEM_OF_UNDYING, getRandomX(.125f), getRandomY(), getRandomZ(.125f), 0, 0.07, 0);
 //        if (this.tickCount % 20 == 1) {
 //            this.scanForEntities();
 //        }
@@ -153,7 +153,7 @@ public class XpCatalyst extends Entity {
     }
 
     @Override
-    public Packet<?> getAddEntityPacket() {
+    public Packet<ClientGamePacketListener> getAddEntityPacket() {
         return new ClientboundAddEntityPacket(this);
     }
 }

@@ -19,6 +19,6 @@ public class SoundRegistry {
     public static RegistryObject<SoundEvent> IDENTIFY = registerSoundEvent("item.identification_scroll.identify");
 
     private static RegistryObject<SoundEvent> registerSoundEvent(String name) {
-        return SOUND_EVENTS.register(name, () -> new SoundEvent(new ResourceLocation(IronsRpgTweaks.MODID, name)));
+        return SOUND_EVENTS.register(name, () -> SoundEvent.m_262824_(new ResourceLocation(IronsRpgTweaks.MODID, name)));
     }
 }

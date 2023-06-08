@@ -26,7 +26,7 @@ public class IdentificationScroll extends Item {
     public static final Component shift = Component.translatable("ui.irons_rpg_tweaks.shift_tooltip").withStyle(ChatFormatting.GRAY);
 
     public IdentificationScroll() {
-        super(new Item.Properties().tab(CreativeModeTab.TAB_TOOLS));
+        super(new Item.Properties());
     }
 
     @Override

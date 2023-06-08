@@ -2,9 +2,7 @@ package io.redspace.ironsrpgtweaks.entity;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
-import com.mojang.math.Matrix3f;
-import com.mojang.math.Matrix4f;
-import com.mojang.math.Vector3f;
+import com.mojang.math.Axis;
 import io.redspace.ironsrpgtweaks.IronsRpgTweaks;
 import net.minecraft.client.model.geom.ModelLayerLocation;
 import net.minecraft.client.model.geom.ModelPart;
@@ -22,6 +20,9 @@ import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
 import net.minecraft.world.phys.Vec3;
+import org.checkerframework.checker.units.qual.A;
+import org.joml.Matrix3f;
+import org.joml.Matrix4f;
 
 public class XpCatalystRenderer extends EntityRenderer<XpCatalyst> {
 
@@ -78,17 +79,18 @@ public class XpCatalystRenderer extends EntityRenderer<XpCatalyst> {
         Vec3 motion = entity.getDeltaMovement();
         float xRot = -((float) (Mth.atan2(motion.horizontalDistance(), motion.y) * (double) (180F / (float) Math.PI)) - 90.0F);
         float yRot = -((float) (Mth.atan2(motion.z, motion.x) * (double) (180F / (float) Math.PI)) + 90.0F);
-        poseStack.mulPose(Vector3f.YP.rotationDegrees(yRot));
-        poseStack.mulPose(Vector3f.XP.rotationDegrees(xRot));
+        //m_252781_ = mulPose
+        poseStack.m_252781_(Axis.f_252436_.m_252977_(yRot));
+        poseStack.m_252781_(Axis.f_252529_.m_252977_(xRot));
         VertexConsumer consumer = bufferSource.getBuffer(RenderType.entityCutoutNoCull(getTextureLocation(entity)));
 
         float f = entity.tickCount + partialTicks;
         float swirlX = Mth.cos(.05f * f) * 90;
         float swirlY = Mth.sin(.05f * f) * 90;
         float swirlZ = Mth.cos(.05f * f + 5464) * 90;
-        poseStack.mulPose(Vector3f.XP.rotationDegrees(swirlX));
-        poseStack.mulPose(Vector3f.YP.rotationDegrees(swirlY));
-        poseStack.mulPose(Vector3f.ZP.rotationDegrees(swirlZ));
+        poseStack.m_252781_(Axis.f_252529_.m_252977_(swirlX));
+        poseStack.m_252781_(Axis.f_252436_.m_252977_(swirlY));
+        poseStack.m_252781_(Axis.f_252403_.m_252977_(swirlZ));
         Vec3 green = new Vec3(.15f, 1f, .2f);
         Vec3 yellow = new Vec3(0.9f, 0.9f, .2f);
         float colorPeriod = (Mth.sin(f * .08f) + 1) * .5f;
@@ -96,9 +98,9 @@ public class XpCatalystRenderer extends EntityRenderer<XpCatalyst> {
         Vec3 color2 = green.add((yellow.subtract(green)).scale(1 - colorPeriod));
         this.orb.render(poseStack, consumer, LightTexture.FULL_BRIGHT, OverlayTexture.NO_OVERLAY, (float) color1.x, (float) color1.y, (float) color1.z, 1f);
 
-        poseStack.mulPose(Vector3f.XP.rotationDegrees(swirlZ));
-        poseStack.mulPose(Vector3f.YP.rotationDegrees(swirlX));
-        poseStack.mulPose(Vector3f.ZP.rotationDegrees(swirlY));
+        poseStack.m_252781_(Axis.f_252529_.m_252977_(swirlZ));
+        poseStack.m_252781_(Axis.f_252436_.m_252977_(swirlX));
+        poseStack.m_252781_(Axis.f_252403_.m_252977_(swirlY));
 
         consumer = bufferSource.getBuffer(RenderType.entityCutoutNoCull(getSwirlTextureLocation(entity)));
         poseStack.scale(1.5f, 1.5f, 1.5f);
@@ -136,14 +138,16 @@ public class XpCatalystRenderer extends EntityRenderer<XpCatalyst> {
         int j = (int) ((Mth.sin(f8 + 0.0F) + 1.0F) * 0.5F * 255.0F);
         int l = (int) ((Mth.sin(f8 + 4.1887903F) + 1.0F) * 0.1F * 255.0F);
         pMatrixStack.translate(0.0D, (double) 0.1F, 0.0D);
-        pMatrixStack.mulPose(this.entityRenderDispatcher.cameraOrientation());
-        pMatrixStack.mulPose(Vector3f.YP.rotationDegrees(180.0F));
+        //camera orientation
+        pMatrixStack.m_252781_(this.entityRenderDispatcher.m_253208_());
+        //pMatrixStack.m_252781_(Axis.YP.m_252977_(180.0F));
+        pMatrixStack.m_252781_(Axis.f_252436_.m_252977_(180.0F));
         float f9 = 0.3F;
         pMatrixStack.scale(0.3F, 0.3F, 0.3F);
         VertexConsumer vertexconsumer = pBuffer.getBuffer(RENDER_TYPE);
         PoseStack.Pose posestack$pose = pMatrixStack.last();
-        Matrix4f matrix4f = posestack$pose.pose();
-        Matrix3f matrix3f = posestack$pose.normal();
+        Matrix4f matrix4f = posestack$pose.m_252922_();
+        Matrix3f matrix3f = posestack$pose.m_252943_();
         vertex(vertexconsumer, matrix4f, matrix3f, -0.5F, -.75F, j, 255, l, f, f3, LightTexture.FULL_BRIGHT);
         vertex(vertexconsumer, matrix4f, matrix3f, 0.5F, -.75F, j, 255, l, f1, f3, LightTexture.FULL_BRIGHT);
         vertex(vertexconsumer, matrix4f, matrix3f, 0.5F, 0.25F, j, 255, l, f1, f2, LightTexture.FULL_BRIGHT);
@@ -152,6 +156,6 @@ public class XpCatalystRenderer extends EntityRenderer<XpCatalyst> {
     }
 
     private static void vertex(VertexConsumer pBuffer, Matrix4f pMatrix, Matrix3f pMatrixNormal, float pX, float pY, int pRed, int pGreen, int pBlue, float pTexU, float pTexV, int pPackedLight) {
-        pBuffer.vertex(pMatrix, pX, pY, 0.0F).color(pRed, pGreen, pBlue, 128).uv(pTexU, pTexV).overlayCoords(OverlayTexture.NO_OVERLAY).uv2(pPackedLight).normal(pMatrixNormal, 0.0F, 1.0F, 0.0F).endVertex();
+        pBuffer.vertex(/*pMatrix,*/ pX, pY, 0.0F).color(pRed, pGreen, pBlue, 128).uv(pTexU, pTexV).overlayCoords(OverlayTexture.NO_OVERLAY).uv2(pPackedLight).normal(/*pMatrixNormal,*/ 0.0F, 1.0F, 0.0F).endVertex();
     }
 }

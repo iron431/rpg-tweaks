@@ -8,7 +8,6 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.network.protocol.game.ClientboundSetActionBarTextPacket;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.damagesource.DamageSource;
-import net.minecraft.world.damagesource.EntityDamageSource;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.Mob;
@@ -42,7 +41,7 @@ public class EnchantmentServerEvents {
 
     @SubscribeEvent
     public static void disableEnchantmentTableInteract(PlayerInteractEvent.RightClickBlock event) {
-        if (event.getEntity() instanceof ServerPlayer serverPlayer && event.getEntity().level.getBlockState(event.getHitVec().getBlockPos()).is(Blocks.ENCHANTING_TABLE) && CommonConfigs.ENCHANT_MODULE_ENABLED.get()) {
+        if (event.getEntity() instanceof ServerPlayer serverPlayer && event.getEntity().getLevel().getBlockState(event.getHitVec().getBlockPos()).is(Blocks.ENCHANTING_TABLE) && CommonConfigs.ENCHANT_MODULE_ENABLED.get()) {
 
             boolean canceled = CommonConfigs.DISABLE_ENCHANTING_TABLE.get();
             boolean sendErrorMessage = true;
@@ -72,7 +71,7 @@ public class EnchantmentServerEvents {
     }
 
     @SubscribeEvent
-    public static void hideOnMobSpawn(LivingSpawnEvent event) {
+    public static void hideOnMobSpawn(MobSpawnEvent event) {
         EnchantHelper.getEnchantedEquipmentItems(event.getEntity()).forEach((itemStack) -> {
             //IronsRpgTweaks.LOGGER.debug("LivingSpawnEvent.equipment {}",itemStack.getHoverName().getString());
             if (!itemStack.getOrCreateTag().contains(EnchantHelper.hideEnchantsNBT)) {

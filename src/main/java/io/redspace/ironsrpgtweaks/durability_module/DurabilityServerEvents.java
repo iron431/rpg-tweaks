@@ -1,23 +1,17 @@
 package io.redspace.ironsrpgtweaks.durability_module;
 
-import io.redspace.ironsrpgtweaks.IronsRpgTweaks;
-import io.redspace.ironsrpgtweaks.config.CommonConfigs;
+import io.redspace.ironsrpgtweaks.config.ServerConfigs;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.network.chat.Style;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.world.damagesource.DamageSource;
-import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.item.ArmorItem;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.enchantment.EnchantmentHelper;
 import net.minecraft.world.item.enchantment.Enchantments;
-import net.minecraftforge.event.entity.living.LivingDamageEvent;
 import net.minecraftforge.event.entity.living.LivingDeathEvent;
-import net.minecraftforge.event.entity.player.AttackEntityEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 
@@ -35,7 +29,7 @@ public class DurabilityServerEvents {
     @SubscribeEvent
     public static void onPlayerDeath(LivingDeathEvent event) {
         if (event.getEntity() instanceof ServerPlayer serverPlayer) {
-            if (CommonConfigs.DURABILITY_LOST_ON_DEATH.get() == 0 || !CommonConfigs.DURABILITY_MODULE_ENABLED.get())
+            if (ServerConfigs.DURABILITY_LOST_ON_DEATH.get() == 0 || !ServerConfigs.DURABILITY_MODULE_ENABLED.get())
                 return;
             //IronsRpgTweaks.LOGGER.debug("{} died! ({})", serverPlayer.getName().getString(), printInventory(serverPlayer.getInventory()));
             var inventory = serverPlayer.getInventory();
@@ -46,7 +40,7 @@ public class DurabilityServerEvents {
                 //IronsRpgTweaks.LOGGER.debug("{}", itemstack.getHoverName().getString());
                 if (itemstack.isDamageableItem()) {
                     int i = itemstack.getEnchantmentLevel(Enchantments.UNBREAKING) + 1;
-                    int damageAmount = (int) (itemstack.getMaxDamage() * CommonConfigs.DURABILITY_LOST_ON_DEATH.get());
+                    int damageAmount = (int) (itemstack.getMaxDamage() * ServerConfigs.DURABILITY_LOST_ON_DEATH.get());
                     damageAmount /= i;
                     itemstack.setDamageValue(itemstack.getDamageValue() + damageAmount);
                     if (itemstack.getDamageValue() < itemstack.getMaxDamage()) {

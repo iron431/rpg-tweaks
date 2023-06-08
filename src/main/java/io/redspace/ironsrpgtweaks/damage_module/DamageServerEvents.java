@@ -1,15 +1,11 @@
 package io.redspace.ironsrpgtweaks.damage_module;
 
-import io.redspace.ironsrpgtweaks.IronsRpgTweaks;
-import io.redspace.ironsrpgtweaks.config.CommonConfigs;
-import io.redspace.ironsrpgtweaks.setup.Messages;
-import net.minecraft.server.level.ServerPlayer;
+import io.redspace.ironsrpgtweaks.config.ServerConfigs;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.EntityType;
 import net.minecraftforge.event.entity.living.LivingDamageEvent;
 import net.minecraftforge.event.entity.living.LivingKnockBackEvent;
 import net.minecraftforge.event.entity.player.AttackEntityEvent;
-import net.minecraftforge.event.entity.player.PlayerEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 
@@ -25,7 +21,7 @@ public class DamageServerEvents {
     public static void onTakeDamage(LivingDamageEvent event) {
         //IronsRpgTweaks.LOGGER.debug("{} took damage! ({})", event.getEntity().getName().getString(), event.getSource().getMsgId());
 
-        if (CommonConfigs.DAMAGE_MODULE_ENABLED.get() && testDamageSource(event.getSource()))
+        if (ServerConfigs.DAMAGE_MODULE_ENABLED.get() && testDamageSource(event.getSource()))
             event.getEntity().invulnerableTime = 0;
     }
 
@@ -34,7 +30,7 @@ public class DamageServerEvents {
         var player = event.getEntity();
         if (player.getLevel().isClientSide)
             return;
-        if (player.getAttackStrengthScale(0) < CommonConfigs.MINIMUM_ATTACK_STRENGTH.get()) {
+        if (player.getAttackStrengthScale(0) < ServerConfigs.MINIMUM_ATTACK_STRENGTH.get()) {
             //IronsRpgTweaks.LOGGER.debug("DamageServerEvents.onPlayerAttack: cancelling");
 
             event.setCanceled(true);
@@ -43,21 +39,21 @@ public class DamageServerEvents {
 
     @SubscribeEvent
     public static void modifyKnockback(LivingKnockBackEvent event) {
-        if (CommonConfigs.DAMAGE_MODULE_ENABLED.get()) {
-            event.setStrength((float) (event.getStrength() * CommonConfigs.KNOCKBACK_MODIFIER.get()));
+        if (ServerConfigs.DAMAGE_MODULE_ENABLED.get()) {
+            event.setStrength((float) (event.getStrength() * ServerConfigs.KNOCKBACK_MODIFIER.get()));
         }
     }
 
     private static boolean testDamageSource(DamageSource source) {
 
         //Some damage sources rely on damage tick to apply dot. We therefore do not want to cancel the damage tick in these cases
-        if (CommonConfigs.DAMAGE_MODULE_DAMAGE_SOURCE_BLACKLIST.get().contains(source.getMsgId()))
+        if (ServerConfigs.DAMAGE_MODULE_DAMAGE_SOURCE_BLACKLIST.get().contains(source.getMsgId()))
             return false;
         if (source.getEntity() != null) {
 
             String entityType = EntityType.getKey(source.getEntity().getType()).toString();
             //IronsRpgTweaks.LOGGER.debug("entity type: {}",entityType);
-            if (CommonConfigs.DAMAGE_MODULE_ENTITY_BLACKLIST.get().contains(entityType))
+            if (ServerConfigs.DAMAGE_MODULE_ENTITY_BLACKLIST.get().contains(entityType))
                 return false;
         }
 

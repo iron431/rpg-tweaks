@@ -1,6 +1,6 @@
 package io.redspace.ironsrpgtweaks.entity;
 
-import io.redspace.ironsrpgtweaks.config.CommonConfigs;
+import io.redspace.ironsrpgtweaks.config.ServerConfigs;
 import io.redspace.ironsrpgtweaks.registry.EntityRegistry;
 import io.redspace.ironsrpgtweaks.registry.SoundRegistry;
 import net.minecraft.ChatFormatting;
@@ -84,7 +84,7 @@ public class XpCatalyst extends Entity {
         //if (!player.level.isClientSide && (player.getUUID().equals(ownerUUID) || !CommonConfigs.XP_ONLY_ALLOW_OWNER.get())) {
 
         if (player instanceof ServerPlayer serverPlayer) {
-            if (player.getUUID().equals(ownerUUID) || !CommonConfigs.XP_ONLY_ALLOW_OWNER.get()) {
+            if (player.getUUID().equals(ownerUUID) || !ServerConfigs.XP_ONLY_ALLOW_OWNER.get()) {
                 //player.giveExperienceLevels(storedLevels);
                 player.giveExperiencePoints(storedXp);
                 this.playSound(SoundRegistry.RETRIEVE_XP.get());

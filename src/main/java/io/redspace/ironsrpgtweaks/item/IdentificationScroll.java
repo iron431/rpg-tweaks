@@ -3,6 +3,7 @@ package io.redspace.ironsrpgtweaks.item;
 import io.redspace.ironsrpgtweaks.enchantment_module.EnchantHelper;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.ClickAction;
 import net.minecraft.world.inventory.Slot;
@@ -27,7 +28,8 @@ public class IdentificationScroll extends Item {
         var other = pSlot.getItem();
         if (pAction == ClickAction.SECONDARY) {
             if (attemptIdentifyItem(other, pPlayer)) {
-                stackMe.shrink(1);
+                if (pPlayer instanceof ServerPlayer serverPlayer && !serverPlayer.gameMode.isCreative())
+                    stackMe.shrink(1);
                 return true;
             }
         }

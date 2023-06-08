@@ -29,7 +29,7 @@ public class DurabilityServerEvents {
     @SubscribeEvent
     public static void onPlayerDeath(LivingDeathEvent event) {
         if (event.getEntity() instanceof ServerPlayer serverPlayer) {
-            if (ServerConfigs.DURABILITY_LOST_ON_DEATH.get() == 0 || !ServerConfigs.DURABILITY_MODULE_ENABLED.get())
+            if (ServerConfigs.DURABILITY_LOST_ON_DEATH.get() == 0 || !ServerConfigs.DURABILITY_MODULE_ENABLED.get() || serverPlayer.gameMode.isCreative())
                 return;
             //IronsRpgTweaks.LOGGER.debug("{} died! ({})", serverPlayer.getName().getString(), printInventory(serverPlayer.getInventory()));
             var inventory = serverPlayer.getInventory();

@@ -1,7 +1,7 @@
 package io.redspace.ironsrpgtweaks;
 
 import com.mojang.logging.LogUtils;
-import io.redspace.ironsrpgtweaks.config.CommonConfigs;
+import io.redspace.ironsrpgtweaks.config.ServerConfigs;
 import io.redspace.ironsrpgtweaks.registry.EntityRegistry;
 import io.redspace.ironsrpgtweaks.registry.ItemRegistry;
 import io.redspace.ironsrpgtweaks.registry.LootRegistry;
@@ -31,7 +31,7 @@ public class IronsRpgTweaks
     {
         IEventBus modEventBus = FMLJavaModLoadingContext.get().getModEventBus();
 
-        ModLoadingContext.get().registerConfig(ModConfig.Type.COMMON, CommonConfigs.SPEC, String.format("%s-common.toml", IronsRpgTweaks.MODID));
+        ModLoadingContext.get().registerConfig(ModConfig.Type.SERVER, ServerConfigs.SPEC, String.format("%s-server.toml", IronsRpgTweaks.MODID));
 
         // Register the commonSetup method for modloading
         modEventBus.addListener(ModSetup::init);

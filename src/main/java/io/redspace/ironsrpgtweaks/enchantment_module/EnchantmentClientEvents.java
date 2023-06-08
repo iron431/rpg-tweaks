@@ -1,7 +1,6 @@
 package io.redspace.ironsrpgtweaks.enchantment_module;
 
-import io.redspace.ironsrpgtweaks.config.CommonConfigs;
-import io.redspace.ironsrpgtweaks.enchantment_module.EnchantHelper;
+import io.redspace.ironsrpgtweaks.config.ServerConfigs;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.nbt.CompoundTag;
@@ -23,7 +22,7 @@ public class EnchantmentClientEvents {
     @SubscribeEvent
     public static void modifyTooltip(ItemTooltipEvent event) {
         //TODO... client can just disable it :skull:
-        if (!CommonConfigs.ENCHANT_MODULE_ENABLED.get())
+        if (!ServerConfigs.ENCHANT_MODULE_ENABLED.get())
             return;
         ItemStack stack = event.getItemStack();
         ListTag enchants = EnchantHelper.getEnchantments(stack);

@@ -1,11 +1,9 @@
 package io.redspace.ironsrpgtweaks.xp_module;
 
 import io.redspace.ironsrpgtweaks.IronsRpgTweaks;
-import io.redspace.ironsrpgtweaks.config.CommonConfigs;
+import io.redspace.ironsrpgtweaks.config.ServerConfigs;
 import io.redspace.ironsrpgtweaks.entity.XpCatalyst;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.world.entity.player.Inventory;
-import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.GameRules;
 import net.minecraft.world.level.Level;
 import net.minecraftforge.event.entity.living.LivingDeathEvent;
@@ -14,9 +12,6 @@ import net.minecraftforge.event.entity.player.PlayerEvent;
 import net.minecraftforge.event.entity.player.PlayerXpEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
-
-import java.util.ArrayList;
-import java.util.List;
 
 @Mod.EventBusSubscriber
 public class XpServerEvents {
@@ -56,8 +51,8 @@ public class XpServerEvents {
     @SubscribeEvent
     public static void modifyXp(PlayerXpEvent.XpChange event) {
         //TODO: this affects everything, including xp catalyst restoration amount
-        if (CommonConfigs.XP_MODULE_ENABLED.get())
-            event.setAmount((int) (event.getAmount() * CommonConfigs.XP_MODIFIER.get()));
+        if (ServerConfigs.XP_MODULE_ENABLED.get())
+            event.setAmount((int) (event.getAmount() * ServerConfigs.XP_MODIFIER.get()));
     }
 
     public static int getVanillaXpReward(ServerPlayer serverPlayer) {
@@ -66,8 +61,8 @@ public class XpServerEvents {
     }
 
     public static boolean shouldCreateCatalyst(Level level) {
-        return CommonConfigs.XP_MODULE_ENABLED.get()
-                && (!CommonConfigs.XP_RESPECT_KEEPINVENTORY.get() || !level.getGameRules().getBoolean(GameRules.RULE_KEEPINVENTORY));
+        return ServerConfigs.XP_MODULE_ENABLED.get()
+                && (!ServerConfigs.XP_RESPECT_KEEPINVENTORY.get() || !level.getGameRules().getBoolean(GameRules.RULE_KEEPINVENTORY));
 
     }
 

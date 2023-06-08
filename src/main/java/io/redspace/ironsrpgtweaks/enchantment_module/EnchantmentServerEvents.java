@@ -42,12 +42,33 @@ public class EnchantmentServerEvents {
 
     @SubscribeEvent
     public static void disableEnchantmentTableInteract(PlayerInteractEvent.RightClickBlock event) {
-        if (CommonConfigs.ENCHANT_MODULE_ENABLED.get() && CommonConfigs.DISABLE_ENCHANTING_TABLE.get())
-            if (event.getEntity().level.getBlockState(event.getHitVec().getBlockPos()).is(Blocks.ENCHANTING_TABLE)) {
-                event.setCanceled(true);
-                if (event.getEntity() instanceof ServerPlayer serverPlayer)
-                    serverPlayer.connection.send(new ClientboundSetActionBarTextPacket(Component.translatable("ui.irons_rpg_tweaks.enchanting_table_error").withStyle(ChatFormatting.RED)));
+        if (event.getEntity() instanceof ServerPlayer serverPlayer && event.getEntity().level.getBlockState(event.getHitVec().getBlockPos()).is(Blocks.ENCHANTING_TABLE) && CommonConfigs.ENCHANT_MODULE_ENABLED.get()) {
+
+            boolean canceled = CommonConfigs.DISABLE_ENCHANTING_TABLE.get();
+            boolean sendErrorMessage = true;
+            String errorMessage = "ui.irons_rpg_tweaks.enchanting_table_error.disabled";
+
+            if (CommonConfigs.IDENTIFY_ON_ENCHANTING_TABLE.get() && !event.getEntity().getItemInHand(event.getHand()).isEmpty()) {
+                var itemStack = event.getEntity().getItemInHand(event.getHand());
+                var enchanted = EnchantHelper.getEnchantments(itemStack) != null;
+                var identified = !EnchantHelper.shouldHideEnchantments(itemStack);
+                if (enchanted && identified)
+                    errorMessage = "ui.irons_rpg_tweaks.enchanting_table_error.identified";
+                else if (enchanted && !identified){
+                    EnchantHelper.unhideEnchantments(itemStack, serverPlayer);
+                    sendErrorMessage = false;
+                    canceled = true;
+                }
             }
+            if (canceled) {
+                event.setCanceled(true);
+                if (sendErrorMessage)
+                    serverPlayer.connection.send(new ClientboundSetActionBarTextPacket(Component.translatable(errorMessage).withStyle(ChatFormatting.RED)));
+
+            }
+        }
+
+
     }
 
     @SubscribeEvent

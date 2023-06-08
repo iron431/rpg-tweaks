@@ -29,6 +29,7 @@ public class CommonConfigs {
     public static final ForgeConfigSpec.ConfigValue<Boolean> ENCHANT_MODULE_ENABLED;
     public static final ForgeConfigSpec.ConfigValue<Boolean> IDENTIFY_ON_EQUIP;
     public static final ForgeConfigSpec.ConfigValue<Boolean> DISABLE_ENCHANTING_TABLE;
+    public static final ForgeConfigSpec.ConfigValue<Boolean> IDENTIFY_ON_ENCHANTING_TABLE;
 
 
 //    public static final ForgeConfigSpec.ConfigValue<Boolean> XP_DROP_REWARD_XP;
@@ -78,7 +79,9 @@ public class CommonConfigs {
         ENCHANT_MODULE_ENABLED = BUILDER.define("enchantmentModuleEnabled", true);
         BUILDER.comment("Whether or not armor should be automatically identified when equipped. Default: true");
         IDENTIFY_ON_EQUIP = BUILDER.define("identifyOnEquip", true);
-        BUILDER.comment("Whether or not the enchanting table should be disabled, making looting or trading the only way to get enchanted items. Default: false");
+        BUILDER.comment("Whether or not unidentified items can be identified by interacting with an enchanting table. Default: true");
+        IDENTIFY_ON_ENCHANTING_TABLE = BUILDER.define("identifyOnEnchantingTable", true);
+        BUILDER.comment("Whether or not the enchanting table's functionality should be disabled, making looting or trading the only way to get enchanted items. Default: false");
         DISABLE_ENCHANTING_TABLE = BUILDER.define("disableEnchantingTable", false);
         BUILDER.pop();
 

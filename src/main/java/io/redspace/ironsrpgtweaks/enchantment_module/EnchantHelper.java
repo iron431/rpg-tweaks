@@ -3,6 +3,7 @@ package io.redspace.ironsrpgtweaks.enchantment_module;
 import io.redspace.ironsrpgtweaks.registry.SoundRegistry;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
+import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.Mob;
@@ -40,7 +41,7 @@ public class EnchantHelper {
         if (shouldHideEnchantments(stack)) {
             stack.getOrCreateTag().putBoolean(hideEnchantsNBT, false);
             if (entity != null) {
-                entity.playSound(SoundRegistry.IDENTIFY.get());
+                entity.level.playSound(null, entity, SoundRegistry.IDENTIFY.get(), SoundSource.PLAYERS, 1f, 1f);
             }
         }
 

@@ -41,7 +41,7 @@ public class EnchantHelper {
         if (shouldHideEnchantments(stack)) {
             stack.getOrCreateTag().putBoolean(hideEnchantsNBT, false);
             if (entity != null) {
-                entity.level.playSound(null, entity, SoundRegistry.IDENTIFY.get(), SoundSource.PLAYERS, 1f, 1f);
+                entity.getLevel().playSound(null, entity, SoundRegistry.IDENTIFY.get(), SoundSource.PLAYERS, 1f, 1f);
             }
         }
 

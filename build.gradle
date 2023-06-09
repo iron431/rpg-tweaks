@@ -182,6 +182,11 @@ dependencies {
     // MIXINS *****************************************************************************************************
     annotationProcessor 'org.spongepowered:mixin:0.8.5:processor'
 
+    // Enchant Descriptions  **************************************************************************************
+    compileOnly fg.deobf("net.darkhax.enchdesc:EnchantmentDescriptions-Forge-1.19.4:15.0.3")
+//    runtimeOnly fg.deobf("net.darkhax.enchdesc:EnchantmentDescriptions-Forge-1.19.2:13.0.14")
+//    runtimeOnly fg.deobf("net.darkhax.bookshelf:Bookshelf-Forge-1.19.2:16.0.1")
+
 }
 
 // Example for how to get properties into the manifest for reading at runtime.

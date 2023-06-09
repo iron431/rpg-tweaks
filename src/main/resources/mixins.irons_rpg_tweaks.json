@@ -3,7 +3,9 @@
   "package": "io.redspace.ironsrpgtweaks.mixin",
   "refmap": "irons_rpg_tweaks.refmap.json",
   "compatibilityLevel": "JAVA_17",
+  "plugin": "io.redspace.ironsrpgtweaks.mixin.MixinPlugin",
   "mixins": [
+    "DisableEnchantmentDescriptions",
     "ItemStackMixin"
   ],
   "client": [

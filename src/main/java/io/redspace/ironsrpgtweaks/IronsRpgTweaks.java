@@ -9,10 +9,11 @@ import io.redspace.ironsrpgtweaks.registry.SoundRegistry;
 import io.redspace.ironsrpgtweaks.setup.ModSetup;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.CreativeModeTabs;
 import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.event.BuildCreativeModeTabContentsEvent;
+import net.minecraftforge.event.CreativeModeTabEvent;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.ModLoadingContext;
@@ -54,8 +55,8 @@ public class IronsRpgTweaks
     public void onServerStarting(ServerStartingEvent event) {
     }
 
-    public void fillCreativeTabs(BuildCreativeModeTabContentsEvent event) {
-        if (event.getTab() == BuiltInRegistries.f_279662_.get(CreativeModeTabs.f_256869_))
+    public void fillCreativeTabs(CreativeModeTabEvent.BuildContents event) {
+        if (event.getTab() == CreativeModeTabs.f_256869_)
             event.accept(ItemRegistry.IDENTIFICATION_SCROLL::get);
     }
 

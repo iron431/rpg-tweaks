@@ -1,10 +1,7 @@
 package io.redspace.ironsrpgtweaks.enchantment_module;
 
-import io.redspace.ironsrpgtweaks.IronsRpgTweaks;
 import io.redspace.ironsrpgtweaks.config.ServerConfigs;
 import net.minecraft.ChatFormatting;
-import net.minecraft.core.Registry;
-import net.minecraft.data.BuiltinRegistries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.network.chat.MutableComponent;

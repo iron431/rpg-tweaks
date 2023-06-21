@@ -16,13 +16,24 @@ public class ItemStackMixin {
 
     @Inject(method = "hurt", at = @At(value = "HEAD"), cancellable = true)
     public void cancelDurabilityUsage(int pAmount, RandomSource pRandom, @Nullable ServerPlayer pUser, CallbackInfoReturnable<Boolean> cir) {
-        if (ServerConfigs.DURABILITY_MODULE_ENABLED.get() && !ServerConfigs.TAKE_DURABILITY_DAMAGE.get()) {
+        if (ServerConfigs.DURABILITY_MODULE_ENABLED.get() && !ServerConfigs.TAKE_VANILLA_DURABILITY_DAMAGE.get()) {
             var self = (ItemStack) (Object) this;
             if (self.getDamageValue() < self.getMaxDamage()) {
                 //if we aren't going to break, ignore the damage. useful for manually doing damage on death.
                 cir.setReturnValue(false);
 
             }
+        }
+    }
+
+    @Inject(method = "isBarVisible", at = @At(value = "HEAD"), cancellable = true)
+    public void hideDurabilityBar(CallbackInfoReturnable<Boolean> cir) {
+        if (ServerConfigs.DURABILITY_MODULE_ENABLED.get()
+                && !ServerConfigs.TAKE_VANILLA_DURABILITY_DAMAGE.get()
+                && ServerConfigs.ADDITIONAL_DURABILITY_LOST_ON_DEATH.get() == 0
+                && ServerConfigs.DURABILITY_LOST_ON_DEATH.get() == 0
+        ) {
+            cir.setReturnValue(false);
         }
     }
 }

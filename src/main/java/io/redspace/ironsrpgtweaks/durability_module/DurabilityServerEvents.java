@@ -29,38 +29,43 @@ public class DurabilityServerEvents {
     @SubscribeEvent
     public static void onPlayerDeath(LivingDeathEvent event) {
         if (event.getEntity() instanceof ServerPlayer serverPlayer) {
-            if (ServerConfigs.DURABILITY_LOST_ON_DEATH.get() == 0 || !ServerConfigs.DURABILITY_MODULE_ENABLED.get() || serverPlayer.gameMode.isCreative())
+            if ((ServerConfigs.DURABILITY_LOST_ON_DEATH.get() == 0 && ServerConfigs.ADDITIONAL_DURABILITY_LOST_ON_DEATH.get() == 0) || !ServerConfigs.DURABILITY_MODULE_ENABLED.get() || serverPlayer.gameMode.isCreative())
                 return;
             //IronsRpgTweaks.LOGGER.debug("{} died! ({})", serverPlayer.getName().getString(), printInventory(serverPlayer.getInventory()));
+            DurabilityMode mode = ServerConfigs.DURABILITY_MODE.get();
             var inventory = serverPlayer.getInventory();
-            List<ItemStack> activeItems = new ArrayList<>();
-            activeItems.addAll(getHotbarItems(inventory));
-            activeItems.addAll(getArmorItems(inventory));
-            activeItems.forEach((itemstack) -> {
-                //IronsRpgTweaks.LOGGER.debug("{}", itemstack.getHoverName().getString());
-                if (itemstack.isDamageableItem()) {
-                    int i = itemstack.getEnchantmentLevel(Enchantments.UNBREAKING) + 1;
-                    int damageAmount = (int) (itemstack.getMaxDamage() * ServerConfigs.DURABILITY_LOST_ON_DEATH.get());
-                    damageAmount /= i;
-                    itemstack.setDamageValue(itemstack.getDamageValue() + damageAmount);
-                    if (itemstack.getDamageValue() < itemstack.getMaxDamage()) {
-                        if (itemstack.getMaxDamage() - itemstack.getDamageValue() < damageAmount)
-                            serverPlayer.sendSystemMessage(Component.translatable("ui.irons_rpg_tweaks.item_damaged_critical", ((MutableComponent) itemstack.getDisplayName()).withStyle(Style.EMPTY.withColor(ChatFormatting.YELLOW).withItalic(false)), damageAmount).setStyle(Style.EMPTY.withColor(ChatFormatting.YELLOW).withItalic(true)));
-                        else
-                            serverPlayer.sendSystemMessage(Component.translatable("ui.irons_rpg_tweaks.item_damaged", ((MutableComponent) itemstack.getDisplayName()).withStyle(Style.EMPTY.withColor(ChatFormatting.GRAY).withItalic(false)), damageAmount).setStyle(Style.EMPTY.withColor(ChatFormatting.GRAY).withItalic(true)));
-                    }
-                    itemstack.hurtAndBreak(0, serverPlayer, (player) -> {
-                        //TODO: sounds/particles of non-mainhand items too
-                        player.sendSystemMessage(Component.translatable("ui.irons_rpg_tweaks.item_broken", ((MutableComponent) itemstack.getDisplayName()).withStyle(Style.EMPTY.withColor(ChatFormatting.RED).withItalic(false))).setStyle(Style.EMPTY.withColor(ChatFormatting.RED).withItalic(true)));
-                        if (itemstack.getItem() instanceof ArmorItem armorItem)
-                            player.broadcastBreakEvent(armorItem.getSlot());
-                        else
-                            player.broadcastBreakEvent(EquipmentSlot.MAINHAND);
-
-                    });
-                }
-            });
+            if (mode.shouldDamageTools())
+                damageItems(getHotbarItems(inventory), serverPlayer);
+            if (mode.shouldDamageArmor())
+                damageItems(getArmorItems(inventory), serverPlayer);
         }
+    }
+
+    private static void damageItems(List<ItemStack> items, ServerPlayer serverPlayer) {
+        items.forEach((itemstack) -> {
+            //IronsRpgTweaks.LOGGER.debug("{}", itemstack.getHoverName().getString());
+            if (itemstack.isDamageableItem()) {
+                int i = itemstack.getEnchantmentLevel(Enchantments.UNBREAKING) + 1;
+                int damageAmount = (int) (itemstack.getMaxDamage() * ServerConfigs.DURABILITY_LOST_ON_DEATH.get()) + ServerConfigs.ADDITIONAL_DURABILITY_LOST_ON_DEATH.get();
+                damageAmount /= i;
+                itemstack.setDamageValue(itemstack.getDamageValue() + damageAmount);
+                if (itemstack.getDamageValue() < itemstack.getMaxDamage()) {
+                    if (itemstack.getMaxDamage() - itemstack.getDamageValue() < damageAmount)
+                        serverPlayer.sendSystemMessage(Component.translatable("ui.irons_rpg_tweaks.item_damaged_critical", ((MutableComponent) itemstack.getDisplayName()).withStyle(Style.EMPTY.withColor(ChatFormatting.YELLOW).withItalic(false)), damageAmount).setStyle(Style.EMPTY.withColor(ChatFormatting.YELLOW).withItalic(true)));
+                    else
+                        serverPlayer.sendSystemMessage(Component.translatable("ui.irons_rpg_tweaks.item_damaged", ((MutableComponent) itemstack.getDisplayName()).withStyle(Style.EMPTY.withColor(ChatFormatting.GRAY).withItalic(false)), damageAmount).setStyle(Style.EMPTY.withColor(ChatFormatting.GRAY).withItalic(true)));
+                }
+                itemstack.hurtAndBreak(0, serverPlayer, (player) -> {
+                    //TODO: sounds/particles of non-mainhand items too
+                    player.sendSystemMessage(Component.translatable("ui.irons_rpg_tweaks.item_broken", ((MutableComponent) itemstack.getDisplayName()).withStyle(Style.EMPTY.withColor(ChatFormatting.RED).withItalic(false))).setStyle(Style.EMPTY.withColor(ChatFormatting.RED).withItalic(true)));
+                    if (itemstack.getItem() instanceof ArmorItem armorItem)
+                        player.broadcastBreakEvent(armorItem.getSlot());
+                    else
+                        player.broadcastBreakEvent(EquipmentSlot.MAINHAND);
+
+                });
+            }
+        });
     }
 
     private static List<ItemStack> getHotbarItems(Inventory inventory) {

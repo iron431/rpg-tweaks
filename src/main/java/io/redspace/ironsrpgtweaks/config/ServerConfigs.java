@@ -1,6 +1,7 @@
 package io.redspace.ironsrpgtweaks.config;
 
 import io.redspace.ironsrpgtweaks.damage_module.DamageServerEvents;
+import io.redspace.ironsrpgtweaks.durability_module.DurabilityMode;
 import net.minecraftforge.common.ForgeConfigSpec;
 
 import java.util.List;
@@ -18,8 +19,10 @@ public class ServerConfigs {
     public static final ForgeConfigSpec.ConfigValue<Double> KNOCKBACK_MODIFIER;
 
     public static final ForgeConfigSpec.ConfigValue<Boolean> DURABILITY_MODULE_ENABLED;
-    public static final ForgeConfigSpec.ConfigValue<Boolean> TAKE_DURABILITY_DAMAGE;
+    public static final ForgeConfigSpec.ConfigValue<Boolean> TAKE_VANILLA_DURABILITY_DAMAGE;
     public static final ForgeConfigSpec.ConfigValue<Double> DURABILITY_LOST_ON_DEATH;
+    public static final ForgeConfigSpec.ConfigValue<Integer> ADDITIONAL_DURABILITY_LOST_ON_DEATH;
+    public static final ForgeConfigSpec.ConfigValue<DurabilityMode> DURABILITY_MODE;
 
     public static final ForgeConfigSpec.ConfigValue<Boolean> XP_MODULE_ENABLED;
     public static final ForgeConfigSpec.ConfigValue<Boolean> XP_RESPECT_KEEPINVENTORY;
@@ -49,16 +52,20 @@ public class ServerConfigs {
         BUILDER.comment("Whether or not a player is allowed to even swing if the threshold is not met. Default: false");
         ALLOW_NON_FULL_STRENGTH_ATTACKS = BUILDER.worldRestart() .define("allowNonFullStrengthAttacks", false);
         BUILDER.comment("Global multiplier to all knockback. Default: 1.0");
-        KNOCKBACK_MODIFIER = BUILDER.worldRestart() .define("globalKnockbackMultiplier", 1.0);
+        KNOCKBACK_MODIFIER = BUILDER.worldRestart().define("globalKnockbackMultiplier", 1.0);
         BUILDER.pop();
 
         BUILDER.push("Durability-Module");
         BUILDER.comment("The purpose of the durability module is to rework how durability damage is applied to better emulate an rpg setting.  Disabling will nullify every feature listed under this module.");
         DURABILITY_MODULE_ENABLED = BUILDER.define("durabilityModuleEnabled", true);
         BUILDER.comment("Whether or not tools and armor should take regular durability damage while in use. Default: false");
-        TAKE_DURABILITY_DAMAGE = BUILDER.define("takeDurabilityDamage", false);
+        TAKE_VANILLA_DURABILITY_DAMAGE = BUILDER.define("takeDurabilityDamage", false);
         BUILDER.comment("The percent of durability damage equipment should take on player dying. Set to 0 to disable. Default: 0.15 (15%)");
         DURABILITY_LOST_ON_DEATH = BUILDER.define("durabilityLostOnDeath", 0.15);
+        BUILDER.comment("An additional constant amount of damage taken on death. This makes items with a high max durability degrade relatively slower. Set to 0 to disable. Default: 25");
+        ADDITIONAL_DURABILITY_LOST_ON_DEATH = BUILDER.define("additionalDurabilityLostOnDeath", 25);
+        BUILDER.comment("What type of gear is damaged upon death. Default: ALL");
+        DURABILITY_MODE = BUILDER.defineEnum("durabilityGearType", DurabilityMode.ALL);
         BUILDER.pop();
 
         BUILDER.push("XP-Module");

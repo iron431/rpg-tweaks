@@ -34,6 +34,10 @@ public class ServerConfigs {
     public static final ForgeConfigSpec.ConfigValue<Boolean> DISABLE_ENCHANTING_TABLE;
     public static final ForgeConfigSpec.ConfigValue<Boolean> IDENTIFY_ON_ENCHANTING_TABLE;
 
+    public static final ForgeConfigSpec.ConfigValue<Boolean> HUNGER_MODULE_ENABLED;
+    public static final ForgeConfigSpec.ConfigValue<Double> FOOD_TO_HEALTH_MODIFIER;
+    public static final ForgeConfigSpec.ConfigValue<Integer> NATURAL_REGENERATION_TICK_RATE;
+
 
 //    public static final ForgeConfigSpec.ConfigValue<Boolean> XP_DROP_REWARD_XP;
 
@@ -50,7 +54,7 @@ public class ServerConfigs {
         BUILDER.comment("In order to prevent spam attacks, a minimum threshold of attack strength can be set before an attack can deal damage. Default: 0.75");
         MINIMUM_ATTACK_STRENGTH = BUILDER.define("minimumAttackStrength", 0.75);
         BUILDER.comment("Whether or not a player is allowed to even swing if the threshold is not met. Default: false");
-        ALLOW_NON_FULL_STRENGTH_ATTACKS = BUILDER.worldRestart() .define("allowNonFullStrengthAttacks", false);
+        ALLOW_NON_FULL_STRENGTH_ATTACKS = BUILDER.worldRestart().define("allowNonFullStrengthAttacks", false);
         BUILDER.comment("Global multiplier to all knockback. Default: 1.0");
         KNOCKBACK_MODIFIER = BUILDER.worldRestart().define("globalKnockbackMultiplier", 1.0);
         BUILDER.pop();
@@ -76,7 +80,7 @@ public class ServerConfigs {
         BUILDER.comment("Whether or not the player who dropped the xp is the only player allow to collect the xp. Default: true");
         XP_ONLY_ALLOW_OWNER = BUILDER.define("onlyAllowOwnerPickup", true);
         BUILDER.comment("Global multiplier to experience amount gained. Default: 1.0");
-        XP_MODIFIER = BUILDER.worldRestart() .define("globalXpMultiplier", 1.0);
+        XP_MODIFIER = BUILDER.worldRestart().define("globalXpMultiplier", 1.0);
 //        BUILDER.comment("Whether or not \"reward xp\" is dropped, meaning a portion of the killed player's experience points. Useful as a reward for pvp. Default: false");
 //        XP_DROP_REWARD_XP = BUILDER.define("dropRewardXp", false);
         BUILDER.pop();
@@ -91,6 +95,16 @@ public class ServerConfigs {
         BUILDER.comment("Whether or not the enchanting table's functionality should be disabled, making looting or trading the only way to get enchanted items. Default: false");
         DISABLE_ENCHANTING_TABLE = BUILDER.define("disableEnchantingTable", false);
         BUILDER.pop();
+
+        BUILDER.push("Hunger-Module");
+        BUILDER.comment("The purpose of the hunger module is to remove the tedious task of maintaining hunger in vanilla minecraft, and rebalancing health management during combat and exploration by removing hunger and using food to directly heal. Disabling will nullify every feature listed under this module.");
+        HUNGER_MODULE_ENABLED = BUILDER.define("hungerModuleEnable", true);
+        BUILDER.comment("The multiplier of a food's hunger value to health regained by eating it. Default: 0.5 (50%)");
+        FOOD_TO_HEALTH_MODIFIER = BUILDER.define("foodToHealthModifier", 0.5);
+        BUILDER.comment("The amount of time, in ticks, between players naturally regenerating 1 hp. 1 second is 20 ticks. Turn off the naturalRegeneration gamerule to disable. Default: 200.");
+        NATURAL_REGENERATION_TICK_RATE = BUILDER.define("naturalRegenerationTickRate", 200);
+        BUILDER.pop();
+
 
         SPEC = BUILDER.build();
     }

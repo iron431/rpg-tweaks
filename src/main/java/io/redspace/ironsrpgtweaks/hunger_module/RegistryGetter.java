@@ -2,12 +2,12 @@ package io.redspace.ironsrpgtweaks.hunger_module;
 
 import net.minecraft.world.item.Item;
 import net.minecraftforge.registries.ForgeRegistries;
-
-import java.util.function.Consumer;
+import net.minecraftforge.registries.IForgeRegistry;
 
 public class RegistryGetter {
 
-    public static void iterateItems(Consumer<Item> action) {
-        ForgeRegistries.ITEMS.forEach(action);
+
+    public static IForgeRegistry<Item> getItem() {
+        return ForgeRegistries.ITEMS;
     }
 }

@@ -3,6 +3,7 @@ package io.redspace.ironsrpgtweaks.config;
 import io.redspace.ironsrpgtweaks.damage_module.DamageServerEvents;
 import io.redspace.ironsrpgtweaks.durability_module.DeathDurabilityMode;
 import io.redspace.ironsrpgtweaks.durability_module.VanillaDurabilityMode;
+import io.redspace.ironsrpgtweaks.hunger_module.CommonHungerEvents;
 import net.minecraftforge.common.ForgeConfigSpec;
 
 import java.util.List;
@@ -40,6 +41,7 @@ public class ServerConfigs {
     public static final ForgeConfigSpec.ConfigValue<Integer> NATURAL_REGENERATION_TICK_RATE;
     public static final ForgeConfigSpec.ConfigValue<Integer> POTION_STACK_SIZE_OVERRIDE;
     public static final ForgeConfigSpec.ConfigValue<Integer> FOOD_STACK_SIZE_OVERRIDE;
+    public static final ForgeConfigSpec.ConfigValue<List<? extends String>> FOOD_STACK_BLACKLIST;
 
 
 //    public static final ForgeConfigSpec.ConfigValue<Boolean> XP_DROP_REWARD_XP;
@@ -107,11 +109,12 @@ public class ServerConfigs {
         FOOD_TO_HEALTH_MODIFIER = BUILDER.define("foodToHealthModifier", 0.5);
         BUILDER.comment("The amount of time, in ticks, between players naturally regenerating 1 hp. 1 second is 20 ticks. Turn off the naturalRegeneration gamerule to disable. Default: 250.");
         NATURAL_REGENERATION_TICK_RATE = BUILDER.define("naturalRegenerationTickRate", 250);
-        BUILDER.comment("Limit the stack size of every food item. Also affects items such as rotten flesh. Set to 0 to disable. Requires game restart. Default: 0");
-        FOOD_STACK_SIZE_OVERRIDE = BUILDER.define("foodStackSize", 0);
         BUILDER.comment("Changes the stack size of potions. Set to 0 to disable. Requires game restart. Default: 4");
         POTION_STACK_SIZE_OVERRIDE = BUILDER.define("potionStackSize", 4);
-
+        BUILDER.comment("Limit the stack size of every food item. Set to 0 to disable. Requires game restart. Default: 0");
+        FOOD_STACK_SIZE_OVERRIDE = BUILDER.define("foodStackSize", 0);
+        BUILDER.comment("A Blacklist for limited food stack size, if enabled. Useful for mob drops or other edible items that are not meant as food. Default: {}", getDefaultEntries(CommonHungerEvents.DEFAULT_FOOD_BLACKLIST));
+        FOOD_STACK_BLACKLIST = BUILDER.defineList("foodStackSizeBlacklist", CommonHungerEvents.DEFAULT_FOOD_BLACKLIST, (x) -> true);
         BUILDER.pop();
 
 

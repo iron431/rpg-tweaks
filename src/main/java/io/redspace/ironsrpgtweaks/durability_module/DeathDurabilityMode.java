@@ -1,6 +1,6 @@
 package io.redspace.ironsrpgtweaks.durability_module;
 
-public enum DurabilityMode {
+public enum DeathDurabilityMode {
     ALL,
     TOOLS,
     ARMOR;

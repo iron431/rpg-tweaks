@@ -1,6 +1,6 @@
 package io.redspace.ironsrpgtweaks.mixin;
 
-import io.redspace.ironsrpgtweaks.config.ServerConfigs;
+import io.redspace.ironsrpgtweaks.config.ConfigHelper;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.item.ItemStack;
@@ -16,8 +16,8 @@ public class ItemStackMixin {
 
     @Inject(method = "hurt", at = @At(value = "HEAD"), cancellable = true)
     public void cancelDurabilityUsage(int pAmount, RandomSource pRandom, @Nullable ServerPlayer pUser, CallbackInfoReturnable<Boolean> cir) {
-        if (ServerConfigs.DURABILITY_MODULE_ENABLED.get() && !ServerConfigs.TAKE_VANILLA_DURABILITY_DAMAGE.get()) {
-            var self = (ItemStack) (Object) this;
+        var self = (ItemStack) (Object) this;
+        if (!ConfigHelper.Durability.shouldTakeVanillaDamage(self)) {
             if (self.getDamageValue() < self.getMaxDamage()) {
                 //if we aren't going to break, ignore the damage. useful for manually doing damage on death.
                 cir.setReturnValue(false);
@@ -28,11 +28,7 @@ public class ItemStackMixin {
 
     @Inject(method = "isBarVisible", at = @At(value = "HEAD"), cancellable = true)
     public void hideDurabilityBar(CallbackInfoReturnable<Boolean> cir) {
-        if (ServerConfigs.DURABILITY_MODULE_ENABLED.get()
-                && !ServerConfigs.TAKE_VANILLA_DURABILITY_DAMAGE.get()
-                && ServerConfigs.ADDITIONAL_DURABILITY_LOST_ON_DEATH.get() == 0
-                && ServerConfigs.DURABILITY_LOST_ON_DEATH.get() == 0
-        ) {
+        if (ConfigHelper.Durability.shouldHideDurabilityBar((ItemStack) (Object) this)) {
             cir.setReturnValue(false);
         }
     }

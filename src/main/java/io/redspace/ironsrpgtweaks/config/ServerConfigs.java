@@ -1,7 +1,8 @@
 package io.redspace.ironsrpgtweaks.config;
 
 import io.redspace.ironsrpgtweaks.damage_module.DamageServerEvents;
-import io.redspace.ironsrpgtweaks.durability_module.DurabilityMode;
+import io.redspace.ironsrpgtweaks.durability_module.DeathDurabilityMode;
+import io.redspace.ironsrpgtweaks.durability_module.VanillaDurabilityMode;
 import net.minecraftforge.common.ForgeConfigSpec;
 
 import java.util.List;
@@ -19,10 +20,10 @@ public class ServerConfigs {
     public static final ForgeConfigSpec.ConfigValue<Double> KNOCKBACK_MODIFIER;
 
     public static final ForgeConfigSpec.ConfigValue<Boolean> DURABILITY_MODULE_ENABLED;
-    public static final ForgeConfigSpec.ConfigValue<Boolean> TAKE_VANILLA_DURABILITY_DAMAGE;
+    public static final ForgeConfigSpec.ConfigValue<VanillaDurabilityMode> DURABILITY_VANILLA_MODE;
+    public static final ForgeConfigSpec.ConfigValue<DeathDurabilityMode> DURABILITY_DEATH_MODE;
     public static final ForgeConfigSpec.ConfigValue<Double> DURABILITY_LOST_ON_DEATH;
     public static final ForgeConfigSpec.ConfigValue<Integer> ADDITIONAL_DURABILITY_LOST_ON_DEATH;
-    public static final ForgeConfigSpec.ConfigValue<DurabilityMode> DURABILITY_MODE;
 
     public static final ForgeConfigSpec.ConfigValue<Boolean> XP_MODULE_ENABLED;
     public static final ForgeConfigSpec.ConfigValue<Boolean> XP_RESPECT_KEEPINVENTORY;
@@ -37,6 +38,8 @@ public class ServerConfigs {
     public static final ForgeConfigSpec.ConfigValue<Boolean> HUNGER_MODULE_ENABLED;
     public static final ForgeConfigSpec.ConfigValue<Double> FOOD_TO_HEALTH_MODIFIER;
     public static final ForgeConfigSpec.ConfigValue<Integer> NATURAL_REGENERATION_TICK_RATE;
+    public static final ForgeConfigSpec.ConfigValue<Integer> POTION_STACK_SIZE_OVERRIDE;
+    public static final ForgeConfigSpec.ConfigValue<Integer> FOOD_STACK_SIZE_OVERRIDE;
 
 
 //    public static final ForgeConfigSpec.ConfigValue<Boolean> XP_DROP_REWARD_XP;
@@ -62,14 +65,15 @@ public class ServerConfigs {
         BUILDER.push("Durability-Module");
         BUILDER.comment("The purpose of the durability module is to rework how durability damage is applied to better emulate an rpg setting.  Disabling will nullify every feature listed under this module.");
         DURABILITY_MODULE_ENABLED = BUILDER.define("durabilityModuleEnabled", true);
-        BUILDER.comment("Whether or not tools and armor should take regular durability damage while in use. Default: false");
-        TAKE_VANILLA_DURABILITY_DAMAGE = BUILDER.define("takeDurabilityDamage", false);
+        BUILDER.comment("What type of gear should take vanilla durability damage. Default: NONE");
+        DURABILITY_VANILLA_MODE = BUILDER.defineEnum("vanillDurabilityGearType", VanillaDurabilityMode.NONE);
+        BUILDER.comment("What type of gear is damaged upon death. Default: ALL");
+        DURABILITY_DEATH_MODE = BUILDER.defineEnum("deathGearType", DeathDurabilityMode.ALL);
         BUILDER.comment("The percent of durability damage equipment should take on player dying. Set to 0 to disable. Default: 0.15 (15%)");
         DURABILITY_LOST_ON_DEATH = BUILDER.define("durabilityLostOnDeath", 0.15);
         BUILDER.comment("An additional constant amount of damage taken on death. This makes items with a high max durability degrade relatively slower. Set to 0 to disable. Default: 25");
         ADDITIONAL_DURABILITY_LOST_ON_DEATH = BUILDER.define("additionalDurabilityLostOnDeath", 25);
-        BUILDER.comment("What type of gear is damaged upon death. Default: ALL");
-        DURABILITY_MODE = BUILDER.defineEnum("durabilityGearType", DurabilityMode.ALL);
+
         BUILDER.pop();
 
         BUILDER.push("XP-Module");
@@ -97,12 +101,17 @@ public class ServerConfigs {
         BUILDER.pop();
 
         BUILDER.push("Hunger-Module");
-        BUILDER.comment("The purpose of the hunger module is to remove the tedious task of maintaining hunger in vanilla minecraft, and rebalancing health management during combat and exploration by removing hunger and using food to directly heal. Disabling will nullify every feature listed under this module.");
+        BUILDER.comment("The hunger module removes hunger and makes food to directly heal in order to to remove the tedious task of maintaining hunger as well as rebalance health management during combat and exploration . Disabling will nullify every feature listed under this module.");
         HUNGER_MODULE_ENABLED = BUILDER.define("hungerModuleEnable", true);
         BUILDER.comment("The multiplier of a food's hunger value to health regained by eating it. Default: 0.5 (50%)");
         FOOD_TO_HEALTH_MODIFIER = BUILDER.define("foodToHealthModifier", 0.5);
-        BUILDER.comment("The amount of time, in ticks, between players naturally regenerating 1 hp. 1 second is 20 ticks. Turn off the naturalRegeneration gamerule to disable. Default: 200.");
-        NATURAL_REGENERATION_TICK_RATE = BUILDER.define("naturalRegenerationTickRate", 200);
+        BUILDER.comment("The amount of time, in ticks, between players naturally regenerating 1 hp. 1 second is 20 ticks. Turn off the naturalRegeneration gamerule to disable. Default: 250.");
+        NATURAL_REGENERATION_TICK_RATE = BUILDER.define("naturalRegenerationTickRate", 250);
+        BUILDER.comment("Limit the stack size of every food item. Also affects items such as rotten flesh. Set to 0 to disable. Requires game restart. Default: 0");
+        FOOD_STACK_SIZE_OVERRIDE = BUILDER.define("foodStackSize", 0);
+        BUILDER.comment("Changes the stack size of potions. Set to 0 to disable. Requires game restart. Default: 4");
+        POTION_STACK_SIZE_OVERRIDE = BUILDER.define("potionStackSize", 4);
+
         BUILDER.pop();
 
 

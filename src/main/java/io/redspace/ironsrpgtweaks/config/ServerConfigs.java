@@ -113,7 +113,7 @@ public class ServerConfigs {
         POTION_STACK_SIZE_OVERRIDE = BUILDER.define("potionStackSize", 4);
         BUILDER.comment("Limit the stack size of every food item. Set to 0 to disable. Requires game restart. Default: 0");
         FOOD_STACK_SIZE_OVERRIDE = BUILDER.define("foodStackSize", 0);
-        BUILDER.comment("A Blacklist for limited food stack size, if enabled. Useful for mob drops or other edible items that are not meant as food. Default: {}", getDefaultEntries(CommonHungerEvents.DEFAULT_FOOD_BLACKLIST));
+        BUILDER.comment("A Blacklist for limited food stack size, if enabled. Useful for mob drops or other edible items that are not meant as food. Default: " + getDefaultEntries(CommonHungerEvents.DEFAULT_FOOD_BLACKLIST));
         FOOD_STACK_BLACKLIST = BUILDER.defineList("foodStackSizeBlacklist", CommonHungerEvents.DEFAULT_FOOD_BLACKLIST, (x) -> true);
         BUILDER.pop();
 

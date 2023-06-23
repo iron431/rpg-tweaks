@@ -12,7 +12,7 @@ import java.util.List;
 
 public class CommonHungerEvents {
 
-    public static final List<String> DEFAULT_FOOD_BLACKLIST = List.of("minecraft:rotten_flesh", "minecraft:spider_eye", "minecraft:potato", "minecraft:carrot");
+    public static final List<String> DEFAULT_FOOD_BLACKLIST = List.of("minecraft:rotten_flesh", "minecraft:spider_eye", "minecraft:potato", "minecraft:carrot", "farmersdelight:onion", "farmersdelight:tomato", "farmersdelight:cabbage");
 
     public static void changeStackSize(ModConfigEvent event) {
         if (event.getConfig().getType().equals(ModConfig.Type.SERVER)) {

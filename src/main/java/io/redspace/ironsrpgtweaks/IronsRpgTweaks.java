@@ -1,6 +1,7 @@
 package io.redspace.ironsrpgtweaks;
 
 import com.mojang.logging.LogUtils;
+import io.redspace.ironsrpgtweaks.config.ClientConfig;
 import io.redspace.ironsrpgtweaks.config.ServerConfigs;
 import io.redspace.ironsrpgtweaks.hunger_module.CommonHungerEvents;
 import io.redspace.ironsrpgtweaks.registry.EntityRegistry;
@@ -32,6 +33,7 @@ public class IronsRpgTweaks {
         IEventBus modEventBus = FMLJavaModLoadingContext.get().getModEventBus();
 
         ModLoadingContext.get().registerConfig(ModConfig.Type.SERVER, ServerConfigs.SPEC, String.format("%s-server.toml", IronsRpgTweaks.MODID));
+        ModLoadingContext.get().registerConfig(ModConfig.Type.CLIENT, ClientConfig.SPEC, String.format("%s-client.toml", IronsRpgTweaks.MODID));
 
         // Register the commonSetup method for modloading
         modEventBus.addListener(ModSetup::init);

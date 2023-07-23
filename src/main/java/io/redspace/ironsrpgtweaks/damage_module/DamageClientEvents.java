@@ -1,5 +1,6 @@
 package io.redspace.ironsrpgtweaks.damage_module;
 
+import com.mojang.authlib.minecraft.client.MinecraftClient;
 import io.redspace.ironsrpgtweaks.IronsRpgTweaks;
 import io.redspace.ironsrpgtweaks.config.ClientConfig;
 import io.redspace.ironsrpgtweaks.config.ServerConfigs;
@@ -43,7 +44,8 @@ public class DamageClientEvents {
             message = String.format("Victim: %s | DamageSource: %s", victim, damageSource.getMsgId());
         }
         IronsRpgTweaks.LOGGER.info(message);
-        Minecraft.getInstance().player.sendSystemMessage(Component.literal(message));
+        if (Minecraft.getInstance().player != null)
+            Minecraft.getInstance().player.sendSystemMessage(Component.literal(message));
         //IronsRpgTweaks.LOGGER.debug("{} took damage! ({})", event.getEntity().getName().getString(), event.getSource().getMsgId());
 
     }

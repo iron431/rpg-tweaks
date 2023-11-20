@@ -1,5 +1,6 @@
 package io.redspace.ironsrpgtweaks.entity;
 
+import io.redspace.ironsrpgtweaks.IronsRpgTweaks;
 import io.redspace.ironsrpgtweaks.config.ServerConfigs;
 import io.redspace.ironsrpgtweaks.registry.EntityRegistry;
 import io.redspace.ironsrpgtweaks.registry.SoundRegistry;
@@ -26,8 +27,6 @@ import java.util.UUID;
 
 public class XpCatalyst extends Entity {
     UUID ownerUUID;
-    //int storedLevels;
-    //int storedPoints;
     int storedXp;
 
     public XpCatalyst(EntityType<?> entityType, Level level) {
@@ -48,7 +47,7 @@ public class XpCatalyst extends Entity {
         //xpCatalyst.storedPoints = (int) (deadPlayer.experienceProgress * deadPlayer.getXpNeededForNextLevel());
         xpCatalyst.storedXp = (int) (deadPlayer.experienceProgress * deadPlayer.getXpNeededForNextLevel());
         int level = deadPlayer.experienceLevel;
-        for (int i = level - 1; i > 0; i--) {
+        for (int i = level - 1; i >= 0; i--) {
             xpCatalyst.storedXp += xpCatalyst.getXpNeededForLevel(i);
         }
         xpCatalyst.ownerUUID = deadPlayer.getUUID();
@@ -72,20 +71,30 @@ public class XpCatalyst extends Entity {
     @Override
     public void tick() {
         super.tick();
-        if (getLevel().isClientSide)
+        if (getLevel().isClientSide) {
             getLevel().addParticle(ParticleTypes.TOTEM_OF_UNDYING, getRandomX(.125f), getRandomY(), getRandomZ(.125f), 0, 0.07, 0);
-//        if (this.tickCount % 20 == 1) {
-//            this.scanForEntities();
-//        }
+        }
     }
 
     @Override
     public InteractionResult interact(Player player, InteractionHand hand) {
-        //if (!player.level.isClientSide && (player.getUUID().equals(ownerUUID) || !CommonConfigs.XP_ONLY_ALLOW_OWNER.get())) {
-
         if (player instanceof ServerPlayer serverPlayer) {
+//            if(serverPlayer.isCrouching()){
+//                String level = "Level: " + serverPlayer.experienceLevel;
+//                String progress = "Progress: " + serverPlayer.experienceProgress;
+//                String nextLevel = "Xp Needed for next Level: " + serverPlayer.getXpNeededForNextLevel();
+//                String point = "Point Estimate: " + serverPlayer.getXpNeededForNextLevel() * serverPlayer.experienceProgress;
+//                IronsRpgTweaks.LOGGER.debug(level);
+//                IronsRpgTweaks.LOGGER.debug(progress);
+//                IronsRpgTweaks.LOGGER.debug(nextLevel);
+//                IronsRpgTweaks.LOGGER.debug(point);
+//                serverPlayer.sendSystemMessage(Component.literal(level));
+//                serverPlayer.sendSystemMessage(Component.literal(progress));
+//                serverPlayer.sendSystemMessage(Component.literal(nextLevel));
+//                serverPlayer.sendSystemMessage(Component.literal(point));
+//                return InteractionResult.SUCCESS;
+//            }
             if (player.getUUID().equals(ownerUUID) || !ServerConfigs.XP_ONLY_ALLOW_OWNER.get()) {
-                //player.giveExperienceLevels(storedLevels);
                 player.giveExperiencePoints(storedXp);
                 this.playSound(SoundRegistry.RETRIEVE_XP.get());
                 this.discard();
@@ -93,10 +102,14 @@ public class XpCatalyst extends Entity {
             } else {
                 serverPlayer.connection.send(new ClientboundSetActionBarTextPacket(Component.translatable("ui.irons_rpg_tweaks.xp_retrieve_error").withStyle(ChatFormatting.RED)));
             }
-
         }
         return super.interact(player, hand);
 
+    }
+
+    @Override
+    public boolean isAlive() {
+        return false;
     }
 
     @Override

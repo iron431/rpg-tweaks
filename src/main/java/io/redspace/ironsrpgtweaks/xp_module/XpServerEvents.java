@@ -9,7 +9,7 @@ import net.minecraft.world.level.Level;
 import net.minecraftforge.event.entity.living.LivingDeathEvent;
 import net.minecraftforge.event.entity.living.LivingExperienceDropEvent;
 import net.minecraftforge.event.entity.player.PlayerEvent;
-import net.minecraftforge.event.entity.player.PlayerXpEvent;
+import net.minecraftforge.event.level.BlockEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 
@@ -49,10 +49,15 @@ public class XpServerEvents {
     }
 
     @SubscribeEvent
-    public static void modifyXp(PlayerXpEvent.XpChange event) {
-        //TODO: this affects everything, including xp catalyst restoration amount
+    public static void modifyEntityXp(LivingExperienceDropEvent event) {
         if (ServerConfigs.XP_MODULE_ENABLED.get())
-            event.setAmount((int) (event.getAmount() * ServerConfigs.XP_MODIFIER.get()));
+            event.setDroppedExperience((int) (event.getDroppedExperience() * ServerConfigs.ENTITY_XP_MODIFIER.get()));
+    }
+
+    @SubscribeEvent
+    public static void modifyBlockXp(BlockEvent.BreakEvent event) {
+        if (ServerConfigs.XP_MODULE_ENABLED.get())
+            event.setExpToDrop((int) (event.getExpToDrop() * ServerConfigs.BLOCK_XP_MODIFIER.get()));
     }
 
     public static int getVanillaXpReward(ServerPlayer serverPlayer) {
@@ -62,7 +67,7 @@ public class XpServerEvents {
 
     public static boolean shouldCreateCatalyst(Level level) {
         return ServerConfigs.XP_MODULE_ENABLED.get()
-                && (!ServerConfigs.XP_RESPECT_KEEPINVENTORY.get() || !level.getGameRules().getBoolean(GameRules.RULE_KEEPINVENTORY));
+                && (ServerConfigs.XP_IGNORE_KEEPINVENTORY.get() || !level.getGameRules().getBoolean(GameRules.RULE_KEEPINVENTORY));
 
     }
 

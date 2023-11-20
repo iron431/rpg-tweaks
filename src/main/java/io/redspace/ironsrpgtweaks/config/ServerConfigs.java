@@ -1,6 +1,7 @@
 package io.redspace.ironsrpgtweaks.config;
 
 import io.redspace.ironsrpgtweaks.damage_module.DamageServerEvents;
+import io.redspace.ironsrpgtweaks.damage_module.PlayerDamageMode;
 import io.redspace.ironsrpgtweaks.durability_module.DeathDurabilityMode;
 import io.redspace.ironsrpgtweaks.durability_module.VanillaDurabilityMode;
 import io.redspace.ironsrpgtweaks.hunger_module.CommonHungerEvents;
@@ -14,8 +15,10 @@ public class ServerConfigs {
     public static final ForgeConfigSpec SPEC;
 
     public static final ForgeConfigSpec.ConfigValue<Boolean> DAMAGE_MODULE_ENABLED;
+    public static final ForgeConfigSpec.ConfigValue<Integer> IFRAME_COUNT;
     public static final ForgeConfigSpec.ConfigValue<List<? extends String>> DAMAGE_MODULE_ENTITY_BLACKLIST;
     public static final ForgeConfigSpec.ConfigValue<List<? extends String>> DAMAGE_MODULE_DAMAGE_SOURCE_BLACKLIST;
+    public static final ForgeConfigSpec.ConfigValue<PlayerDamageMode> PLAYER_DAMAGE_MODE;
     public static final ForgeConfigSpec.ConfigValue<Boolean> ALLOW_NON_FULL_STRENGTH_ATTACKS;
     public static final ForgeConfigSpec.ConfigValue<Double> MINIMUM_ATTACK_STRENGTH;
     public static final ForgeConfigSpec.ConfigValue<Double> KNOCKBACK_MODIFIER;
@@ -27,9 +30,10 @@ public class ServerConfigs {
     public static final ForgeConfigSpec.ConfigValue<Integer> ADDITIONAL_DURABILITY_LOST_ON_DEATH;
 
     public static final ForgeConfigSpec.ConfigValue<Boolean> XP_MODULE_ENABLED;
-    public static final ForgeConfigSpec.ConfigValue<Boolean> XP_RESPECT_KEEPINVENTORY;
+    public static final ForgeConfigSpec.ConfigValue<Boolean> XP_IGNORE_KEEPINVENTORY;
     public static final ForgeConfigSpec.ConfigValue<Boolean> XP_ONLY_ALLOW_OWNER;
-    public static final ForgeConfigSpec.ConfigValue<Double> XP_MODIFIER;
+    public static final ForgeConfigSpec.ConfigValue<Double> ENTITY_XP_MODIFIER;
+    public static final ForgeConfigSpec.ConfigValue<Double> BLOCK_XP_MODIFIER;
 
     public static final ForgeConfigSpec.ConfigValue<Boolean> ENCHANT_MODULE_ENABLED;
     public static final ForgeConfigSpec.ConfigValue<Boolean> IDENTIFY_ON_EQUIP;
@@ -56,10 +60,14 @@ public class ServerConfigs {
         DAMAGE_MODULE_ENTITY_BLACKLIST = BUILDER.defineList("entityBlacklist", DamageServerEvents.BLACKLIST_ENTITY_TYPES, (x) -> true);
         BUILDER.comment("damagesourceBlacklist default: " + getDefaultEntries(DamageServerEvents.BLACKLIST_DAMAGE_SOURCES));
         DAMAGE_MODULE_DAMAGE_SOURCE_BLACKLIST = BUILDER.defineList("damagesourceBlacklist", DamageServerEvents.BLACKLIST_DAMAGE_SOURCES, (x) -> true);
+        BUILDER.comment("Invulnerability Tick (I-Frame) count. Default: 0 (Vanilla's is 20, one second)");
+        IFRAME_COUNT = BUILDER.define("invulnerabilityTickCount", 0);
+        BUILDER.comment("Specialized handling for player damage ticks. \"ALL\" means there is no special handling, \"ONLY_LIVING\" means only living attacks ignore player i-frames (may help with unforeseen damage like potions), and \"NONE\" means player's damage ticks are unaffected by the damage module.");
+        PLAYER_DAMAGE_MODE = BUILDER.defineEnum("playerDamageMode", PlayerDamageMode.ALL);
         BUILDER.comment("In order to prevent spam attacks, a minimum threshold of attack strength can be set before an attack can deal damage. Default: 0.75");
         MINIMUM_ATTACK_STRENGTH = BUILDER.define("minimumAttackStrength", 0.75);
-        BUILDER.comment("Whether or not a player is allowed to even swing if the threshold is not met. Default: false");
-        ALLOW_NON_FULL_STRENGTH_ATTACKS = BUILDER.worldRestart().define("allowNonFullStrengthAttacks", false);
+        BUILDER.comment("Whether or not a player is allowed to even swing if the threshold is not met. Default: true");
+        ALLOW_NON_FULL_STRENGTH_ATTACKS = BUILDER.worldRestart().define("allowNonFullStrengthAttacks", true);
         BUILDER.comment("Global multiplier to all knockback. Default: 1.0");
         KNOCKBACK_MODIFIER = BUILDER.worldRestart().define("globalKnockbackMultiplier", 1.0);
         BUILDER.pop();
@@ -81,12 +89,14 @@ public class ServerConfigs {
         BUILDER.push("XP-Module");
         BUILDER.comment("The purpose of the xp module is to rework how experience is dropped on a player's death by creating a souls-like xp catalyst instead. Disabling will nullify every feature listed under this module.");
         XP_MODULE_ENABLED = BUILDER.define("xpModuleEnabled", true);
-        BUILDER.comment("Whether or not the keepInventory gamerule will prevent the player from losing xp Default: false, meaning even though you keep your items, your xp is still dropped.");
-        XP_RESPECT_KEEPINVENTORY = BUILDER.define("respectKeepInventory", false);
+        BUILDER.comment("Whether or not players will drop xp despite keepInventory gamerule. Default: true");
+        XP_IGNORE_KEEPINVENTORY = BUILDER.define("ignoreKeepInventory", true);
         BUILDER.comment("Whether or not the player who dropped the xp is the only player allow to collect the xp. Default: true");
         XP_ONLY_ALLOW_OWNER = BUILDER.define("onlyAllowOwnerPickup", true);
-        BUILDER.comment("Global multiplier to experience amount gained. Default: 1.0");
-        XP_MODIFIER = BUILDER.worldRestart().define("globalXpMultiplier", 1.0);
+        BUILDER.comment("Multiplier to experience dropped by slain entities. Default: 1.0");
+        ENTITY_XP_MODIFIER = BUILDER.worldRestart().define("mobDropXpMultiplier", 1.0);
+        BUILDER.comment("Multiplier to experience dropped by blocks broken. Default: 1.0");
+        BLOCK_XP_MODIFIER = BUILDER.worldRestart().define("blockDropXpMultiplier", 1.0);
 //        BUILDER.comment("Whether or not \"reward xp\" is dropped, meaning a portion of the killed player's experience points. Useful as a reward for pvp. Default: false");
 //        XP_DROP_REWARD_XP = BUILDER.define("dropRewardXp", false);
         BUILDER.pop();

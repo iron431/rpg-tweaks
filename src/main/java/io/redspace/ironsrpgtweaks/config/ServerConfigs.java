@@ -5,7 +5,9 @@ import io.redspace.ironsrpgtweaks.damage_module.PlayerDamageMode;
 import io.redspace.ironsrpgtweaks.durability_module.DeathDurabilityMode;
 import io.redspace.ironsrpgtweaks.durability_module.VanillaDurabilityMode;
 import io.redspace.ironsrpgtweaks.hunger_module.CommonHungerEvents;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraftforge.common.ForgeConfigSpec;
+import net.minecraftforge.registries.ForgeRegistries;
 
 import java.util.List;
 
@@ -41,11 +43,14 @@ public class ServerConfigs {
     public static final ForgeConfigSpec.ConfigValue<Boolean> IDENTIFY_ON_ENCHANTING_TABLE;
 
     public static final ForgeConfigSpec.ConfigValue<Boolean> HUNGER_MODULE_ENABLED;
+    public static final ForgeConfigSpec.ConfigValue<Boolean> HUNGER_DISABLED;
     public static final ForgeConfigSpec.ConfigValue<Double> FOOD_TO_HEALTH_MODIFIER;
     public static final ForgeConfigSpec.ConfigValue<Integer> NATURAL_REGENERATION_TICK_RATE;
     public static final ForgeConfigSpec.ConfigValue<Integer> POTION_STACK_SIZE_OVERRIDE;
     public static final ForgeConfigSpec.ConfigValue<Integer> FOOD_STACK_SIZE_OVERRIDE;
     public static final ForgeConfigSpec.ConfigValue<List<? extends String>> FOOD_STACK_BLACKLIST;
+    public static final ForgeConfigSpec.ConfigValue<Double> SPLASH_POTION_COOLDOWN;
+    public static final ForgeConfigSpec.ConfigValue<Double> LINGERING_POTION_COOLDOWN;
 
 
 //    public static final ForgeConfigSpec.ConfigValue<Boolean> XP_DROP_REWARD_XP;
@@ -57,7 +62,7 @@ public class ServerConfigs {
         DAMAGE_MODULE_ENABLED = BUILDER.define("damageModuleEnabled", true);
         BUILDER.comment("Some entities or damage sources rely on damage ticks to time their attacks. In these cases, we want to let them initiate i-frames.");
         BUILDER.comment("entityBlacklist default: " + getDefaultEntries(DamageServerEvents.BLACKLIST_ENTITY_TYPES));
-        DAMAGE_MODULE_ENTITY_BLACKLIST = BUILDER.defineList("entityBlacklist", DamageServerEvents.BLACKLIST_ENTITY_TYPES, (x) -> true);
+        DAMAGE_MODULE_ENTITY_BLACKLIST = BUILDER.defineList("entityBlacklist", DamageServerEvents.BLACKLIST_ENTITY_TYPES, ServerConfigs::validateEntityName);
         BUILDER.comment("damagesourceBlacklist default: " + getDefaultEntries(DamageServerEvents.BLACKLIST_DAMAGE_SOURCES));
         DAMAGE_MODULE_DAMAGE_SOURCE_BLACKLIST = BUILDER.defineList("damagesourceBlacklist", DamageServerEvents.BLACKLIST_DAMAGE_SOURCES, (x) -> true);
         BUILDER.comment("Invulnerability Tick (I-Frame) count. Default: 0 (Vanilla's is 20, one second)");
@@ -113,8 +118,10 @@ public class ServerConfigs {
         BUILDER.pop();
 
         BUILDER.push("Hunger-Module");
-        BUILDER.comment("The hunger module removes hunger and makes food to directly heal in order to to remove the tedious task of maintaining hunger as well as rebalance health management during combat and exploration . Disabling will nullify every feature listed under this module.");
+        BUILDER.comment("The hunger module removes hunger and makes food to directly heal in order to to remove the tedious task of maintaining hunger, as well as rebalance health management during combat and exploration. Disabling will nullify every feature listed under this module.");
         HUNGER_MODULE_ENABLED = BUILDER.define("hungerModuleEnable", true);
+        BUILDER.comment("Disable Hunger. Without this, most of the hunger module features and config are nullified, but if you want to adjust stack sizes or potion mechanics without disabling hunger, you can do so here.");
+        HUNGER_DISABLED = BUILDER.define("disableHunger", true);
         BUILDER.comment("The multiplier of a food's hunger value to health regained by eating it. Default: 0.5 (50%)");
         FOOD_TO_HEALTH_MODIFIER = BUILDER.define("foodToHealthModifier", 0.5);
         BUILDER.comment("The amount of time, in ticks, between players naturally regenerating 1 hp. 1 second is 20 ticks. Turn off the naturalRegeneration gamerule to disable. Default: 250.");
@@ -124,11 +131,23 @@ public class ServerConfigs {
         BUILDER.comment("Limit the stack size of every food item. Set to 0 to disable. Requires game restart. Default: 0");
         FOOD_STACK_SIZE_OVERRIDE = BUILDER.define("foodStackSize", 0);
         BUILDER.comment("A Blacklist for limited food stack size, if enabled. Useful for mob drops or other edible items that are not meant as food. Default: " + getDefaultEntries(CommonHungerEvents.DEFAULT_FOOD_BLACKLIST));
-        FOOD_STACK_BLACKLIST = BUILDER.defineList("foodStackSizeBlacklist", CommonHungerEvents.DEFAULT_FOOD_BLACKLIST, (x) -> true);
+        FOOD_STACK_BLACKLIST = BUILDER.defineList("foodStackSizeBlacklist", CommonHungerEvents.DEFAULT_FOOD_BLACKLIST, ServerConfigs::validateItemName);
+        BUILDER.comment("Item Cooldown in seconds when throwing a splash potion. Default: 0.5");
+        SPLASH_POTION_COOLDOWN = BUILDER.define("splashPotionCooldown", 0.5);
+        BUILDER.comment("Item Cooldown in seconds when throwing a lingering potion. Default: 1.5");
+        LINGERING_POTION_COOLDOWN = BUILDER.define("lingeringPotionCooldown", 1.5);
         BUILDER.pop();
 
 
         SPEC = BUILDER.build();
+    }
+
+    private static boolean validateEntityName(final Object obj) {
+        return obj instanceof final String itemName && ResourceLocation.isValidResourceLocation(itemName) && ForgeRegistries.ENTITY_TYPES.containsKey(new ResourceLocation(itemName));
+    }
+
+    private static boolean validateItemName(final Object obj) {
+        return obj instanceof final String itemName && ResourceLocation.isValidResourceLocation(itemName) && ForgeRegistries.ITEMS.containsKey(new ResourceLocation(itemName));
     }
 
     private static String getDefaultEntries(List<? extends String> list) {

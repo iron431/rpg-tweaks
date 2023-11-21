@@ -1,9 +1,8 @@
 package io.redspace.ironsrpgtweaks.damage_module;
 
+import io.redspace.ironsrpgtweaks.config.ConfigHelper;
 import io.redspace.ironsrpgtweaks.config.ServerConfigs;
-import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.damagesource.DamageSource;
-import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraftforge.event.entity.living.LivingDamageEvent;
@@ -18,7 +17,7 @@ import java.util.List;
 public class DamageServerEvents {
 
     public static final List<String> BLACKLIST_DAMAGE_SOURCES = List.of("lava", "inFire", "cactus", "inWall", "hotFloor", "lightningBolt", "sweetBerryBush", "outOfWorld", "drown");
-    public static final List<String> BLACKLIST_ENTITY_TYPES = List.of("minecraft:slime", "minecraft:ender_dragon", "minecraft:magma_cube", "irons_spellbooks:wall_of_fire");
+    public static final List<String> BLACKLIST_ENTITY_TYPES = List.of("minecraft:slime", "minecraft:ender_dragon", "minecraft:magma_cube", "irons_spellbooks:wall_of_fire", "irons_spellbooks:void_tentacle");
 
     @SubscribeEvent
     public static void onTakeDamage(LivingDamageEvent event) {
@@ -63,14 +62,8 @@ public class DamageServerEvents {
         if (ServerConfigs.DAMAGE_MODULE_DAMAGE_SOURCE_BLACKLIST.get().contains(source.getMsgId())) {
             return false;
         }
-        if (source.getEntity() != null) {
-            String entityType = EntityType.getKey(source.getEntity().getType()).toString();
-            //IronsRpgTweaks.LOGGER.debug("entity type: {}",entityType);
-            return !ServerConfigs.DAMAGE_MODULE_ENTITY_BLACKLIST.get().contains(entityType);
-        }
-
-        return true;
-
+        return (source.getEntity() == null || !ConfigHelper.Damage.damageEntityBlacklist.contains(source.getEntity().getType())) &&
+                (source.getDirectEntity() == null || !ConfigHelper.Damage.damageEntityBlacklist.contains(source.getDirectEntity().getType()));
     }
 
 //    @SubscribeEvent

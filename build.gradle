@@ -17,7 +17,7 @@ apply plugin: 'org.spongepowered.mixin'
 apply plugin: 'org.parchmentmc.librarian.forgegradle'
 apply plugin: 'maven-publish'
 
-version = '1.20-1.1.1'
+version = '1.20-1.2.0'
 group = 'io.redspace.ironsrpgtweaks'
 archivesBaseName = 'irons_rpg_tweaks'
 

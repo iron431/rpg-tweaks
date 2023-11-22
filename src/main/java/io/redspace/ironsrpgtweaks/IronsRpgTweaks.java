@@ -1,5 +1,6 @@
 package io.redspace.ironsrpgtweaks;
 
+
 import com.mojang.logging.LogUtils;
 import io.redspace.ironsrpgtweaks.config.ClientConfig;
 import io.redspace.ironsrpgtweaks.config.ServerConfigs;
@@ -11,15 +12,14 @@ import io.redspace.ironsrpgtweaks.setup.ModSetup;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.CreativeModeTabs;
-import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.BuildCreativeModeTabContentsEvent;
+import net.minecraftforge.event.server.ServerStartingEvent;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.ModLoadingContext;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.config.ModConfig;
-import net.minecraftforge.event.server.ServerStartingEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
@@ -46,8 +46,8 @@ public class IronsRpgTweaks
         SoundRegistry.register(modEventBus);
         LootRegistry.register(modEventBus);
 
-        //modEventBus.addListener(this::fillCreativeTabs);
-        modEventBus.addListener(CommonHungerEvents::changeStackSize);
+        modEventBus.addListener(this::fillCreativeTabs);
+        //modEventBus.addListener(CommonHungerEvents::changeStackSize);
 
         MinecraftForge.EVENT_BUS.register(this);
     }

@@ -8,6 +8,7 @@ public class ClientConfig {
     public static final ForgeConfigSpec.ConfigValue<Boolean> combatDebugMode;
 
     static {
+        BUILDER.comment("If you're looking for Module Configuration, it's in the \"serverconfig\" directory in the world file!\n");
         BUILDER.comment("Combat Debug Mode will show the id of damage sources and entities. Useful for getting the ids of other mods for the combat module's blacklist");
         combatDebugMode = BUILDER.define("combatDebugMode", false);
 

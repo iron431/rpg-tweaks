@@ -1,6 +1,6 @@
 package io.redspace.ironsrpgtweaks.hunger_module;
 
-import io.redspace.ironsrpgtweaks.config.ServerConfigs;
+import io.redspace.ironsrpgtweaks.config.ConfigHelper;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.client.event.RenderGuiOverlayEvent;
 import net.minecraftforge.client.gui.overlay.VanillaGuiOverlay;
@@ -12,7 +12,7 @@ public class ClientHungerEvents {
 
     @SubscribeEvent
     public static void disableHunger(RenderGuiOverlayEvent.Pre event) {
-        if (event.getOverlay() == VanillaGuiOverlay.FOOD_LEVEL.type() && ServerConfigs.HUNGER_MODULE_ENABLED.get())
+        if (event.getOverlay() == VanillaGuiOverlay.FOOD_LEVEL.type() && ConfigHelper.Hunger.disableVanillaHunger())
             event.setCanceled(true);
     }
 }

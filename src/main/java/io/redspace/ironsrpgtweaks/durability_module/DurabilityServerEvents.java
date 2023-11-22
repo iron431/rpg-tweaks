@@ -1,5 +1,6 @@
 package io.redspace.ironsrpgtweaks.durability_module;
 
+import io.redspace.ironsrpgtweaks.IronsRpgTweaks;
 import io.redspace.ironsrpgtweaks.config.ServerConfigs;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
@@ -34,10 +35,12 @@ public class DurabilityServerEvents {
             //IronsRpgTweaks.LOGGER.debug("{} died! ({})", serverPlayer.getName().getString(), printInventory(serverPlayer.getInventory()));
             DeathDurabilityMode mode = ServerConfigs.DURABILITY_DEATH_MODE.get();
             var inventory = serverPlayer.getInventory();
-            if (mode.shouldDamageTools())
+            if (mode.shouldDamageTools()) {
                 damageItems(getHotbarItems(inventory), serverPlayer);
-            if (mode.shouldDamageArmor())
+            }
+            if (mode.shouldDamageArmor()) {
                 damageItems(getArmorItems(inventory), serverPlayer);
+            }
         }
     }
 
@@ -49,21 +52,24 @@ public class DurabilityServerEvents {
                 int damageAmount = (int) (itemstack.getMaxDamage() * ServerConfigs.DURABILITY_LOST_ON_DEATH.get()) + ServerConfigs.ADDITIONAL_DURABILITY_LOST_ON_DEATH.get();
                 damageAmount /= i;
                 itemstack.setDamageValue(itemstack.getDamageValue() + damageAmount);
-                if (itemstack.getDamageValue() < itemstack.getMaxDamage()) {
-                    if (itemstack.getMaxDamage() - itemstack.getDamageValue() < damageAmount)
-                        serverPlayer.sendSystemMessage(Component.translatable("ui.irons_rpg_tweaks.item_damaged_critical", ((MutableComponent) itemstack.getDisplayName()).withStyle(Style.EMPTY.withColor(ChatFormatting.YELLOW).withItalic(false)), damageAmount).setStyle(Style.EMPTY.withColor(ChatFormatting.YELLOW).withItalic(true)));
-                    else
-                        serverPlayer.sendSystemMessage(Component.translatable("ui.irons_rpg_tweaks.item_damaged", ((MutableComponent) itemstack.getDisplayName()).withStyle(Style.EMPTY.withColor(ChatFormatting.GRAY).withItalic(false)), damageAmount).setStyle(Style.EMPTY.withColor(ChatFormatting.GRAY).withItalic(true)));
+                if (itemstack.getDisplayName() instanceof MutableComponent itemName) {
+                    if (itemstack.getDamageValue() < itemstack.getMaxDamage()) {
+                        if (itemstack.getMaxDamage() - itemstack.getDamageValue() < damageAmount) {
+                            serverPlayer.sendSystemMessage(Component.translatable("ui.irons_rpg_tweaks.item_damaged_critical", itemName.withStyle(Style.EMPTY.withColor(ChatFormatting.YELLOW).withItalic(false)), damageAmount).setStyle(Style.EMPTY.withColor(ChatFormatting.YELLOW).withItalic(true)));
+                        } else {
+                            serverPlayer.sendSystemMessage(Component.translatable("ui.irons_rpg_tweaks.item_damaged", itemName.withStyle(Style.EMPTY.withColor(ChatFormatting.GRAY).withItalic(false)), damageAmount).setStyle(Style.EMPTY.withColor(ChatFormatting.GRAY).withItalic(true)));
+                        }
+                    }
+                    itemstack.hurtAndBreak(0, serverPlayer, (player) -> {
+                        //TODO: sounds/particles of non-mainhand items too
+                        player.sendSystemMessage(Component.translatable("ui.irons_rpg_tweaks.item_broken", itemName.withStyle(Style.EMPTY.withColor(ChatFormatting.RED).withItalic(false))).setStyle(Style.EMPTY.withColor(ChatFormatting.RED).withItalic(true)));
+                        if (itemstack.getItem() instanceof ArmorItem armorItem) {
+                            player.broadcastBreakEvent(armorItem.getSlot());
+                        } else {
+                            player.broadcastBreakEvent(EquipmentSlot.MAINHAND);
+                        }
+                    });
                 }
-                itemstack.hurtAndBreak(0, serverPlayer, (player) -> {
-                    //TODO: sounds/particles of non-mainhand items too
-                    player.sendSystemMessage(Component.translatable("ui.irons_rpg_tweaks.item_broken", ((MutableComponent) itemstack.getDisplayName()).withStyle(Style.EMPTY.withColor(ChatFormatting.RED).withItalic(false))).setStyle(Style.EMPTY.withColor(ChatFormatting.RED).withItalic(true)));
-                    if (itemstack.getItem() instanceof ArmorItem armorItem)
-                        player.broadcastBreakEvent(armorItem.getSlot());
-                    else
-                        player.broadcastBreakEvent(EquipmentSlot.MAINHAND);
-
-                });
             }
         });
     }

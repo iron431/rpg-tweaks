@@ -1,5 +1,6 @@
 package io.redspace.ironsrpgtweaks.mixin;
 
+import io.redspace.ironsrpgtweaks.config.ConfigHelper;
 import io.redspace.ironsrpgtweaks.config.ServerConfigs;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
@@ -23,7 +24,7 @@ public class FoodDataMixin {
 
     @Inject(method = "eat(Lnet/minecraft/world/item/Item;Lnet/minecraft/world/item/ItemStack;Lnet/minecraft/world/entity/LivingEntity;)V", remap = false, at = @At(value = "HEAD"), cancellable = true)
     public void hungerToHealth(Item pItem, ItemStack pStack, LivingEntity entity, CallbackInfo ci) {
-        if (!ServerConfigs.HUNGER_MODULE_ENABLED.get())
+        if (!ConfigHelper.Hunger.disableVanillaHunger())
             return;
         if (pItem.isEdible()) {
             FoodProperties foodproperties = pStack.getFoodProperties(entity);
@@ -38,7 +39,7 @@ public class FoodDataMixin {
 
     @Inject(method = "tick", at = @At(value = "HEAD"))
     public void detectEatCake(Player pPlayer, CallbackInfo ci) {
-        if (!ServerConfigs.HUNGER_MODULE_ENABLED.get())
+        if (!ConfigHelper.Hunger.disableVanillaHunger())
             return;
         if (lastFoodLevel != foodLevel) {
             float healing = (float) ((foodLevel - lastFoodLevel) * ServerConfigs.FOOD_TO_HEALTH_MODIFIER.get() * .5f);

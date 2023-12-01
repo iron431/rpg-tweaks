@@ -17,6 +17,7 @@ import net.minecraft.world.item.enchantment.Enchantment;
 import net.minecraft.world.item.enchantment.EnchantmentHelper;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.event.entity.player.ItemTooltipEvent;
+import net.minecraftforge.eventbus.api.EventPriority;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.registries.ForgeRegistries;
@@ -28,7 +29,7 @@ import java.util.List;
 public class EnchantmentClientEvents {
     public static final ResourceLocation ENCHANT_FONT = new ResourceLocation("alt");
 
-    @SubscribeEvent
+    @SubscribeEvent(priority = EventPriority.LOWEST)
     public static void modifyTooltip(ItemTooltipEvent event) {
         if (!ServerConfigs.ENCHANT_MODULE_ENABLED.get())
             return;
@@ -36,7 +37,7 @@ public class EnchantmentClientEvents {
         ListTag enchants = EnchantHelper.getEnchantments(stack);
         var tooltipComponents = event.getToolTip();
         if (enchants != null) {
-            if (EnchantHelper.shouldHideEnchantments(stack))
+            if (EnchantHelper.shouldHideEnchantments(stack)) {
                 for (int e = 0; e < enchants.size(); e++) {
                     CompoundTag compoundtag = enchants.getCompound(e);
                     Enchantment enchantment = ForgeRegistries.ENCHANTMENTS.getValue(EnchantmentHelper.getEnchantmentId(compoundtag));
@@ -56,7 +57,9 @@ public class EnchantmentClientEvents {
                         }
                     }
                 }
+            }
         }
+        //if (event.getFlags().isAdvanced())
+        //    tooltipComponents.replaceAll(component -> component.getContents() instanceof TranslatableContents ? Component.literal(((TranslatableContents) component.getContents()).getKey()).withStyle(Style.EMPTY.withColor(component.getStyle().getColor())) : component);
     }
-
 }

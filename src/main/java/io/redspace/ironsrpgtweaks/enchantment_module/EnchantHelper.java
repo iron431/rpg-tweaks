@@ -1,5 +1,7 @@
 package io.redspace.ironsrpgtweaks.enchantment_module;
 
+import io.redspace.ironsrpgtweaks.config.ConfigHelper;
+import io.redspace.ironsrpgtweaks.config.ServerConfigs;
 import io.redspace.ironsrpgtweaks.registry.SoundRegistry;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
@@ -40,26 +42,33 @@ public class EnchantHelper {
     public static void unhideEnchantments(ItemStack stack, @Nullable Entity entity) {
         if (shouldHideEnchantments(stack)) {
             stack.getOrCreateTag().putBoolean(hideEnchantsNBT, false);
-            if (entity != null) {
+            if (entity != null && ServerConfigs.ENCHANT_MODULE_ENABLED.get()) {
                 entity.getLevel().playSound(null, entity, SoundRegistry.IDENTIFY.get(), SoundSource.PLAYERS, 1f, 1f);
             }
         }
-
     }
 
     public static void hideEnchantments(ItemStack stack) {
         stack.getOrCreateTag().putBoolean(hideEnchantsNBT, true);
     }
 
-    public static List<ItemStack> getEnchantedEquipmentItems(Mob mob) {
-        ArrayList<ItemStack> list = new ArrayList<>();
-        list.add(mob.getItemBySlot(EquipmentSlot.HEAD));
-        list.add(mob.getItemBySlot(EquipmentSlot.CHEST));
-        list.add(mob.getItemBySlot(EquipmentSlot.LEGS));
-        list.add(mob.getItemBySlot(EquipmentSlot.FEET));
-        list.add(mob.getItemBySlot(EquipmentSlot.MAINHAND));
-        list.add(mob.getItemBySlot(EquipmentSlot.OFFHAND));
+//    public static List<ItemStack> getEnchantedEquipmentItems(Mob mob) {
+//        ArrayList<ItemStack> itemStacks = new ArrayList<>();
+//        mob.getArmorSlots().forEach(itemStack -> {
+//            if (isEquipmentItemEnchanted(itemStack)) {
+//                itemStacks.add(itemStack);
+//            }
+//        });
+//        if (isEquipmentItemEnchanted(mob.getMainHandItem())) {
+//            itemStacks.add(mob.getMainHandItem());
+//        }
+//        if (isEquipmentItemEnchanted(mob.getOffhandItem())) {
+//            itemStacks.add(mob.getOffhandItem());
+//        }
+//        return itemStacks;
+//    }
 
-        return list.stream().filter((itemStack) -> !itemStack.isEmpty() && EnchantHelper.getEnchantments(itemStack) != null).toList();
+    public static boolean isEquipmentItemEnchanted(ItemStack itemStack) {
+        return itemStack.hasTag() && itemStack.getTag().contains("Enchantments");
     }
 }

@@ -7,6 +7,7 @@ import net.minecraft.network.protocol.game.ClientboundSetActionBarTextPacket;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraftforge.event.entity.living.*;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
@@ -56,14 +57,28 @@ public class EnchantmentServerEvents {
     }
 
     @SubscribeEvent
-    public static void hideOnMobSpawn(MobSpawnEvent event) {
-        EnchantHelper.getEnchantedEquipmentItems(event.getEntity()).forEach((itemStack) -> {
-            //IronsRpgTweaks.LOGGER.debug("LivingSpawnEvent.equipment {}",itemStack.getHoverName().getString());
-            if (!itemStack.getOrCreateTag().contains(EnchantHelper.hideEnchantsNBT)) {
-                EnchantHelper.hideEnchantments(itemStack);
-                //IronsRpgTweaks.LOGGER.debug("LivingSpawnEvent hiding enchanmtents",itemStack.getHoverName().getString());
-
+    public static void hideOnMobSpawn(MobSpawnEvent.FinalizeSpawn event) {
+        if (!ServerConfigs.ENCHANT_MODULE_ENABLED.get()) {
+            return;
+        }
+        var mob = event.getEntity();
+        mob.getArmorSlots().forEach(itemStack -> {
+            if (EnchantHelper.isEquipmentItemEnchanted(itemStack)) {
+                hide(itemStack);
             }
         });
+        if (EnchantHelper.isEquipmentItemEnchanted(mob.getMainHandItem())) {
+            hide(mob.getMainHandItem());
+        }
+        if (EnchantHelper.isEquipmentItemEnchanted(mob.getOffhandItem())) {
+            hide(mob.getOffhandItem());
+        }
+    }
+
+    private static void hide(ItemStack itemStack) {
+        if (!itemStack.getOrCreateTag().contains(EnchantHelper.hideEnchantsNBT)) {
+            EnchantHelper.hideEnchantments(itemStack);
+        }
     }
 }
+

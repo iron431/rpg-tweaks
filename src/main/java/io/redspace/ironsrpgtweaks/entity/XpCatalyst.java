@@ -70,10 +70,13 @@ public class XpCatalyst extends Entity {
 
     @Override
     public void tick() {
-        super.tick();
         if (getLevel().isClientSide) {
             getLevel().addParticle(ParticleTypes.TOTEM_OF_UNDYING, getRandomX(.125f), getRandomY(), getRandomZ(.125f), 0, 0.07, 0);
         }
+        if (firstTick) {
+            firstTick = false;
+        }
+        checkOutOfWorld();
     }
 
     @Override

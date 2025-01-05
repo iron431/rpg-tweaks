@@ -4,6 +4,7 @@ import java.util.List;
 
 import io.redspace.ironsrpgtweaks.config.ConfigHelper;
 import io.redspace.ironsrpgtweaks.config.ServerConfigs;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
@@ -23,15 +24,35 @@ public class DamageServerEvents {
 
     @SubscribeEvent
     public static void onRecieveDamage(LivingAttackEvent event) {
-        if (shouldProcess(event.getSource(), event.getEntity()) && testDamageSource(event.getSource()) && event.getEntity().invulnerableTime > 0) {
+        var source = event.getSource();
+        var entity = event.getEntity();
+        if (!(entity.level() instanceof ServerLevel serverLevel)) {
+            return;
+        }
+        if (!shouldProcess(source, entity)) {
+            return;
+        }
+        long time = serverLevel.getGameTime();
+        var livingExtension = (IRpgLivingEntityExtension) entity;
+        int lastActuallyHurtTimestamp = livingExtension.rpg_tweaks$getHurtTracker().getOrDefault(source.typeHolder(), -1);
+        int lastDamageRequestTimestamp = livingExtension.rpg_tweaks$getRequestDamageTracker().getOrDefault(source.typeHolder(), -1);
+        int currentTick = entity.tickCount;
+        // ignore the damage if we are requesting it to be taken every tick (delta ticks <= 1), unless full vanilla delay has passed since we actually last took this type of damage (20 ticks)
+        boolean ignoreDamage =  /*legacyTestDamageSource(event.getSource()) &&*/ event.getEntity().invulnerableTime > 0 ||
+                (currentTick - lastDamageRequestTimestamp <= 1 && currentTick - lastActuallyHurtTimestamp < 20);
+        if (ignoreDamage) {
             event.setCanceled(true);
         }
+        livingExtension.rpg_tweaks$updateLastRequest(source.typeHolder(), currentTick);
+
     }
 
     @SubscribeEvent
     public static void onTakeDamage(LivingDamageEvent event) {
-        if (shouldProcess(event.getSource(), event.getEntity()) && testDamageSource(event.getSource())) {
+        if (shouldProcess(event.getSource(), event.getEntity()) /*&& legacyTestDamageSource(event.getSource())*/) {
             event.getEntity().invulnerableTime = ServerConfigs.IFRAME_COUNT.get();
+            IRpgLivingEntityExtension entityExtension = (IRpgLivingEntityExtension) event.getEntity();
+            entityExtension.rpg_tweaks$updateLastHurt(event.getSource().typeHolder(), event.getEntity().tickCount);
         }
     }
 
@@ -64,7 +85,7 @@ public class DamageServerEvents {
         return false;
     }
 
-    private static boolean testDamageSource(DamageSource source) {
+    private static boolean legacyTestDamageSource(DamageSource source) {
         //Some damage sources rely on damage tick to apply dot. We therefore do not want to cancel the damage tick in these cases
         if (ServerConfigs.DAMAGE_MODULE_DAMAGE_SOURCE_BLACKLIST.get().contains(source.getMsgId())) {
             return false;

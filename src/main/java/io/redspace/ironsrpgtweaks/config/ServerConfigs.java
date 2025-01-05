@@ -116,7 +116,7 @@ public class ServerConfigs {
                 .defineEnum("vanillaDurabilityGearType", VanillaDurabilityMode.NONE);
         BUILDER.push("Vanilla-Mode-Item-Configs");
         DURABILITY_VANILLA_MODE_WHITELIST = BUILDER
-                .comment("(VANILLA MODE CANNOT BE NONE) If specified, the only items or item tags to take vanilla durability damage")
+                .comment("If specified, the only items or item tags to take vanilla durability damage (Ignores durability mode)")
                 .defineList("vanillaDurabilityWhitelist", List.of(), x -> true);
         DURABILITY_VANILLA_MODE_BLACKLIST = BUILDER
                 .comment("If specified, these items or item tags never take vanilla durability damage")
@@ -127,7 +127,7 @@ public class ServerConfigs {
                 .defineEnum("deathGearType", DeathDurabilityMode.ALL);
         BUILDER.push("Death-Mode-Item-Configs");
         DURABILITY_DEATH_MODE_WHITELIST = BUILDER
-                .comment("(DEATH MODE CANNOT BE NONE) If specified, the only items or item tags to take durability damage on death").
+                .comment("If specified, the only items or item tags to take durability damage on death (Ignores durability mode)").
                 defineList("deathDurabilityWhitelist", List.of(), x -> true);
         DURABILITY_DEATH_MODE_BLACKLIST = BUILDER
                 .comment("If specified, these items or item tags never take durability damage on death")

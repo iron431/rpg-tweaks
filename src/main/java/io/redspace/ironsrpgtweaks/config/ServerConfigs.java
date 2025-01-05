@@ -60,6 +60,7 @@ public class ServerConfigs {
     public static final ForgeConfigSpec.ConfigValue<Boolean> HUNGER_DISABLED;
     public static final ForgeConfigSpec.ConfigValue<Double> FOOD_TO_HEALTH_MODIFIER;
     public static final ForgeConfigSpec.ConfigValue<Integer> NATURAL_REGENERATION_TICK_RATE;
+    public static final ForgeConfigSpec.ConfigValue<Boolean> NATURAL_REGENERATION_DURING_COMBAT;
     public static final ForgeConfigSpec.ConfigValue<Integer> POTION_STACK_SIZE_OVERRIDE;
     public static final ForgeConfigSpec.ConfigValue<Integer> FOOD_STACK_SIZE_OVERRIDE;
     public static final ForgeConfigSpec.ConfigValue<List<? extends String>> FOOD_STACK_BLACKLIST;
@@ -195,6 +196,9 @@ public class ServerConfigs {
         NATURAL_REGENERATION_TICK_RATE = BUILDER.
                 comment("The amount of time, in ticks, between players naturally regenerating 1 hp. 1 second is 20 ticks. Turn off the naturalRegeneration gamerule to disable. Default: 250.")
                 .define("naturalRegenerationTickRate", 250);
+        NATURAL_REGENERATION_DURING_COMBAT = BUILDER
+                .comment("Whether players should naturally regenerate hp during combat. (Turn off the naturalRegeneration gamerule to disable all natural regen). Default: false.")
+                .define("naturalRegenerationDuringCombat", false);
         POTION_STACK_SIZE_OVERRIDE = BUILDER
                 .comment("Changes the stack size of potions. Set to 0 to disable. Requires game restart. Default: 4")
                 .define("potionStackSize", 4);
@@ -213,7 +217,6 @@ public class ServerConfigs {
         EAT_TIME_MULTIPLIER = BUILDER
                 .comment("Multiplier to the time taken to eat food. Default: 1.2")
                 .define("eatTimeMultiplier", 1.2);
-
         POTION_DRINK_TIME_MULTIPLER = BUILDER
                 .comment("Multiplier to the time taken to drink potions. Default: 0.8")
                 .define("potionDrinkTimeMultiplier", 0.8);

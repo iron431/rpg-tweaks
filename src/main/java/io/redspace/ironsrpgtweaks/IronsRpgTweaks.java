@@ -4,6 +4,7 @@ package io.redspace.ironsrpgtweaks;
 import com.mojang.logging.LogUtils;
 import io.redspace.ironsrpgtweaks.config.ClientConfig;
 import io.redspace.ironsrpgtweaks.config.ServerConfigs;
+import io.redspace.ironsrpgtweaks.registry.AttributeRegistry;
 import io.redspace.ironsrpgtweaks.registry.EntityRegistry;
 import io.redspace.ironsrpgtweaks.registry.ItemRegistry;
 import io.redspace.ironsrpgtweaks.registry.LootRegistry;
@@ -45,6 +46,7 @@ public class IronsRpgTweaks {
         ItemRegistry.register(modEventBus);
         SoundRegistry.register(modEventBus);
         LootRegistry.register(modEventBus);
+        AttributeRegistry.register(modEventBus);
 
         modEventBus.addListener(this::fillCreativeTabs);
         modEventBus.addListener(this::onConfigReload);

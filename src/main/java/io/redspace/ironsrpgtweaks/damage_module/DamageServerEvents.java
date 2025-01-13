@@ -32,7 +32,6 @@ public class DamageServerEvents {
         if (!shouldProcess(source, entity)) {
             return;
         }
-        long time = serverLevel.getGameTime();
         var livingExtension = (IRpgLivingEntityExtension) entity;
         int lastActuallyHurtTimestamp = livingExtension.rpg_tweaks$getHurtTracker().getOrDefault(source.typeHolder(), -1);
         int lastDamageRequestTimestamp = livingExtension.rpg_tweaks$getRequestDamageTracker().getOrDefault(source.typeHolder(), -1);

@@ -11,6 +11,7 @@ import net.minecraft.world.level.Level;
 import net.minecraftforge.common.util.FakePlayer;
 import net.minecraftforge.event.entity.living.LivingAttackEvent;
 import net.minecraftforge.event.entity.living.LivingDamageEvent;
+import net.minecraftforge.event.entity.living.LivingEvent;
 import net.minecraftforge.event.entity.living.LivingKnockBackEvent;
 import net.minecraftforge.event.entity.player.AttackEntityEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
@@ -18,8 +19,8 @@ import net.minecraftforge.fml.common.Mod;
 
 @Mod.EventBusSubscriber
 public class DamageServerEvents {
-    public static final List<String> BLACKLIST_DAMAGE_SOURCES = List.of("lava", "inFire", "cactus", "inWall", "hotFloor", "lightningBolt", "sweetBerryBush", "outOfWorld", "drown");
-    public static final List<String> BLACKLIST_ENTITY_TYPES = List.of("minecraft:slime", "minecraft:ender_dragon", "minecraft:magma_cube", "irons_spellbooks:wall_of_fire", "irons_spellbooks:void_tentacle");
+    public static final List<String> BLACKLIST_DAMAGE_SOURCES = List.of();
+    public static final List<String> BLACKLIST_ENTITY_TYPES = List.of();
 
     @SubscribeEvent
     public static void onRecieveDamage(LivingAttackEvent event) {
@@ -70,6 +71,13 @@ public class DamageServerEvents {
     public static void modifyKnockback(LivingKnockBackEvent event) {
         if (ServerConfigs.DAMAGE_MODULE_ENABLED.get()) {
             event.setStrength((float) (event.getStrength() * ServerConfigs.KNOCKBACK_MODIFIER.get()));
+        }
+    }
+
+    @SubscribeEvent
+    public static void onLivingTick(LivingEvent.LivingTickEvent event) {
+        if (event.getEntity().tickCount % 600 == 0) {
+            ((IRpgLivingEntityExtension) event.getEntity()).rpg_tweaks$garbageCollect(event.getEntity().tickCount);
         }
     }
 

@@ -27,6 +27,12 @@ public class LivingEntityMixin implements IRpgLivingEntityExtension {
     }
 
     @Override
+    public void rpg_tweaks$garbageCollect(int tickCount) {
+        rpg_tweaks$hurtTracker.entrySet().removeIf(entry -> entry.getValue() < tickCount - 20);
+        rpg_tweaks$requestDamageTracker.entrySet().removeIf(entry -> entry.getValue() < tickCount - 20);
+    }
+
+    @Override
     public void rpg_tweaks$updateLastRequest(Holder<DamageType> type, int timestamp) {
         rpg_tweaks$requestDamageTracker.put(type, timestamp);
     }

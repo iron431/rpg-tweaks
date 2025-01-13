@@ -16,4 +16,5 @@ public interface IRpgLivingEntityExtension {
 
     void rpg_tweaks$updateLastRequest(Holder<DamageType> type, int timestamp);
     void rpg_tweaks$updateLastHurt(Holder<DamageType> type, int timestamp);
+    void rpg_tweaks$garbageCollect(int tickCount);
 }

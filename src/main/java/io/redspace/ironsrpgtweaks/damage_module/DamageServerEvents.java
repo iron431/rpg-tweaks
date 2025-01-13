@@ -2,7 +2,6 @@ package io.redspace.ironsrpgtweaks.damage_module;
 
 import java.util.List;
 
-import io.redspace.ironsrpgtweaks.config.ConfigHelper;
 import io.redspace.ironsrpgtweaks.config.ServerConfigs;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.damagesource.DamageSource;
@@ -90,7 +89,7 @@ public class DamageServerEvents {
         if (ServerConfigs.DAMAGE_MODULE_DAMAGE_SOURCE_BLACKLIST.get().contains(source.getMsgId())) {
             return false;
         }
-        return (source.getEntity() == null || !ConfigHelper.Damage.damageEntityBlacklist.contains(source.getEntity().getType())) &&
-                (source.getDirectEntity() == null || !ConfigHelper.Damage.damageEntityBlacklist.contains(source.getDirectEntity().getType()));
+        return (source.getEntity() == null || !ServerConfigs.RegistryLists.DAMAGE_ENTITY_BLACKLIST.contains(source.getEntity().getType())) &&
+                (source.getDirectEntity() == null || !ServerConfigs.RegistryLists.DAMAGE_ENTITY_BLACKLIST.contains(source.getDirectEntity().getType()));
     }
 }

@@ -6,12 +6,16 @@ import io.redspace.ironsrpgtweaks.damage_module.PlayerDamageMode;
 import io.redspace.ironsrpgtweaks.durability_module.DeathDurabilityMode;
 import io.redspace.ironsrpgtweaks.durability_module.VanillaDurabilityMode;
 import io.redspace.ironsrpgtweaks.hunger_module.CommonHungerEvents;
-import net.minecraft.core.registries.Registries;
+import io.redspace.ironsrpgtweaks.hunger_module.RegistryGetter;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.TagKey;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.item.Item;
+import net.minecraft.world.item.PotionItem;
 import net.minecraftforge.common.ForgeConfigSpec;
 import net.minecraftforge.registries.ForgeRegistries;
+import net.minecraftforge.registries.IForgeRegistry;
 
 import java.util.HashSet;
 import java.util.List;
@@ -24,7 +28,7 @@ public class ServerConfigs {
 
     public static final ForgeConfigSpec.ConfigValue<Boolean> DAMAGE_MODULE_ENABLED;
     public static final ForgeConfigSpec.ConfigValue<Integer> IFRAME_COUNT;
-    public static final ForgeConfigSpec.ConfigValue<List<? extends String>> DAMAGE_MODULE_ENTITY_BLACKLIST;
+    private static final ForgeConfigSpec.ConfigValue<List<? extends String>> DAMAGE_MODULE_ENTITY_BLACKLIST; //private so the cache must be used
     public static final ForgeConfigSpec.ConfigValue<List<? extends String>> DAMAGE_MODULE_DAMAGE_SOURCE_BLACKLIST;
     public static final ForgeConfigSpec.ConfigValue<PlayerDamageMode> PLAYER_DAMAGE_MODE;
     public static final ForgeConfigSpec.ConfigValue<Boolean> ALLOW_NON_FULL_STRENGTH_ATTACKS;
@@ -40,10 +44,6 @@ public class ServerConfigs {
     private static final ForgeConfigSpec.ConfigValue<List<? extends String>> DURABILITY_DEATH_MODE_BLACKLIST; //private so the cache must be used
     public static final ForgeConfigSpec.ConfigValue<Double> DURABILITY_LOST_ON_DEATH;
     public static final ForgeConfigSpec.ConfigValue<Integer> ADDITIONAL_DURABILITY_LOST_ON_DEATH;
-    public static final Set<Item> DURABILITY_VANILLA_MODE_WHITELIST_ITEMS = new HashSet<>();
-    public static final Set<Item> DURABILITY_VANILLA_MODE_BLACKLIST_ITEMS = new HashSet<>();
-    public static final Set<Item> DURABILITY_DEATH_MODE_WHITELIST_ITEMS = new HashSet<>();
-    public static final Set<Item> DURABILITY_DEATH_MODE_BLACKLIST_ITEMS = new HashSet<>();
 
     public static final ForgeConfigSpec.ConfigValue<Boolean> XP_MODULE_ENABLED;
     public static final ForgeConfigSpec.ConfigValue<Boolean> XP_IGNORE_KEEPINVENTORY;
@@ -63,7 +63,7 @@ public class ServerConfigs {
     public static final ForgeConfigSpec.ConfigValue<Boolean> NATURAL_REGENERATION_DURING_COMBAT;
     public static final ForgeConfigSpec.ConfigValue<Integer> POTION_STACK_SIZE_OVERRIDE;
     public static final ForgeConfigSpec.ConfigValue<Integer> FOOD_STACK_SIZE_OVERRIDE;
-    public static final ForgeConfigSpec.ConfigValue<List<? extends String>> FOOD_STACK_BLACKLIST;
+    private static final ForgeConfigSpec.ConfigValue<List<? extends String>> FOOD_STACK_BLACKLIST; //private so the cache must be used
     public static final ForgeConfigSpec.ConfigValue<Double> SPLASH_POTION_COOLDOWN;
     public static final ForgeConfigSpec.ConfigValue<Double> LINGERING_POTION_COOLDOWN;
     public static final ForgeConfigSpec.ConfigValue<Double> EAT_TIME_MULTIPLIER;
@@ -226,32 +226,62 @@ public class ServerConfigs {
         SPEC = BUILDER.build();
     }
 
+    public static class RegistryLists {
+        public static final Set<Item> DURABILITY_VANILLA_MODE_WHITELIST_ITEMS = new HashSet<>();
+        public static final Set<Item> DURABILITY_VANILLA_MODE_BLACKLIST_ITEMS = new HashSet<>();
+        public static final Set<Item> DURABILITY_DEATH_MODE_WHITELIST_ITEMS = new HashSet<>();
+        public static final Set<Item> DURABILITY_DEATH_MODE_BLACKLIST_ITEMS = new HashSet<>();
+        public static final Set<EntityType<? extends Entity>> DAMAGE_ENTITY_BLACKLIST = new HashSet<>();
+        public static final Set<Item> FOOD_STACK_BLACKLIST_ITEMS = new HashSet<>();
+    }
+
     public static void handleOnConfigReload() {
         IronsRpgTweaks.LOGGER.debug("On Config Reload");
 
         /*
         Cache whitelists/blacklists into items
          */
-        cacheItemList(DURABILITY_VANILLA_MODE_WHITELIST.get(), DURABILITY_VANILLA_MODE_WHITELIST_ITEMS);
-        cacheItemList(DURABILITY_VANILLA_MODE_BLACKLIST.get(), DURABILITY_VANILLA_MODE_BLACKLIST_ITEMS);
-        cacheItemList(DURABILITY_DEATH_MODE_WHITELIST.get(), DURABILITY_DEATH_MODE_WHITELIST_ITEMS);
-        cacheItemList(DURABILITY_DEATH_MODE_BLACKLIST.get(), DURABILITY_DEATH_MODE_BLACKLIST_ITEMS);
-        IronsRpgTweaks.LOGGER.debug("DURABILITY_VANILLA_MODE_WHITELIST: {} {}", DURABILITY_VANILLA_MODE_WHITELIST.get(), DURABILITY_VANILLA_MODE_WHITELIST_ITEMS);
-        IronsRpgTweaks.LOGGER.debug("DURABILITY_VANILLA_MODE_BLACKLIST: {} {}", DURABILITY_VANILLA_MODE_BLACKLIST.get(), DURABILITY_VANILLA_MODE_BLACKLIST_ITEMS);
-        IronsRpgTweaks.LOGGER.debug("DURABILITY_DEATH_MODE_WHITELIST: {} {}", DURABILITY_DEATH_MODE_WHITELIST.get(), DURABILITY_DEATH_MODE_WHITELIST_ITEMS);
-        IronsRpgTweaks.LOGGER.debug("DURABILITY_DEATH_MODE_BLACKLIST: {} {}", DURABILITY_DEATH_MODE_BLACKLIST.get(), DURABILITY_DEATH_MODE_BLACKLIST_ITEMS);
+        cacheRegistryList(RegistryGetter.getItem(), DURABILITY_VANILLA_MODE_WHITELIST.get(), RegistryLists.DURABILITY_VANILLA_MODE_WHITELIST_ITEMS);
+        cacheRegistryList(RegistryGetter.getItem(), DURABILITY_VANILLA_MODE_BLACKLIST.get(), RegistryLists.DURABILITY_VANILLA_MODE_BLACKLIST_ITEMS);
+        cacheRegistryList(RegistryGetter.getItem(), DURABILITY_DEATH_MODE_WHITELIST.get(), RegistryLists.DURABILITY_DEATH_MODE_WHITELIST_ITEMS);
+        cacheRegistryList(RegistryGetter.getItem(), DURABILITY_DEATH_MODE_BLACKLIST.get(), RegistryLists.DURABILITY_DEATH_MODE_BLACKLIST_ITEMS);
+        cacheRegistryList(RegistryGetter.getItem(), FOOD_STACK_BLACKLIST.get(), RegistryLists.FOOD_STACK_BLACKLIST_ITEMS);
+        // cast to unparameterized because compiler is angry. this is a sign of trepidatious code, but it works now :)
+        cacheRegistryList((IForgeRegistry) ForgeRegistries.ENTITY_TYPES, DAMAGE_MODULE_ENTITY_BLACKLIST.get(), RegistryLists.DAMAGE_ENTITY_BLACKLIST);
+        IronsRpgTweaks.LOGGER.debug("DURABILITY_VANILLA_MODE_WHITELIST: {} {}", DURABILITY_VANILLA_MODE_WHITELIST.get(), RegistryLists.DURABILITY_VANILLA_MODE_WHITELIST_ITEMS);
+        IronsRpgTweaks.LOGGER.debug("DURABILITY_VANILLA_MODE_BLACKLIST: {} {}", DURABILITY_VANILLA_MODE_BLACKLIST.get(), RegistryLists.DURABILITY_VANILLA_MODE_BLACKLIST_ITEMS);
+        IronsRpgTweaks.LOGGER.debug("DURABILITY_DEATH_MODE_WHITELIST: {} {}", DURABILITY_DEATH_MODE_WHITELIST.get(), RegistryLists.DURABILITY_DEATH_MODE_WHITELIST_ITEMS);
+        IronsRpgTweaks.LOGGER.debug("DURABILITY_DEATH_MODE_BLACKLIST: {} {}", DURABILITY_DEATH_MODE_BLACKLIST.get(), RegistryLists.DURABILITY_DEATH_MODE_BLACKLIST_ITEMS);
 
+
+        if (ServerConfigs.HUNGER_MODULE_ENABLED.get()) {
+            int potionStack = Math.min(ServerConfigs.POTION_STACK_SIZE_OVERRIDE.get(), 64);
+            int foodStack = Math.min(ServerConfigs.FOOD_STACK_SIZE_OVERRIDE.get(), 64);
+            if (foodStack <= 0 && potionStack <= 0) {
+                return;
+            }
+            IForgeRegistry<Item> registry = RegistryGetter.getItem();
+            registry.forEach((item) -> {
+                if (!RegistryLists.FOOD_STACK_BLACKLIST_ITEMS.contains(item)) {
+                    if (potionStack > 0 && item instanceof PotionItem) {
+                        item.maxStackSize = potionStack;
+                    } else if (foodStack > 0 && item.getFoodProperties() != null) {
+                        item.maxStackSize = Math.min(item.maxStackSize, foodStack);
+                    }
+                }
+            });
+        }
     }
 
-    private static void cacheItemList(List<? extends String> ids, Set<Item> output) {
+    private static <T> void cacheRegistryList(IForgeRegistry<T> registry, List<? extends String> ids, Set<T> output) {
         output.clear();
         for (String name : ids) {
             try {
                 if (name.startsWith("#")) {
-                    var tag = new TagKey<Item>(Registries.ITEM, new ResourceLocation(name.substring(1)));
-                    output.addAll(ForgeRegistries.ITEMS.getValues().stream().filter(item -> item.builtInRegistryHolder().is(tag)).toList());
+                    var tag = new TagKey<T>(registry.getRegistryKey(), new ResourceLocation(name.substring(1)));
+                    output.addAll(registry.getValues().stream().filter(item -> registry.getHolder(item).get().is(tag)).toList());
                 } else {
-                    var item = ForgeRegistries.ITEMS.getValue(new ResourceLocation(name));
+                    var item = registry.getValue(new ResourceLocation(name));
                     if (item != null) {
                         output.add(item);
                     } else {

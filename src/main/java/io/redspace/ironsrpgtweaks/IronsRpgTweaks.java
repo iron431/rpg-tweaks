@@ -50,24 +50,18 @@ public class IronsRpgTweaks {
 
         modEventBus.addListener(this::fillCreativeTabs);
         modEventBus.addListener(this::onConfigReload);
+        modEventBus.addListener(this::onConfigLoad);
         //modEventBus.addListener(CommonHungerEvents::changeStackSize);
 
         MinecraftForge.EVENT_BUS.register(this);
     }
 
-    // You can use SubscribeEvent and let the Event Bus discover methods to call
-    @SubscribeEvent
-    public void onServerStarting(ServerStartingEvent event) {
-    }
-
-    @SubscribeEvent
     public void onConfigReload(ModConfigEvent.Reloading event) {
         if (event.getConfig().getType() == ModConfig.Type.SERVER) {
             ServerConfigs.handleOnConfigReload();
         }
     }
 
-    @SubscribeEvent
     public void onConfigLoad(ModConfigEvent.Loading event) {
         if (event.getConfig().getType() == ModConfig.Type.SERVER) {
             ServerConfigs.handleOnConfigReload();

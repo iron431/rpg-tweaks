@@ -28,8 +28,6 @@ public class ServerConfigs {
 
     public static final ForgeConfigSpec.ConfigValue<Boolean> DAMAGE_MODULE_ENABLED;
     public static final ForgeConfigSpec.ConfigValue<Integer> IFRAME_COUNT;
-    private static final ForgeConfigSpec.ConfigValue<List<? extends String>> DAMAGE_MODULE_ENTITY_BLACKLIST; //private so the cache must be used
-    public static final ForgeConfigSpec.ConfigValue<List<? extends String>> DAMAGE_MODULE_DAMAGE_SOURCE_BLACKLIST;
     public static final ForgeConfigSpec.ConfigValue<PlayerDamageMode> PLAYER_DAMAGE_MODE;
     public static final ForgeConfigSpec.ConfigValue<Boolean> ALLOW_NON_FULL_STRENGTH_ATTACKS;
     public static final ForgeConfigSpec.ConfigValue<Double> MINIMUM_ATTACK_STRENGTH;
@@ -80,15 +78,8 @@ public class ServerConfigs {
         DAMAGE_MODULE_ENABLED = BUILDER
                 .comment("The purpose of the damage module is to remove the invulnerability ticks after an entity is damaged to better suit gameplay where entities are going to be ignoring too much damage if left unchecked. Disabling will nullify every feature listed under this module.")
                 .define("damageModuleEnabled", true);
-        DAMAGE_MODULE_ENTITY_BLACKLIST = BUILDER
-                .comment("Some entities or damage sources rely on damage ticks to time their attacks. In these cases, we want to let them initiate i-frames.")
-                .comment("entityBlacklist default: " + getDefaultEntries(DamageServerEvents.BLACKLIST_ENTITY_TYPES))
-                .defineList("entityBlacklist", DamageServerEvents.BLACKLIST_ENTITY_TYPES, ServerConfigs::validateEntityName);
-        DAMAGE_MODULE_DAMAGE_SOURCE_BLACKLIST = BUILDER
-                .comment("damagesourceBlacklist default: " + getDefaultEntries(DamageServerEvents.BLACKLIST_DAMAGE_SOURCES))
-                .defineList("damagesourceBlacklist", DamageServerEvents.BLACKLIST_DAMAGE_SOURCES, (x) -> true);
         IFRAME_COUNT = BUILDER
-                .comment("Invulnerability Tick (I-Frame) count. Default: 0 (Vanilla's is 20, one second)")
+                .comment("Invulnerability Tick (I-Frame) count. Default: 0")
                 .define("invulnerabilityTickCount", 0);
         PLAYER_DAMAGE_MODE = BUILDER
                 .comment("Specialized handling for player damage ticks. \"ALL\" means there is no special handling, \"ONLY_LIVING\" means only living attacks ignore player i-frames (may help with unforeseen damage like potions), and \"NONE\" means player's damage ticks are unaffected by the damage module.")
@@ -98,10 +89,10 @@ public class ServerConfigs {
                 .define("minimumAttackStrength", 0.75);
         ALLOW_NON_FULL_STRENGTH_ATTACKS = BUILDER
                 .comment("Whether a player is allowed to even swing if the threshold is not met. Default: true")
-                .worldRestart().define("allowNonFullStrengthAttacks", true);
+                .define("allowNonFullStrengthAttacks", true);
         KNOCKBACK_MODIFIER = BUILDER
                 .comment("Global multiplier to all knockback. Default: 1.0")
-                .worldRestart().define("globalKnockbackMultiplier", 1.0);
+                .define("globalKnockbackMultiplier", 1.0);
         BUILDER.pop();
 
         /*
@@ -231,7 +222,6 @@ public class ServerConfigs {
         public static final Set<Item> DURABILITY_VANILLA_MODE_BLACKLIST_ITEMS = new HashSet<>();
         public static final Set<Item> DURABILITY_DEATH_MODE_WHITELIST_ITEMS = new HashSet<>();
         public static final Set<Item> DURABILITY_DEATH_MODE_BLACKLIST_ITEMS = new HashSet<>();
-        public static final Set<EntityType<? extends Entity>> DAMAGE_ENTITY_BLACKLIST = new HashSet<>();
         public static final Set<Item> FOOD_STACK_BLACKLIST_ITEMS = new HashSet<>();
     }
 
@@ -246,12 +236,11 @@ public class ServerConfigs {
         cacheRegistryList(RegistryGetter.getItem(), DURABILITY_DEATH_MODE_WHITELIST.get(), RegistryLists.DURABILITY_DEATH_MODE_WHITELIST_ITEMS);
         cacheRegistryList(RegistryGetter.getItem(), DURABILITY_DEATH_MODE_BLACKLIST.get(), RegistryLists.DURABILITY_DEATH_MODE_BLACKLIST_ITEMS);
         cacheRegistryList(RegistryGetter.getItem(), FOOD_STACK_BLACKLIST.get(), RegistryLists.FOOD_STACK_BLACKLIST_ITEMS);
-        // cast to unparameterized because compiler is angry. this is a sign of trepidatious code, but it works now :)
-        cacheRegistryList((IForgeRegistry) ForgeRegistries.ENTITY_TYPES, DAMAGE_MODULE_ENTITY_BLACKLIST.get(), RegistryLists.DAMAGE_ENTITY_BLACKLIST);
         IronsRpgTweaks.LOGGER.debug("DURABILITY_VANILLA_MODE_WHITELIST: {} {}", DURABILITY_VANILLA_MODE_WHITELIST.get(), RegistryLists.DURABILITY_VANILLA_MODE_WHITELIST_ITEMS);
         IronsRpgTweaks.LOGGER.debug("DURABILITY_VANILLA_MODE_BLACKLIST: {} {}", DURABILITY_VANILLA_MODE_BLACKLIST.get(), RegistryLists.DURABILITY_VANILLA_MODE_BLACKLIST_ITEMS);
         IronsRpgTweaks.LOGGER.debug("DURABILITY_DEATH_MODE_WHITELIST: {} {}", DURABILITY_DEATH_MODE_WHITELIST.get(), RegistryLists.DURABILITY_DEATH_MODE_WHITELIST_ITEMS);
         IronsRpgTweaks.LOGGER.debug("DURABILITY_DEATH_MODE_BLACKLIST: {} {}", DURABILITY_DEATH_MODE_BLACKLIST.get(), RegistryLists.DURABILITY_DEATH_MODE_BLACKLIST_ITEMS);
+        IronsRpgTweaks.LOGGER.debug("FOOD_STACK_BLACKLIST: {} {}", FOOD_STACK_BLACKLIST.get(), RegistryLists.FOOD_STACK_BLACKLIST_ITEMS);
 
 
         if (ServerConfigs.HUNGER_MODULE_ENABLED.get()) {

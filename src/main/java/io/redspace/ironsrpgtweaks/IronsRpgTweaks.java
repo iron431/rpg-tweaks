@@ -2,7 +2,6 @@ package io.redspace.ironsrpgtweaks;
 
 
 import com.mojang.logging.LogUtils;
-import io.redspace.ironsrpgtweaks.config.ClientConfig;
 import io.redspace.ironsrpgtweaks.config.ServerConfigs;
 import io.redspace.ironsrpgtweaks.registry.AttributeRegistry;
 import io.redspace.ironsrpgtweaks.registry.EntityRegistry;

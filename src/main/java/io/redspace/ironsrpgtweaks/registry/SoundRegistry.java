@@ -1,24 +1,23 @@
 package io.redspace.ironsrpgtweaks.registry;
 
 import io.redspace.ironsrpgtweaks.IronsRpgTweaks;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundEvent;
-import net.minecraftforge.eventbus.api.IEventBus;
-import net.minecraftforge.registries.DeferredRegister;
-import net.minecraftforge.registries.ForgeRegistries;
-import net.minecraftforge.registries.RegistryObject;
+import net.neoforged.bus.api.IEventBus;
+import net.neoforged.neoforge.registries.DeferredHolder;
+import net.neoforged.neoforge.registries.DeferredRegister;
 
 public class SoundRegistry {
-    private static final DeferredRegister<SoundEvent> SOUND_EVENTS = DeferredRegister.create(ForgeRegistries.SOUND_EVENTS, IronsRpgTweaks.MODID);
+    private static final DeferredRegister<SoundEvent> SOUND_EVENTS = DeferredRegister.create(Registries.SOUND_EVENT, IronsRpgTweaks.MODID);
 
     public static void register(IEventBus eventBus) {
         SOUND_EVENTS.register(eventBus);
     }
 
-    public static RegistryObject<SoundEvent> RETRIEVE_XP = registerSoundEvent("entity.xp_catalyst.retrieve");
-    public static RegistryObject<SoundEvent> IDENTIFY = registerSoundEvent("item.identification_scroll.identify");
+    public static DeferredHolder<SoundEvent, SoundEvent> RETRIEVE_XP = registerSoundEvent("entity.xp_catalyst.retrieve");
 
-    private static RegistryObject<SoundEvent> registerSoundEvent(String name) {
-        return SOUND_EVENTS.register(name, () -> SoundEvent.createVariableRangeEvent(new ResourceLocation(IronsRpgTweaks.MODID, name)));
+    private static DeferredHolder<SoundEvent, SoundEvent> registerSoundEvent(String name) {
+        return SOUND_EVENTS.register(name, () -> SoundEvent.createVariableRangeEvent(ResourceLocation.fromNamespaceAndPath(IronsRpgTweaks.MODID, name)));
     }
 }

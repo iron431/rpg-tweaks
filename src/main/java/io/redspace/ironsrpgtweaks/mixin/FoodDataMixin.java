@@ -10,6 +10,7 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
+import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
@@ -22,28 +23,30 @@ public class FoodDataMixin {
     @Shadow
     int lastFoodLevel;
 
-    @Inject(method = "eat(Lnet/minecraft/world/item/Item;Lnet/minecraft/world/item/ItemStack;Lnet/minecraft/world/entity/LivingEntity;)V", remap = false, at = @At(value = "HEAD"), cancellable = true)
-    public void hungerToHealth(Item pItem, ItemStack pStack, LivingEntity entity, CallbackInfo ci) {
-        if (!ConfigHelper.Hunger.shouldDisableVanillaHunger())
+    @Unique
+    float rpg_tweaks$toHeal;
+
+    @Inject(method = "Lnet/minecraft/world/food/FoodData;add(IF)V", remap = false, at = @At(value = "HEAD"), cancellable = true)
+    public void hungerToHealth(int nutritionToAdd, float saturationToAdd, CallbackInfo ci) {
+        if (!ConfigHelper.Hunger.shouldDisableVanillaHunger()) {
             return;
-        if (pItem.isEdible()) {
-            FoodProperties foodproperties = pStack.getFoodProperties(entity);
-            if (foodproperties != null && entity != null) {
-                float healing = (float) (foodproperties.getNutrition() * ServerConfigs.FOOD_TO_HEALTH_MODIFIER.get());
-                entity.heal(healing);
-                lastFoodLevel = foodLevel;
-                ci.cancel();
-            }
         }
+        rpg_tweaks$toHeal = (float) (nutritionToAdd * ServerConfigs.FOOD_TO_HEALTH_MODIFIER.get());
+        ci.cancel();
     }
 
     @Inject(method = "tick", at = @At(value = "HEAD"))
-    public void detectEatCake(Player pPlayer, CallbackInfo ci) {
-        if (!ConfigHelper.Hunger.shouldDisableVanillaHunger())
+    public void heal(Player pPlayer, CallbackInfo ci) {
+        if (!ConfigHelper.Hunger.shouldDisableVanillaHunger()) {
             return;
-        if (lastFoodLevel != foodLevel) {
-            float healing = (float) ((foodLevel - lastFoodLevel) * ServerConfigs.FOOD_TO_HEALTH_MODIFIER.get() * .5f);
-            pPlayer.heal(healing);
         }
+        if (rpg_tweaks$toHeal > 0) {
+            pPlayer.heal(rpg_tweaks$toHeal);
+            rpg_tweaks$toHeal = 0;
+        }
+//        if (lastFoodLevel != foodLevel) {
+//            float healing = (float) ((foodLevel - lastFoodLevel) * ServerConfigs.FOOD_TO_HEALTH_MODIFIER.get() * .5f);
+//            pPlayer.heal(healing);
+//        }
     }
 }

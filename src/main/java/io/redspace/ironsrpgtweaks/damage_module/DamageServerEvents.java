@@ -6,20 +6,20 @@ import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
-import net.minecraftforge.common.util.FakePlayer;
-import net.minecraftforge.event.entity.living.LivingAttackEvent;
-import net.minecraftforge.event.entity.living.LivingDamageEvent;
-import net.minecraftforge.event.entity.living.LivingEvent;
-import net.minecraftforge.event.entity.living.LivingKnockBackEvent;
-import net.minecraftforge.event.entity.player.AttackEntityEvent;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.common.Mod;
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.common.EventBusSubscriber;
+import net.neoforged.neoforge.common.util.FakePlayer;
+import net.neoforged.neoforge.event.entity.living.LivingDamageEvent;
+import net.neoforged.neoforge.event.entity.living.LivingIncomingDamageEvent;
+import net.neoforged.neoforge.event.entity.living.LivingKnockBackEvent;
+import net.neoforged.neoforge.event.entity.player.AttackEntityEvent;
+import net.neoforged.neoforge.event.tick.EntityTickEvent;
 
-@Mod.EventBusSubscriber
+@EventBusSubscriber
 public class DamageServerEvents {
 
     @SubscribeEvent
-    public static void onRecieveDamage(LivingAttackEvent event) {
+    public static void onIncomingDamage(LivingIncomingDamageEvent event) {
         var source = event.getSource();
         var entity = event.getEntity();
         if (!(entity.level() instanceof ServerLevel serverLevel)) {
@@ -44,7 +44,7 @@ public class DamageServerEvents {
     }
 
     @SubscribeEvent
-    public static void onTakeDamage(LivingDamageEvent event) {
+    public static void onTakeDamage(LivingDamageEvent.Post event) {
         if (shouldProcess(event.getSource(), event.getEntity()) /*&& legacyTestDamageSource(event.getSource())*/) {
             event.getEntity().invulnerableTime = ServerConfigs.IFRAME_COUNT.get();
             IRpgLivingEntityExtension entityExtension = (IRpgLivingEntityExtension) event.getEntity();
@@ -71,7 +71,7 @@ public class DamageServerEvents {
     }
 
     @SubscribeEvent
-    public static void onLivingTick(LivingEvent.LivingTickEvent event) {
+    public static void onLivingTick(EntityTickEvent.Post event) {
         if (ServerConfigs.DAMAGE_MODULE_ENABLED.get() && event.getEntity().tickCount % 600 == 0) {
             ((IRpgLivingEntityExtension) event.getEntity()).rpg_tweaks$garbageCollect(event.getEntity().tickCount);
         }

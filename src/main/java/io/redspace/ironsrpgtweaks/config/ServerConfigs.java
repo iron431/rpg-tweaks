@@ -1,21 +1,18 @@
 package io.redspace.ironsrpgtweaks.config;
 
 import io.redspace.ironsrpgtweaks.IronsRpgTweaks;
-import io.redspace.ironsrpgtweaks.damage_module.DamageServerEvents;
 import io.redspace.ironsrpgtweaks.damage_module.PlayerDamageMode;
 import io.redspace.ironsrpgtweaks.durability_module.DeathDurabilityMode;
 import io.redspace.ironsrpgtweaks.durability_module.VanillaDurabilityMode;
 import io.redspace.ironsrpgtweaks.hunger_module.CommonHungerEvents;
 import io.redspace.ironsrpgtweaks.hunger_module.RegistryGetter;
+import net.minecraft.core.Registry;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.TagKey;
-import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.PotionItem;
-import net.minecraftforge.common.ForgeConfigSpec;
-import net.minecraftforge.registries.ForgeRegistries;
-import net.minecraftforge.registries.IForgeRegistry;
+import net.neoforged.neoforge.common.ModConfigSpec;
 
 import java.util.HashSet;
 import java.util.List;
@@ -23,52 +20,44 @@ import java.util.Set;
 
 public class ServerConfigs {
 
-    private static final ForgeConfigSpec.Builder BUILDER = new ForgeConfigSpec.Builder();
-    public static final ForgeConfigSpec SPEC;
+    private static final ModConfigSpec.Builder BUILDER = new ModConfigSpec.Builder();
+    public static final ModConfigSpec SPEC;
 
-    public static final ForgeConfigSpec.ConfigValue<Boolean> DAMAGE_MODULE_ENABLED;
-    public static final ForgeConfigSpec.ConfigValue<Integer> IFRAME_COUNT;
-    public static final ForgeConfigSpec.ConfigValue<PlayerDamageMode> PLAYER_DAMAGE_MODE;
-    public static final ForgeConfigSpec.ConfigValue<Boolean> ALLOW_NON_FULL_STRENGTH_ATTACKS;
-    public static final ForgeConfigSpec.ConfigValue<Double> MINIMUM_ATTACK_STRENGTH;
-    public static final ForgeConfigSpec.ConfigValue<Double> KNOCKBACK_MODIFIER;
+    public static final ModConfigSpec.ConfigValue<Boolean> DAMAGE_MODULE_ENABLED;
+    public static final ModConfigSpec.ConfigValue<Integer> IFRAME_COUNT;
+    public static final ModConfigSpec.ConfigValue<PlayerDamageMode> PLAYER_DAMAGE_MODE;
+    public static final ModConfigSpec.ConfigValue<Boolean> ALLOW_NON_FULL_STRENGTH_ATTACKS;
+    public static final ModConfigSpec.ConfigValue<Double> MINIMUM_ATTACK_STRENGTH;
+    public static final ModConfigSpec.ConfigValue<Double> KNOCKBACK_MODIFIER;
 
-    public static final ForgeConfigSpec.ConfigValue<Boolean> DURABILITY_MODULE_ENABLED;
-    public static final ForgeConfigSpec.ConfigValue<VanillaDurabilityMode> DURABILITY_VANILLA_MODE;
-    private static final ForgeConfigSpec.ConfigValue<List<? extends String>> DURABILITY_VANILLA_MODE_WHITELIST; //private so the cache must be used
-    private static final ForgeConfigSpec.ConfigValue<List<? extends String>> DURABILITY_VANILLA_MODE_BLACKLIST; //private so the cache must be used
-    public static final ForgeConfigSpec.ConfigValue<DeathDurabilityMode> DURABILITY_DEATH_MODE;
-    private static final ForgeConfigSpec.ConfigValue<List<? extends String>> DURABILITY_DEATH_MODE_WHITELIST; //private so the cache must be used
-    private static final ForgeConfigSpec.ConfigValue<List<? extends String>> DURABILITY_DEATH_MODE_BLACKLIST; //private so the cache must be used
-    public static final ForgeConfigSpec.ConfigValue<Double> DURABILITY_LOST_ON_DEATH;
-    public static final ForgeConfigSpec.ConfigValue<Integer> ADDITIONAL_DURABILITY_LOST_ON_DEATH;
+    public static final ModConfigSpec.ConfigValue<Boolean> DURABILITY_MODULE_ENABLED;
+    public static final ModConfigSpec.ConfigValue<VanillaDurabilityMode> DURABILITY_VANILLA_MODE;
+    private static final ModConfigSpec.ConfigValue<List<? extends String>> DURABILITY_VANILLA_MODE_WHITELIST; //private so the cache must be used
+    private static final ModConfigSpec.ConfigValue<List<? extends String>> DURABILITY_VANILLA_MODE_BLACKLIST; //private so the cache must be used
+    public static final ModConfigSpec.ConfigValue<DeathDurabilityMode> DURABILITY_DEATH_MODE;
+    private static final ModConfigSpec.ConfigValue<List<? extends String>> DURABILITY_DEATH_MODE_WHITELIST; //private so the cache must be used
+    private static final ModConfigSpec.ConfigValue<List<? extends String>> DURABILITY_DEATH_MODE_BLACKLIST; //private so the cache must be used
+    public static final ModConfigSpec.ConfigValue<Double> DURABILITY_LOST_ON_DEATH;
+    public static final ModConfigSpec.ConfigValue<Integer> ADDITIONAL_DURABILITY_LOST_ON_DEATH;
 
-    public static final ForgeConfigSpec.ConfigValue<Boolean> XP_MODULE_ENABLED;
-    public static final ForgeConfigSpec.ConfigValue<Boolean> XP_IGNORE_KEEPINVENTORY;
-    public static final ForgeConfigSpec.ConfigValue<Boolean> XP_ONLY_ALLOW_OWNER;
-    public static final ForgeConfigSpec.ConfigValue<Double> ENTITY_XP_MODIFIER;
-    public static final ForgeConfigSpec.ConfigValue<Double> BLOCK_XP_MODIFIER;
+    public static final ModConfigSpec.ConfigValue<Boolean> XP_MODULE_ENABLED;
+    public static final ModConfigSpec.ConfigValue<Boolean> XP_IGNORE_KEEPINVENTORY;
+    public static final ModConfigSpec.ConfigValue<Boolean> XP_ONLY_ALLOW_OWNER;
+    public static final ModConfigSpec.ConfigValue<Double> ENTITY_XP_MODIFIER;
+    public static final ModConfigSpec.ConfigValue<Double> BLOCK_XP_MODIFIER;
 
-    public static final ForgeConfigSpec.ConfigValue<Boolean> ENCHANT_MODULE_ENABLED;
-    public static final ForgeConfigSpec.ConfigValue<Boolean> IDENTIFY_ON_EQUIP;
-    public static final ForgeConfigSpec.ConfigValue<Boolean> DISABLE_ENCHANTING_TABLE;
-    public static final ForgeConfigSpec.ConfigValue<Boolean> IDENTIFY_ON_ENCHANTING_TABLE;
-
-    public static final ForgeConfigSpec.ConfigValue<Boolean> HUNGER_MODULE_ENABLED;
-    public static final ForgeConfigSpec.ConfigValue<Boolean> HUNGER_DISABLED;
-    public static final ForgeConfigSpec.ConfigValue<Double> FOOD_TO_HEALTH_MODIFIER;
-    public static final ForgeConfigSpec.ConfigValue<Integer> NATURAL_REGENERATION_TICK_RATE;
-    public static final ForgeConfigSpec.ConfigValue<Boolean> NATURAL_REGENERATION_DURING_COMBAT;
-    public static final ForgeConfigSpec.ConfigValue<Integer> POTION_STACK_SIZE_OVERRIDE;
-    public static final ForgeConfigSpec.ConfigValue<Integer> FOOD_STACK_SIZE_OVERRIDE;
-    private static final ForgeConfigSpec.ConfigValue<List<? extends String>> FOOD_STACK_BLACKLIST; //private so the cache must be used
-    public static final ForgeConfigSpec.ConfigValue<Double> SPLASH_POTION_COOLDOWN;
-    public static final ForgeConfigSpec.ConfigValue<Double> LINGERING_POTION_COOLDOWN;
-    public static final ForgeConfigSpec.ConfigValue<Double> EAT_TIME_MULTIPLIER;
-    public static final ForgeConfigSpec.ConfigValue<Double> POTION_DRINK_TIME_MULTIPLER;
+    public static final ModConfigSpec.ConfigValue<Boolean> HUNGER_MODULE_ENABLED;
+    public static final ModConfigSpec.ConfigValue<Boolean> HUNGER_DISABLED;
+    public static final ModConfigSpec.ConfigValue<Double> FOOD_TO_HEALTH_MODIFIER;
+    public static final ModConfigSpec.ConfigValue<Integer> NATURAL_REGENERATION_TICK_RATE;
+    public static final ModConfigSpec.ConfigValue<Boolean> NATURAL_REGENERATION_DURING_COMBAT;
+    public static final ModConfigSpec.ConfigValue<Double> SPLASH_POTION_COOLDOWN;
+    public static final ModConfigSpec.ConfigValue<Double> LINGERING_POTION_COOLDOWN;
+    public static final ModConfigSpec.ConfigValue<Double> EAT_TIME_MULTIPLIER;
+    public static final ModConfigSpec.ConfigValue<Double> POTION_DRINK_TIME_MULTIPLER;
 
 
-//    public static final ForgeConfigSpec.ConfigValue<Boolean> XP_DROP_REWARD_XP;
+//    public static final ModConfigSpec.ConfigValue<Boolean> XP_DROP_REWARD_XP;
 
     static {
         /*
@@ -154,24 +143,6 @@ public class ServerConfigs {
         BUILDER.pop();
 
         /*
-        Enchantment Module
-         */
-        BUILDER.push("Enchantment-Module");
-        ENCHANT_MODULE_ENABLED = BUILDER
-                .comment("The purpose of the enchantment module is to mystify enchantments and add an additional challenge to game by obscuring the description of enchanted and cursed items found through looting. Disabling will nullify every feature listed under this module.")
-                .define("enchantmentModuleEnabled", true);
-        IDENTIFY_ON_EQUIP = BUILDER
-                .comment("Whether or not armor should be automatically identified when equipped. Default: true")
-                .define("identifyOnEquip", true);
-        IDENTIFY_ON_ENCHANTING_TABLE = BUILDER
-                .comment("Whether or not unidentified items can be identified by interacting with an enchanting table. Default: true")
-                .define("identifyOnEnchantingTable", true);
-        DISABLE_ENCHANTING_TABLE = BUILDER
-                .comment("Whether or not the enchanting table's functionality should be disabled, making looting or trading the only way to get enchanted items. Default: false")
-                .define("disableEnchantingTable", false);
-        BUILDER.pop();
-
-        /*
         Hunger Module
          */
         BUILDER.push("Hunger-Module");
@@ -190,15 +161,6 @@ public class ServerConfigs {
         NATURAL_REGENERATION_DURING_COMBAT = BUILDER
                 .comment("Whether players should naturally regenerate hp during combat. (Turn off the naturalRegeneration gamerule to disable all natural regen). Default: false.")
                 .define("naturalRegenerationDuringCombat", false);
-        POTION_STACK_SIZE_OVERRIDE = BUILDER
-                .comment("Changes the stack size of potions. Set to 0 to disable. Requires game restart. Default: 4")
-                .define("potionStackSize", 4);
-        FOOD_STACK_SIZE_OVERRIDE = BUILDER
-                .comment("Limit the stack size of every food item. Set to 0 to disable. Requires game restart. Default: 0")
-                .define("foodStackSize", 0);
-        FOOD_STACK_BLACKLIST = BUILDER
-                .comment("A Blacklist for limited food stack size, if enabled. Useful for mob drops or other edible items that are not meant as food. Default: " + getDefaultEntries(CommonHungerEvents.DEFAULT_FOOD_BLACKLIST))
-                .defineList("foodStackSizeBlacklist", CommonHungerEvents.DEFAULT_FOOD_BLACKLIST, ServerConfigs::validateItemName);
         SPLASH_POTION_COOLDOWN = BUILDER
                 .comment("Item Cooldown in seconds when throwing a splash potion. Default: 0.5")
                 .define("splashPotionCooldown", 0.5);
@@ -235,42 +197,22 @@ public class ServerConfigs {
         cacheRegistryList(RegistryGetter.getItem(), DURABILITY_VANILLA_MODE_BLACKLIST.get(), RegistryLists.DURABILITY_VANILLA_MODE_BLACKLIST_ITEMS);
         cacheRegistryList(RegistryGetter.getItem(), DURABILITY_DEATH_MODE_WHITELIST.get(), RegistryLists.DURABILITY_DEATH_MODE_WHITELIST_ITEMS);
         cacheRegistryList(RegistryGetter.getItem(), DURABILITY_DEATH_MODE_BLACKLIST.get(), RegistryLists.DURABILITY_DEATH_MODE_BLACKLIST_ITEMS);
-        cacheRegistryList(RegistryGetter.getItem(), FOOD_STACK_BLACKLIST.get(), RegistryLists.FOOD_STACK_BLACKLIST_ITEMS);
         IronsRpgTweaks.LOGGER.debug("DURABILITY_VANILLA_MODE_WHITELIST: {} {}", DURABILITY_VANILLA_MODE_WHITELIST.get(), RegistryLists.DURABILITY_VANILLA_MODE_WHITELIST_ITEMS);
         IronsRpgTweaks.LOGGER.debug("DURABILITY_VANILLA_MODE_BLACKLIST: {} {}", DURABILITY_VANILLA_MODE_BLACKLIST.get(), RegistryLists.DURABILITY_VANILLA_MODE_BLACKLIST_ITEMS);
         IronsRpgTweaks.LOGGER.debug("DURABILITY_DEATH_MODE_WHITELIST: {} {}", DURABILITY_DEATH_MODE_WHITELIST.get(), RegistryLists.DURABILITY_DEATH_MODE_WHITELIST_ITEMS);
         IronsRpgTweaks.LOGGER.debug("DURABILITY_DEATH_MODE_BLACKLIST: {} {}", DURABILITY_DEATH_MODE_BLACKLIST.get(), RegistryLists.DURABILITY_DEATH_MODE_BLACKLIST_ITEMS);
-        IronsRpgTweaks.LOGGER.debug("FOOD_STACK_BLACKLIST: {} {}", FOOD_STACK_BLACKLIST.get(), RegistryLists.FOOD_STACK_BLACKLIST_ITEMS);
 
-
-        if (ServerConfigs.HUNGER_MODULE_ENABLED.get()) {
-            int potionStack = Math.min(ServerConfigs.POTION_STACK_SIZE_OVERRIDE.get(), 64);
-            int foodStack = Math.min(ServerConfigs.FOOD_STACK_SIZE_OVERRIDE.get(), 64);
-            if (foodStack <= 0 && potionStack <= 0) {
-                return;
-            }
-            IForgeRegistry<Item> registry = RegistryGetter.getItem();
-            registry.forEach((item) -> {
-                if (!RegistryLists.FOOD_STACK_BLACKLIST_ITEMS.contains(item)) {
-                    if (potionStack > 0 && item instanceof PotionItem) {
-                        item.maxStackSize = potionStack;
-                    } else if (foodStack > 0 && item.getFoodProperties() != null) {
-                        item.maxStackSize = Math.min(item.maxStackSize, foodStack);
-                    }
-                }
-            });
-        }
     }
 
-    private static <T> void cacheRegistryList(IForgeRegistry<T> registry, List<? extends String> ids, Set<T> output) {
+    private static <T> void cacheRegistryList(Registry<T> registry, List<? extends String> ids, Set<T> output) {
         output.clear();
         for (String name : ids) {
             try {
                 if (name.startsWith("#")) {
-                    var tag = new TagKey<T>(registry.getRegistryKey(), new ResourceLocation(name.substring(1)));
-                    output.addAll(registry.getValues().stream().filter(item -> registry.getHolder(item).get().is(tag)).toList());
+                    var tag = new TagKey<T>(registry.key(), ResourceLocation.parse(name.substring(1)));
+                    output.addAll(registry.stream().filter(item -> registry.wrapAsHolder(item).is(tag)).toList());
                 } else {
-                    var item = registry.getValue(new ResourceLocation(name));
+                    var item = registry.get(ResourceLocation.parse(name));
                     if (item != null) {
                         output.add(item);
                     } else {
@@ -283,12 +225,8 @@ public class ServerConfigs {
         }
     }
 
-    private static boolean validateEntityName(final Object obj) {
-        return obj instanceof final String itemName && ResourceLocation.isValidResourceLocation(itemName) && ForgeRegistries.ENTITY_TYPES.containsKey(new ResourceLocation(itemName));
-    }
-
     private static boolean validateItemName(final Object obj) {
-        return obj instanceof final String itemName && ResourceLocation.isValidResourceLocation(itemName) && ForgeRegistries.ITEMS.containsKey(new ResourceLocation(itemName));
+        return obj instanceof final String itemName && ResourceLocation.isValidNamespace(itemName)  && ResourceLocation.isValidPath(itemName)&& BuiltInRegistries.ITEM.containsKey(ResourceLocation.parse(itemName));
     }
 
     private static String getDefaultEntries(List<? extends String> list) {

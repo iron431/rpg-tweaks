@@ -15,11 +15,5 @@ import javax.annotation.Nullable;
 
 @Mixin({Item.class, PotionItem.class})
 public class ItemMixin {
-    @Inject(method = "getUseDuration", at = @At(value = "RETURN"), cancellable = true)
-    public void getUseDuration(ItemStack pStack, CallbackInfoReturnable<Integer> cir) {
-        var d = ConfigHelper.Hunger.useDurationMultiplier((Item) (Object) this);
-        if (d != 1) {
-            cir.setReturnValue((int) (cir.getReturnValue() * d));
-        }
-    }
+
 }

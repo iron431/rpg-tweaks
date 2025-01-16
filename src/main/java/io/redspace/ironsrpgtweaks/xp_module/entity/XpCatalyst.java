@@ -19,7 +19,7 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
-import net.minecraftforge.fluids.FluidType;
+import net.neoforged.neoforge.fluids.FluidType;
 
 import javax.annotation.Nullable;
 import java.util.UUID;
@@ -98,7 +98,7 @@ public class XpCatalyst extends Entity {
 //            }
             if (player.getUUID().equals(ownerUUID) || !ServerConfigs.XP_ONLY_ALLOW_OWNER.get()) {
                 player.giveExperiencePoints(storedXp);
-                this.playSound(SoundRegistry.RETRIEVE_XP.get());
+                this.playSound(SoundRegistry.RETRIEVE_XP);
                 this.discard();
                 return InteractionResult.SUCCESS;
             } else {

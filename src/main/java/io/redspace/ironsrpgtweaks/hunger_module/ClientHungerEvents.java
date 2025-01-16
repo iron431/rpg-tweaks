@@ -1,18 +1,19 @@
 package io.redspace.ironsrpgtweaks.hunger_module;
 
 import io.redspace.ironsrpgtweaks.config.ConfigHelper;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.client.event.RenderGuiOverlayEvent;
-import net.minecraftforge.client.gui.overlay.VanillaGuiOverlay;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.common.Mod;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.common.EventBusSubscriber;
+import net.neoforged.neoforge.client.event.CustomizeGuiOverlayEvent;
+import net.neoforged.neoforge.client.event.RenderGuiLayerEvent;
+import net.neoforged.neoforge.client.gui.VanillaGuiLayers;
 
-@Mod.EventBusSubscriber(Dist.CLIENT)
+@EventBusSubscriber(Dist.CLIENT)
 public class ClientHungerEvents {
 
     @SubscribeEvent
-    public static void disableHunger(RenderGuiOverlayEvent.Pre event) {
-        if (event.getOverlay() == VanillaGuiOverlay.FOOD_LEVEL.type() && ConfigHelper.Hunger.shouldDisableVanillaHunger())
+    public static void disableHunger(RenderGuiLayerEvent.Pre event) {
+        if (event.getName().equals(VanillaGuiLayers.FOOD_LEVEL) && ConfigHelper.Hunger.shouldDisableVanillaHunger())
             event.setCanceled(true);
     }
 }

@@ -72,8 +72,8 @@ public class DamageServerEvents {
 
     @SubscribeEvent
     public static void onLivingTick(EntityTickEvent.Post event) {
-        if (ServerConfigs.DAMAGE_MODULE_ENABLED.get() && event.getEntity().tickCount % 600 == 0) {
-            ((IRpgLivingEntityExtension) event.getEntity()).rpg_tweaks$garbageCollect(event.getEntity().tickCount);
+        if (ServerConfigs.DAMAGE_MODULE_ENABLED.get() && event.getEntity() instanceof LivingEntity livingEntity && livingEntity.tickCount % 600 == 0) {
+            ((IRpgLivingEntityExtension) livingEntity).rpg_tweaks$garbageCollect(livingEntity.tickCount);
         }
     }
 

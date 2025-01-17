@@ -8,6 +8,7 @@ import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.network.chat.Style;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.player.Inventory;
@@ -23,12 +24,6 @@ import java.util.List;
 
 @EventBusSubscriber
 public class DurabilityServerEvents {
-
-//    @SubscribeEvent
-//    public static void onTakeDamage(LivingDamageEvent event) {
-//
-//    }
-
     @SubscribeEvent
     public static void onPlayerDeath(LivingDeathEvent event) {
         if (event.getEntity() instanceof ServerPlayer serverPlayer) {
@@ -62,19 +57,19 @@ public class DurabilityServerEvents {
                             serverPlayer.sendSystemMessage(Component.translatable("ui.irons_rpg_tweaks.item_damaged", itemName.withStyle(Style.EMPTY.withColor(ChatFormatting.GRAY).withItalic(false)), damageAmount).setStyle(Style.EMPTY.withColor(ChatFormatting.GRAY).withItalic(true)));
                         }
                     }
-                    itemstack.hurtAndBreak(0, serverPlayer, (player) -> {
-                        //TODO: sounds/particles of non-mainhand items too
-                        serverPlayer.sendSystemMessage(Component.translatable("ui.irons_rpg_tweaks.item_broken", itemName.withStyle(Style.EMPTY.withColor(ChatFormatting.RED).withItalic(false))).setStyle(Style.EMPTY.withColor(ChatFormatting.RED).withItalic(true)));
-                        if (itemstack.getItem() instanceof ArmorItem armorItem) {
-                            serverPlayer.broadcastBreakEvent(armorItem.getEquipmentSlot());
-                        } else {
-                            serverPlayer.broadcastBreakEvent(EquipmentSlot.MAINHAND);
-                        }
-                    });
+                    if(serverPlayer.level() instanceof ServerLevel serverLevel){
+                        itemstack.hurtAndBreak(0, serverLevel, serverPlayer, (item) -> {
+                            serverPlayer.sendSystemMessage(Component.translatable("ui.irons_rpg_tweaks.item_broken", itemName.withStyle(Style.EMPTY.withColor(ChatFormatting.RED).withItalic(false))).setStyle(Style.EMPTY.withColor(ChatFormatting.RED).withItalic(true)));
+                            if (item instanceof ArmorItem armorItem) {
+                                serverPlayer.onEquippedItemBroken(armorItem, armorItem.getEquipmentSlot());
+                            } else {
+                                serverPlayer.onEquippedItemBroken(item, EquipmentSlot.MAINHAND);
+                            }
+                        });
+                    }
                 }
             }
         }
-        ;
     }
 
     private static int getUnbreakingDivisor(ItemStack itemstack, RegistryAccess access) {
@@ -87,7 +82,6 @@ public class DurabilityServerEvents {
             }
         }
         return i;
-
     }
 
     private static List<ItemStack> getHotbarItems(Inventory inventory) {

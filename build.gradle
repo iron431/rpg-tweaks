@@ -140,14 +140,32 @@ neoForge.ideSyncTask generateModMetadata
 
 // Example configuration to allow publishing using the maven-publish plugin
 publishing {
+    tasks.publish.dependsOn 'build'
     publications {
-        register('mavenJava', MavenPublication) {
-            from components.java
+
+        mavenJava(MavenPublication) {
+            artifactId project.archivesBaseName
+            artifact jar
         }
     }
+
     repositories {
         maven {
-            url "file://${project.projectDir}/repo"
+            name = "redspace"
+
+            if (project.version.endsWith('-SNAPSHOT')) {
+                url uri("https://code.redspace.io/snapshots")
+            } else {
+                url uri("https://code.redspace.io/releases")
+            }
+
+            credentials {
+                username = System.getenv("MAVEN_USER")
+                password = System.getenv("MAVEN_PASS")
+            }
+            authentication {
+                basic(BasicAuthentication)
+            }
         }
     }
 }

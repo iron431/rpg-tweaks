@@ -4,7 +4,6 @@ import io.redspace.durability_module.DeathDurabilityMode;
 import io.redspace.durability_module.VanillaDurabilityMode;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.world.item.ArmorItem;
-import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.PotionItem;
 

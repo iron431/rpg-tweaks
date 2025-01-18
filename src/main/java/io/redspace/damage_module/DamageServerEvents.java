@@ -36,13 +36,23 @@ public class DamageServerEvents {
             // some damage types apply damage every tick use entity iframes to space out their damage, like lava or cactus
             // therefore, if we detect a source attempting to damage every tick, we want to ignore until the default tick delay has passed
             // ergo: ignore = requestDelta <= 1 && hurtDelta < 10
+            boolean isDamageRepeatTick = currentTick - lastDamageRequestTimestamp == 1;
+            boolean isDamageSameTick = currentTick - lastDamageRequestTimestamp <= 0 && !canBypassSameTick(event.getSource());
             boolean ignoreDamage = event.getEntity().invulnerableTime > 0 ||
-                    (currentTick - lastDamageRequestTimestamp == 1 && currentTick - lastActuallyHurtTimestamp < 10);
+                    ((isDamageRepeatTick || isDamageSameTick) && currentTick - lastActuallyHurtTimestamp < 10);
             if (ignoreDamage) {
                 event.setCanceled(true);
             }
             livingExtension.rpg_tweaks$updateLastRequest(source.typeHolder(), currentTick);
         }
+    }
+
+    private static boolean canBypassSameTick(DamageSource source) {
+        var key = source.typeHolder().getKey();
+        if (key != null) {
+            return ServerConfigs.SAME_TICK_DAMAGE_TYPE_WHITELIST.get().contains(key.location().toString());
+        }
+        return false;
     }
 
     @SubscribeEvent

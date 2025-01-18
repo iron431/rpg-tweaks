@@ -1,8 +1,8 @@
 package io.redspace.setup;
 
 import io.redspace.IronsRpgTweaks;
-import io.redspace.xp_module.entity.XpCatalystRenderer;
 import io.redspace.registry.EntityRegistry;
+import io.redspace.xp_module.entity.XpCatalystRenderer;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;

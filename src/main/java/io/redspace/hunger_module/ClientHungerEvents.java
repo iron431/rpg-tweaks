@@ -13,7 +13,8 @@ public class ClientHungerEvents {
 
     @SubscribeEvent
     public static void disableHunger(RenderGuiLayerEvent.Pre event) {
-        if (event.getName().equals(VanillaGuiLayers.FOOD_LEVEL) && ConfigHelper.Hunger.shouldDisableVanillaHunger())
+        if (event.getName().equals(VanillaGuiLayers.FOOD_LEVEL) && ConfigHelper.Hunger.shouldDisableVanillaHunger()) {
             event.setCanceled(true);
+        }
     }
 }

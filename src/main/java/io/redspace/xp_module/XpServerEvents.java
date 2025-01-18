@@ -58,11 +58,6 @@ public class XpServerEvents {
         }
     }
 
-    public static int getVanillaXpReward(ServerPlayer serverPlayer) {
-        int i = serverPlayer.experienceLevel * 7;
-        return Math.min(i, 100);
-    }
-
     public static boolean shouldCreateCatalyst(Level level) {
         return ServerConfigs.XP_MODULE_ENABLED.get()
                 && (ServerConfigs.XP_IGNORE_KEEPINVENTORY.get() || !level.getGameRules().getBoolean(GameRules.RULE_KEEPINVENTORY));

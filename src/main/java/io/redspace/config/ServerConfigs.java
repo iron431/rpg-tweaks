@@ -91,7 +91,7 @@ public class ServerConfigs {
                 .comment("Global multiplier to all knockback. Default: 1.0")
                 .define("globalKnockbackMultiplier", 1.0);
         ENABLE_COMBAT_SNAPSHOT = BUILDER
-                .comment("Enable Combat Snapshot Inspired Changes: Attack cooldown no longer affects damage, but instead affects weapon reach")
+                .comment("Enable Combat Snapshot Inspired Changes (experimental): Attack cooldown no longer affects damage, but instead affects weapon reach")
                 .comment("!THIS SETTING IS AFFECTED BY \"minimumAttackStrength\" AND \"allowNonMinStrengthAttacks\" WHICH SHOULD BE CONFIGURED ACCORDINGLY!")
                 .define("enableCombatSnapshot", false);
         BUILDER.pop();

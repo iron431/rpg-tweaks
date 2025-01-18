@@ -9,7 +9,7 @@ import net.minecraft.core.Registry;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.TagKey;
-import net.minecraft.world.damagesource.DamageType;
+import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.item.Item;
 import net.neoforged.neoforge.common.ModConfigSpec;
 
@@ -26,7 +26,7 @@ public class ServerConfigs {
     public static final ModConfigSpec.ConfigValue<Integer> IFRAME_COUNT;
     public static final ModConfigSpec.ConfigValue<PlayerDamageMode> PLAYER_DAMAGE_MODE;
     public static final ModConfigSpec.ConfigValue<List<? extends String>> SAME_TICK_DAMAGE_TYPE_WHITELIST;
-
+    private static final ModConfigSpec.ConfigValue<List<? extends String>> ENTITY_IFRAME_BLACKLIST; //private so the cache must be used
     public static final ModConfigSpec.ConfigValue<Boolean> ALLOW_NON_MINIMUM_STRENGTH_ATTACKS;
     public static final ModConfigSpec.ConfigValue<Double> MINIMUM_ATTACK_STRENGTH;
     public static final ModConfigSpec.ConfigValue<Double> KNOCKBACK_MODIFIER;
@@ -75,6 +75,9 @@ public class ServerConfigs {
         SAME_TICK_DAMAGE_TYPE_WHITELIST = BUILDER
                 .comment("If specified, these damage types will be able to deal damage on the same tick as a mechanism to bypass auto tick detection")
                 .defineList("damageTypeSameTickWhitelist", List.of("minecraft:arrow"), x -> true);
+        ENTITY_IFRAME_BLACKLIST = BUILDER
+                .comment("If specified, these entity types or type tags will be blacklisted from skipping i-frames upon dealing damage")
+                .defineList("entityIframeBlacklist", List.of(), x -> true);
         PLAYER_DAMAGE_MODE = BUILDER
                 .comment("Additional handling for player's interactions with reduced i-frames. \"ALL\" means there is no additional handling, \"ONLY_LIVING\" means only living attacks ignore player i-frames (may help with unforeseen damage like potions), and \"NONE\" means player's damage ticks are unaffected by the damage module.")
                 .defineEnum("playerDamageMode", PlayerDamageMode.ALL);
@@ -193,7 +196,7 @@ public class ServerConfigs {
         public static final Set<Item> DURABILITY_VANILLA_MODE_BLACKLIST_ITEMS = new HashSet<>();
         public static final Set<Item> DURABILITY_DEATH_MODE_WHITELIST_ITEMS = new HashSet<>();
         public static final Set<Item> DURABILITY_DEATH_MODE_BLACKLIST_ITEMS = new HashSet<>();
-        public static final Set<DamageType> SAME_TICK_DAMAGE_TYPE_WHITELIST = new HashSet<>();
+        public static final Set<EntityType<?>> ENTITY_IFRAME_BLACKLIST = new HashSet<>();
         public static final Set<Item> FOOD_STACK_BLACKLIST_ITEMS = new HashSet<>();
     }
 
@@ -201,16 +204,18 @@ public class ServerConfigs {
         IronsRpgTweaks.LOGGER.debug("On Config Reload");
 
         /*
-        Cache whitelists/blacklists into items
+        Cache whitelists/blacklists into objects
          */
         cacheRegistryList(RegistryGetter.getItem(), DURABILITY_VANILLA_MODE_WHITELIST.get(), RegistryLists.DURABILITY_VANILLA_MODE_WHITELIST_ITEMS);
         cacheRegistryList(RegistryGetter.getItem(), DURABILITY_VANILLA_MODE_BLACKLIST.get(), RegistryLists.DURABILITY_VANILLA_MODE_BLACKLIST_ITEMS);
         cacheRegistryList(RegistryGetter.getItem(), DURABILITY_DEATH_MODE_WHITELIST.get(), RegistryLists.DURABILITY_DEATH_MODE_WHITELIST_ITEMS);
         cacheRegistryList(RegistryGetter.getItem(), DURABILITY_DEATH_MODE_BLACKLIST.get(), RegistryLists.DURABILITY_DEATH_MODE_BLACKLIST_ITEMS);
+        cacheRegistryList(RegistryGetter.getEntity(), ENTITY_IFRAME_BLACKLIST.get(), RegistryLists.ENTITY_IFRAME_BLACKLIST);
         IronsRpgTweaks.LOGGER.debug("DURABILITY_VANILLA_MODE_WHITELIST: {} {}", DURABILITY_VANILLA_MODE_WHITELIST.get(), RegistryLists.DURABILITY_VANILLA_MODE_WHITELIST_ITEMS);
         IronsRpgTweaks.LOGGER.debug("DURABILITY_VANILLA_MODE_BLACKLIST: {} {}", DURABILITY_VANILLA_MODE_BLACKLIST.get(), RegistryLists.DURABILITY_VANILLA_MODE_BLACKLIST_ITEMS);
         IronsRpgTweaks.LOGGER.debug("DURABILITY_DEATH_MODE_WHITELIST: {} {}", DURABILITY_DEATH_MODE_WHITELIST.get(), RegistryLists.DURABILITY_DEATH_MODE_WHITELIST_ITEMS);
         IronsRpgTweaks.LOGGER.debug("DURABILITY_DEATH_MODE_BLACKLIST: {} {}", DURABILITY_DEATH_MODE_BLACKLIST.get(), RegistryLists.DURABILITY_DEATH_MODE_BLACKLIST_ITEMS);
+        IronsRpgTweaks.LOGGER.debug("ENTITY_IFRAME_BLACKLIST: {} {}", ENTITY_IFRAME_BLACKLIST.get(), RegistryLists.ENTITY_IFRAME_BLACKLIST);
 
     }
 

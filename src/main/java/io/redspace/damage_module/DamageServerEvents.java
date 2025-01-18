@@ -97,10 +97,10 @@ public class DamageServerEvents {
     private static boolean shouldProcess(DamageSource source, LivingEntity entityBeingAttacked) {
         if (ServerConfigs.DAMAGE_MODULE_ENABLED.get()) {
             return
-                    !(entityBeingAttacked instanceof Player)
-                            || ServerConfigs.PLAYER_DAMAGE_MODE.get() == PlayerDamageMode.ALL
-                            || (ServerConfigs.PLAYER_DAMAGE_MODE.get() == PlayerDamageMode.ONLY_LIVING && (source.getDirectEntity() instanceof LivingEntity)
-                    );
+                    (source.getDirectEntity() == null || ServerConfigs.RegistryLists.ENTITY_IFRAME_BLACKLIST.isEmpty() || !ServerConfigs.RegistryLists.ENTITY_IFRAME_BLACKLIST.contains(source.getDirectEntity().getType())) &&
+                            (!(entityBeingAttacked instanceof Player)
+                                    || ServerConfigs.PLAYER_DAMAGE_MODE.get() == PlayerDamageMode.ALL
+                                    || (ServerConfigs.PLAYER_DAMAGE_MODE.get() == PlayerDamageMode.ONLY_LIVING && (source.getDirectEntity() instanceof LivingEntity)));
         }
         return false;
     }

@@ -4,14 +4,12 @@ import io.redspace.IronsRpgTweaks;
 import io.redspace.damage_module.PlayerDamageMode;
 import io.redspace.durability_module.DeathDurabilityMode;
 import io.redspace.durability_module.VanillaDurabilityMode;
-import io.redspace.hunger_module.CommonHungerEvents;
 import io.redspace.hunger_module.RegistryGetter;
 import net.minecraft.core.Registry;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.item.Item;
-import net.minecraft.world.item.PotionItem;
 import net.neoforged.neoforge.common.ModConfigSpec;
 
 import java.util.HashSet;
@@ -26,9 +24,10 @@ public class ServerConfigs {
     public static final ModConfigSpec.ConfigValue<Boolean> DAMAGE_MODULE_ENABLED;
     public static final ModConfigSpec.ConfigValue<Integer> IFRAME_COUNT;
     public static final ModConfigSpec.ConfigValue<PlayerDamageMode> PLAYER_DAMAGE_MODE;
-    public static final ModConfigSpec.ConfigValue<Boolean> ALLOW_NON_FULL_STRENGTH_ATTACKS;
+    public static final ModConfigSpec.ConfigValue<Boolean> ALLOW_NON_MINIMUM_STRENGTH_ATTACKS;
     public static final ModConfigSpec.ConfigValue<Double> MINIMUM_ATTACK_STRENGTH;
     public static final ModConfigSpec.ConfigValue<Double> KNOCKBACK_MODIFIER;
+    public static final ModConfigSpec.ConfigValue<Boolean> ENABLE_COMBAT_SNAPSHOT;
 
     public static final ModConfigSpec.ConfigValue<Boolean> DURABILITY_MODULE_ENABLED;
     public static final ModConfigSpec.ConfigValue<VanillaDurabilityMode> DURABILITY_VANILLA_MODE;
@@ -76,12 +75,16 @@ public class ServerConfigs {
         MINIMUM_ATTACK_STRENGTH = BUILDER
                 .comment("In order to prevent spam attacks, a minimum threshold of attack strength can be set before an attack can deal damage. Default: 0.75")
                 .define("minimumAttackStrength", 0.75);
-        ALLOW_NON_FULL_STRENGTH_ATTACKS = BUILDER
-                .comment("Whether a player is allowed to even swing if the threshold is not met. Default: true")
-                .define("allowNonFullStrengthAttacks", true);
+        ALLOW_NON_MINIMUM_STRENGTH_ATTACKS = BUILDER
+                .comment("Whether a player is allowed to swing if the minimumAttackStrength threshold is not met. Default: true")
+                .define("allowNonMinStrengthAttacks", true);
         KNOCKBACK_MODIFIER = BUILDER
                 .comment("Global multiplier to all knockback. Default: 1.0")
                 .define("globalKnockbackMultiplier", 1.0);
+        ENABLE_COMBAT_SNAPSHOT = BUILDER
+                .comment("Enable Combat Snapshot Inspired Changes: Attack cooldown no longer affects damage, but instead affects weapon reach")
+                .comment("!THIS SETTING IS AFFECTED BY \"minimumAttackStrength\" AND \"allowNonMinStrengthAttacks\" WHICH SHOULD BE CONFIGURED ACCORDINGLY!")
+                .define("enableCombatSnapshot", false);
         BUILDER.pop();
 
         /*
@@ -129,10 +132,10 @@ public class ServerConfigs {
                 comment("The purpose of the xp module is to rework how experience is dropped on a player's death by creating a souls-like xp catalyst instead. Disabling will nullify every feature listed under this module.")
                 .define("xpModuleEnabled", true);
         XP_IGNORE_KEEPINVENTORY = BUILDER
-                .comment("Whether or not players will drop xp despite keepInventory gamerule. Default: true")
+                .comment("Whether players will drop xp despite keepInventory gamerule. Default: true")
                 .define("ignoreKeepInventory", true);
         XP_ONLY_ALLOW_OWNER = BUILDER
-                .comment("Whether or not the player who dropped the xp is the only player allow to collect the xp. Default: true")
+                .comment("Whether the player who dropped the xp is the only player allow to collect the xp. Default: true")
                 .define("onlyAllowOwnerPickup", true);
         ENTITY_XP_MODIFIER = BUILDER
                 .comment("Multiplier to experience dropped by slain entities. Default: 1.0")

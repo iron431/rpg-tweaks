@@ -36,7 +36,7 @@ public class DamageServerEvents {
         // therefore, if we detect a source attempting to damage every tick, we want to ignore until the default tick delay has passed
         // ergo: ignore = requestDelta <= 1 && hurtDelta < 10
         boolean ignoreDamage = event.getEntity().invulnerableTime > 0 ||
-                (currentTick - lastDamageRequestTimestamp <= 1 && currentTick - lastActuallyHurtTimestamp < 10);
+                (currentTick - lastDamageRequestTimestamp == 1 && currentTick - lastActuallyHurtTimestamp < 10);
         if (ignoreDamage) {
             event.setCanceled(true);
         }

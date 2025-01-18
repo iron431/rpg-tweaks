@@ -1,0 +1,16 @@
+{
+  "item.irons_rpg_tweaks.identification_scroll": "Pergaminho de Identificação",
+  "item.irons_rpg_tweaks.identification_scroll.description": "Permite identificar itens desconhecidos no seu inventário.",
+
+  "ui.irons_rpg_tweaks.enchanting_table_error.disabled": "As mesas de encantamento foram desativadas.",
+  "ui.irons_rpg_tweaks.enchanting_table_error.unenchanted": "Este item não está encantado.",
+  "ui.irons_rpg_tweaks.enchanting_table_error.identified": "Este item já foi identificado.",
+  "ui.irons_rpg_tweaks.enchanting_table_success": "%s foi identificado com sucesso.",
+  "ui.irons_rpg_tweaks.xp_retrieve_error": "Você não é o dono deste catalisador de experiência.",
+  "ui.irons_rpg_tweaks.shift_tooltip": "[Shift+]",
+  "ui.irons_rpg_tweaks.item_broken": "%s foi destruído!",
+  "ui.irons_rpg_tweaks.item_damaged": "%s sofreu %d de dano.",
+  "ui.irons_rpg_tweaks.item_damaged_critical": "%s sofreu %d de dano e está prestes a quebrar!",
+
+  "entity.irons_rpg_tweaks.xp_catalyst": "Catalisador de Experiência"
+}

@@ -2,6 +2,7 @@ package io.redspace.mixin;
 
 import io.redspace.config.ConfigHelper;
 import io.redspace.config.ServerConfigs;
+import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.food.FoodData;
 import org.spongepowered.asm.mixin.Mixin;
@@ -37,12 +38,12 @@ public class FoodDataMixin {
             return;
         }
         if (rpg_tweaks$toHeal > 0) {
-            pPlayer.heal(rpg_tweaks$toHeal);
+            if (pPlayer.hasEffect(MobEffects.HUNGER)) {
+                pPlayer.heal(rpg_tweaks$toHeal * ServerConfigs.HUNGER_NUTRITION_MULTIPLIER.get().floatValue());
+            } else {
+                pPlayer.heal(rpg_tweaks$toHeal);
+            }
             rpg_tweaks$toHeal = 0;
         }
-//        if (lastFoodLevel != foodLevel) {
-//            float healing = (float) ((foodLevel - lastFoodLevel) * ServerConfigs.FOOD_TO_HEALTH_MODIFIER.get() * .5f);
-//            pPlayer.heal(healing);
-//        }
     }
 }

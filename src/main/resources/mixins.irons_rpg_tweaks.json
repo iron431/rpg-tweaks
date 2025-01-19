@@ -10,7 +10,8 @@
     "PlayerMixin"
   ],
   "client": [
-    "GuiMixin"
+    "GuiMixin",
+    "LocalPlayerMixin"
   ],
   "injectors": {
     "defaultRequire": 1

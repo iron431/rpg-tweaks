@@ -50,6 +50,9 @@ public class ServerConfigs {
 
     public static final ModConfigSpec.ConfigValue<Boolean> HUNGER_MODULE_ENABLED;
     public static final ModConfigSpec.ConfigValue<Boolean> HUNGER_DISABLED;
+    public static final ModConfigSpec.ConfigValue<Boolean> ALLOW_SPRINTING;
+    public static final ModConfigSpec.ConfigValue<Boolean> HUNGER_PREVENTS_SPRINTING;
+    public static final ModConfigSpec.ConfigValue<Double> HUNGER_NUTRITION_MULTIPLIER;
     public static final ModConfigSpec.ConfigValue<Double> FOOD_TO_HEALTH_MODIFIER;
     public static final ModConfigSpec.ConfigValue<Integer> NATURAL_REGENERATION_TICK_RATE;
     public static final ModConfigSpec.ConfigValue<Boolean> NATURAL_REGENERATION_DURING_COMBAT;
@@ -148,10 +151,10 @@ public class ServerConfigs {
                 .define("onlyAllowOwnerPickup", true);
         ENTITY_XP_MODIFIER = BUILDER
                 .comment("Multiplier to experience dropped by slain entities. Default: 1.0")
-                .worldRestart().define("mobDropXpMultiplier", 1.0);
+                .define("mobDropXpMultiplier", 1.0);
         BLOCK_XP_MODIFIER = BUILDER
                 .comment("Multiplier to experience dropped by blocks broken. Default: 1.0")
-                .worldRestart().define("blockDropXpMultiplier", 1.0);
+                .define("blockDropXpMultiplier", 1.0);
         BUILDER.pop();
 
         /*
@@ -164,9 +167,18 @@ public class ServerConfigs {
         HUNGER_DISABLED = BUILDER
                 .comment("Disable Hunger. Without this, most of the hunger module features and config are nullified, but if you want to adjust stack sizes or potion mechanics without disabling hunger, you can do so here.")
                 .define("disableHunger", true);
+        HUNGER_PREVENTS_SPRINTING = BUILDER
+                .comment("Whether the Hunger status effect prevents the player from sprinting. Default: true")
+                .define("hungerEffectPreventsSprinting", true);
+        ALLOW_SPRINTING = BUILDER
+                .comment("Whether sprinting is allowed. Default: true")
+                .define("allowSprinting", true);
         FOOD_TO_HEALTH_MODIFIER = BUILDER
                 .comment("The multiplier of a food's hunger value to health regained by eating it. Default: 0.5 (50%)")
                 .define("foodToHealthModifier", 0.5);
+        HUNGER_NUTRITION_MULTIPLIER = BUILDER
+                .comment("An additional multiplier to the health regained by eating while under the Hunger status effect. Default: 0.5 (50%)")
+                .define("hungerEffectHealMultiplier", 0.5);
         NATURAL_REGENERATION_TICK_RATE = BUILDER.
                 comment("The amount of time, in ticks, between players naturally regenerating 1 hp. 1 second is 20 ticks. Turn off the naturalRegeneration gamerule to disable. Default: 250.")
                 .define("naturalRegenerationTickRate", 250);
@@ -241,7 +253,7 @@ public class ServerConfigs {
     }
 
     private static boolean validateItemName(final Object obj) {
-        return obj instanceof final String itemName && ResourceLocation.isValidNamespace(itemName)  && ResourceLocation.isValidPath(itemName)&& BuiltInRegistries.ITEM.containsKey(ResourceLocation.parse(itemName));
+        return obj instanceof final String itemName && ResourceLocation.isValidNamespace(itemName) && ResourceLocation.isValidPath(itemName) && BuiltInRegistries.ITEM.containsKey(ResourceLocation.parse(itemName));
     }
 
     private static String getDefaultEntries(List<? extends String> list) {

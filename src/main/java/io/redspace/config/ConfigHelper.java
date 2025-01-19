@@ -3,6 +3,8 @@ package io.redspace.config;
 import io.redspace.durability_module.DeathDurabilityMode;
 import io.redspace.durability_module.VanillaDurabilityMode;
 import net.minecraft.core.component.DataComponents;
+import net.minecraft.world.effect.MobEffects;
+import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.ArmorItem;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.PotionItem;
@@ -73,6 +75,10 @@ public class ConfigHelper {
                 }
             }
             return 1.0;
+        }
+
+        public static boolean canSprint(LivingEntity entity) {
+            return (!ServerConfigs.HUNGER_PREVENTS_SPRINTING.get() || !entity.hasEffect(MobEffects.HUNGER)) && (ServerConfigs.ALLOW_SPRINTING.get() || entity.isUnderWater());
         }
 
         public static boolean shouldDisableVanillaHunger() {

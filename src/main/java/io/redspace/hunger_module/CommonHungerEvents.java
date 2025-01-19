@@ -6,12 +6,8 @@ import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.event.entity.player.PlayerInteractEvent;
 
-import java.util.List;
-
 @EventBusSubscriber
 public class CommonHungerEvents {
-
-    public static final List<String> DEFAULT_FOOD_BLACKLIST = List.of("minecraft:rotten_flesh", "minecraft:spider_eye", "minecraft:potato", "minecraft:carrot", "farmersdelight:onion", "farmersdelight:tomato", "farmersdelight:cabbage");
 
     @SubscribeEvent
     public static void handlePotionCooldowns(PlayerInteractEvent.RightClickItem event) {

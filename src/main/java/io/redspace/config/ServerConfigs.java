@@ -228,7 +228,6 @@ public class ServerConfigs {
         IronsRpgTweaks.LOGGER.debug("DURABILITY_DEATH_MODE_WHITELIST: {} {}", DURABILITY_DEATH_MODE_WHITELIST.get(), RegistryLists.DURABILITY_DEATH_MODE_WHITELIST_ITEMS);
         IronsRpgTweaks.LOGGER.debug("DURABILITY_DEATH_MODE_BLACKLIST: {} {}", DURABILITY_DEATH_MODE_BLACKLIST.get(), RegistryLists.DURABILITY_DEATH_MODE_BLACKLIST_ITEMS);
         IronsRpgTweaks.LOGGER.debug("ENTITY_IFRAME_BLACKLIST: {} {}", ENTITY_IFRAME_BLACKLIST.get(), RegistryLists.ENTITY_IFRAME_BLACKLIST);
-
     }
 
     private static <T> void cacheRegistryList(Registry<T> registry, List<? extends String> ids, Set<T> output) {

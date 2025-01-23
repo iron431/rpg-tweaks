@@ -38,9 +38,11 @@ public class DamageServerEvents {
             // ergo: ignore = requestDelta <= 1 && hurtDelta < 10
             boolean isDamageRepeatTick = currentTick - lastDamageRequestTimestamp == 1;
             boolean isDamageSameTick = currentTick - lastDamageRequestTimestamp <= 0 && !canBypassSameTick(event.getSource());
-            boolean ignoreDamage = event.getEntity().invulnerableTime > 0 ||
+            boolean ignoreDamage =
+                    event.getEntity().invulnerableTime > 0 ||
                     ((isDamageRepeatTick || isDamageSameTick) && currentTick - lastActuallyHurtTimestamp < 10);
-            if (ignoreDamage) {
+            // further, if a mod already is doing custom iframe bypassing, do not cancel it
+            if (ignoreDamage && event.getContainer().getPostAttackInvulnerabilityTicks() != 0) {
                 event.setCanceled(true);
             }
             livingExtension.rpg_tweaks$updateLastRequest(source.typeHolder(), currentTick);

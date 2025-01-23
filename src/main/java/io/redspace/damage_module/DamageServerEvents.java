@@ -5,6 +5,7 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.entity.projectile.AbstractArrow;
 import net.minecraft.world.level.Level;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
@@ -26,6 +27,9 @@ public class DamageServerEvents {
             if (!(entity.level() instanceof ServerLevel serverLevel)) {
                 return;
             }
+            if(source.getDirectEntity() instanceof AbstractArrow arrow){
+                event.getContainer().setPostAttackInvulnerabilityTicks(0);
+            }
             if (!shouldProcess(source, entity)) {
                 return;
             }
@@ -41,7 +45,7 @@ public class DamageServerEvents {
             boolean ignoreDamage =
                     event.getEntity().invulnerableTime > 0 ||
                     ((isDamageRepeatTick || isDamageSameTick) && currentTick - lastActuallyHurtTimestamp < 10);
-            // further, if a mod already is doing custom iframe bypassing, do not cancel it
+            // further, if a mod already is doing custom iframe bypassing, let the damage pass
             if (ignoreDamage && event.getContainer().getPostAttackInvulnerabilityTicks() != 0) {
                 event.setCanceled(true);
             }

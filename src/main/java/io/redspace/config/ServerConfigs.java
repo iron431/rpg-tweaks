@@ -77,7 +77,7 @@ public class ServerConfigs {
                 .define("invulnerabilityTickCount", 0);
         SAME_TICK_DAMAGE_TYPE_WHITELIST = BUILDER
                 .comment("If specified, these damage types will be able to deal damage on the same tick as a mechanism to bypass auto tick detection")
-                .defineList("damageTypeSameTickWhitelist", List.of("minecraft:arrow"), x -> true);
+                .defineList("damageTypeSameTickWhitelist", List.of(/*"minecraft:arrow"*/), x -> true);
         ENTITY_IFRAME_BLACKLIST = BUILDER
                 .comment("If specified, these entity types or type tags will be blacklisted from skipping i-frames upon dealing damage")
                 .defineList("entityIframeBlacklist", List.of(), x -> true);

@@ -1,6 +1,5 @@
 package io.redspace.hunger_module;
 
-import io.redspace.config.ConfigHelper;
 import io.redspace.config.ServerConfigs;
 import net.minecraft.core.component.DataComponentPatch;
 import net.minecraft.core.component.DataComponents;
@@ -11,7 +10,6 @@ import net.minecraft.world.item.Items;
 import net.minecraft.world.item.alchemy.PotionContents;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
-import net.neoforged.neoforge.event.ModifyDefaultComponentsEvent;
 import net.neoforged.neoforge.event.entity.living.LivingEntityUseItemEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerInteractEvent;
 
@@ -39,7 +37,10 @@ public class CommonHungerEvents {
             for (Item item : BuiltInRegistries.ITEM) {
                 var fooddata = item.components().get(DataComponents.FOOD);
                 if (fooddata != null) {
+                    // min nutrition = 5 to prevent resource-like foods (rotten flesh, raw carrot/potatoes, etc) from being limited
+                    // however, ensure anything with positive effects (golden apples) is limited no matter the nutrition value
                     if (fooddata.nutrition() >= 5 || fooddata.effects().stream().anyMatch(possibleEffect -> possibleEffect.effect().getEffect().value().isBeneficial())) {
+                        // using default stack size as min-limiter creates a feedback loop if the stack size is limited via this config, then the cap is increased, requiring world restart.
                         modifyCallback.accept(item, builder -> builder.set(DataComponents.MAX_STACK_SIZE, Math.min(food, Math.min(item.getDefaultMaxStackSize(), 99))));
                     }
                 }

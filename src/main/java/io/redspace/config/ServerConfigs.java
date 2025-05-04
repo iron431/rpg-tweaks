@@ -71,8 +71,8 @@ public class ServerConfigs {
     public static final ModConfigSpec.ConfigValue<Integer> POTION_STACK_SIZE;
     public static final ModConfigSpec.ConfigValue<Integer> FOOD_STACK_SIZE;
 
+    public static final ModConfigSpec.ConfigValue<Boolean> SLEEP_MODULE_ENABLED;
 
-//    public static final ModConfigSpec.ConfigValue<Boolean> XP_DROP_REWARD_XP;
 
     static {
         /*
@@ -221,6 +221,14 @@ public class ServerConfigs {
                 .define("potionStackSize", 4);
         BUILDER.pop();
 
+        /*
+        Sleep Module
+         */
+        BUILDER.push("Sleep-Module");
+        SLEEP_MODULE_ENABLED = BUILDER
+                .comment("The sleep module addresses imbalance caused by the ease of skipping nights via sleeping. Disabling will nullify every feature listed under this module.")
+                .define("sleepModuleEnabled", true);
+        BUILDER.pop();
 
         SPEC = BUILDER.build();
     }
@@ -251,6 +259,7 @@ public class ServerConfigs {
         IronsRpgTweaks.LOGGER.debug("DURABILITY_DEATH_MODE_BLACKLIST: {} {}", DURABILITY_DEATH_MODE_BLACKLIST.get(), RegistryLists.DURABILITY_DEATH_MODE_BLACKLIST_ITEMS);
         IronsRpgTweaks.LOGGER.debug("ENTITY_IFRAME_BLACKLIST: {} {}", ENTITY_IFRAME_BLACKLIST.get(), RegistryLists.ENTITY_IFRAME_BLACKLIST);
         CommonHungerEvents.modifyDefaultStackSize(ServerConfigs::modifyDefaultComponent);
+
     }
 
     private static void modifyDefaultComponent(Item item, Consumer<DataComponentPatch.Builder> patchWorker) {

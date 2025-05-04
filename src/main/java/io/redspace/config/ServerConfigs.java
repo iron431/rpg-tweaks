@@ -4,8 +4,12 @@ import io.redspace.IronsRpgTweaks;
 import io.redspace.damage_module.PlayerDamageMode;
 import io.redspace.durability_module.DeathDurabilityMode;
 import io.redspace.durability_module.VanillaDurabilityMode;
+import io.redspace.hunger_module.CommonHungerEvents;
 import io.redspace.hunger_module.RegistryGetter;
 import net.minecraft.core.Registry;
+import net.minecraft.core.component.DataComponentMap;
+import net.minecraft.core.component.DataComponentPatch;
+import net.minecraft.core.component.DataComponentType;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.TagKey;
@@ -16,6 +20,8 @@ import net.neoforged.neoforge.common.ModConfigSpec;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.function.BiConsumer;
+import java.util.function.Consumer;
 
 public class ServerConfigs {
 
@@ -58,8 +64,12 @@ public class ServerConfigs {
     public static final ModConfigSpec.ConfigValue<Boolean> NATURAL_REGENERATION_DURING_COMBAT;
     public static final ModConfigSpec.ConfigValue<Double> SPLASH_POTION_COOLDOWN;
     public static final ModConfigSpec.ConfigValue<Double> LINGERING_POTION_COOLDOWN;
+    public static final ModConfigSpec.ConfigValue<Double> DRINKABLE_POTION_COOLDOWN;
+    public static final ModConfigSpec.ConfigValue<Double> FOOD_COOLDOWN;
     public static final ModConfigSpec.ConfigValue<Double> EAT_TIME_MULTIPLIER;
     public static final ModConfigSpec.ConfigValue<Double> POTION_DRINK_TIME_MULTIPLER;
+    public static final ModConfigSpec.ConfigValue<Integer> POTION_STACK_SIZE;
+    public static final ModConfigSpec.ConfigValue<Integer> FOOD_STACK_SIZE;
 
 
 //    public static final ModConfigSpec.ConfigValue<Boolean> XP_DROP_REWARD_XP;
@@ -191,12 +201,24 @@ public class ServerConfigs {
         LINGERING_POTION_COOLDOWN = BUILDER
                 .comment("Item Cooldown in seconds when throwing a lingering potion. Default: 1.5")
                 .define("lingeringPotionCooldown", 1.5);
+        DRINKABLE_POTION_COOLDOWN = BUILDER
+                .comment("Item Cooldown in seconds for drinking a potion. Default: 0.0")
+                .define("drinkPotionCooldown", 0.0);
+        FOOD_COOLDOWN = BUILDER
+                .comment("Item Cooldown in seconds for eating a food item. Default: 0.0")
+                .define("eatFoodCooldown", 0.0);
         EAT_TIME_MULTIPLIER = BUILDER
                 .comment("Multiplier to the time taken to eat food. Default: 1.2")
                 .define("eatTimeMultiplier", 1.2);
         POTION_DRINK_TIME_MULTIPLER = BUILDER
                 .comment("Multiplier to the time taken to drink potions. Default: 0.8")
                 .define("potionDrinkTimeMultiplier", 0.8);
+        FOOD_STACK_SIZE = BUILDER
+                .comment("Limit on stack size of foods with 5 hunger or more. Set to -1 to leave unchanged. Default: -1")
+                .define("foodStackSize", -1);
+        POTION_STACK_SIZE = BUILDER
+                .comment("Limit on stack size of all potion types. Set to -1 to leave unchanged. Default: 4")
+                .define("potionStackSize", 4);
         BUILDER.pop();
 
 
@@ -228,6 +250,16 @@ public class ServerConfigs {
         IronsRpgTweaks.LOGGER.debug("DURABILITY_DEATH_MODE_WHITELIST: {} {}", DURABILITY_DEATH_MODE_WHITELIST.get(), RegistryLists.DURABILITY_DEATH_MODE_WHITELIST_ITEMS);
         IronsRpgTweaks.LOGGER.debug("DURABILITY_DEATH_MODE_BLACKLIST: {} {}", DURABILITY_DEATH_MODE_BLACKLIST.get(), RegistryLists.DURABILITY_DEATH_MODE_BLACKLIST_ITEMS);
         IronsRpgTweaks.LOGGER.debug("ENTITY_IFRAME_BLACKLIST: {} {}", ENTITY_IFRAME_BLACKLIST.get(), RegistryLists.ENTITY_IFRAME_BLACKLIST);
+        CommonHungerEvents.modifyDefaultStackSize(ServerConfigs::modifyDefaultComponent);
+    }
+
+    private static void modifyDefaultComponent(Item item, Consumer<DataComponentPatch.Builder> patchWorker) {
+        var patchBuilder = DataComponentPatch.builder();
+        patchWorker.accept(patchBuilder);
+        var patch = patchBuilder.build();
+        var builder = DataComponentMap.builder().addAll(item.components());
+        patch.entrySet().forEach(entry -> builder.set((DataComponentType) entry.getKey(), entry.getValue().orElse(null)));
+        item.components = Item.Properties.COMPONENT_INTERNER.intern(Item.Properties.validateComponents(builder.build()));
     }
 
     private static <T> void cacheRegistryList(Registry<T> registry, List<? extends String> ids, Set<T> output) {

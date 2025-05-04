@@ -3,6 +3,7 @@ package io.redspace;
 
 import com.mojang.logging.LogUtils;
 import io.redspace.config.ServerConfigs;
+import io.redspace.hunger_module.CommonHungerEvents;
 import io.redspace.registry.AttributeRegistry;
 import io.redspace.registry.EntityRegistry;
 import io.redspace.registry.SoundRegistry;

@@ -6,6 +6,7 @@ import io.redspace.durability_module.DeathDurabilityMode;
 import io.redspace.durability_module.VanillaDurabilityMode;
 import io.redspace.hunger_module.CommonHungerEvents;
 import io.redspace.hunger_module.RegistryGetter;
+import net.minecraft.core.Holder;
 import net.minecraft.core.Registry;
 import net.minecraft.core.component.DataComponentMap;
 import net.minecraft.core.component.DataComponentPatch;
@@ -15,11 +16,10 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
 import net.neoforged.neoforge.common.ModConfigSpec;
 
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
@@ -246,7 +246,7 @@ public class ServerConfigs {
         IronsRpgTweaks.LOGGER.debug("On Config Reload");
 
         /*
-        Cache whitelists/blacklists into objects
+         * Cache whitelists/blacklists into objects
          */
         cacheRegistryList(RegistryGetter.getItem(), DURABILITY_VANILLA_MODE_WHITELIST.get(), RegistryLists.DURABILITY_VANILLA_MODE_WHITELIST_ITEMS);
         cacheRegistryList(RegistryGetter.getItem(), DURABILITY_VANILLA_MODE_BLACKLIST.get(), RegistryLists.DURABILITY_VANILLA_MODE_BLACKLIST_ITEMS);
@@ -258,17 +258,26 @@ public class ServerConfigs {
         IronsRpgTweaks.LOGGER.debug("DURABILITY_DEATH_MODE_WHITELIST: {} {}", DURABILITY_DEATH_MODE_WHITELIST.get(), RegistryLists.DURABILITY_DEATH_MODE_WHITELIST_ITEMS);
         IronsRpgTweaks.LOGGER.debug("DURABILITY_DEATH_MODE_BLACKLIST: {} {}", DURABILITY_DEATH_MODE_BLACKLIST.get(), RegistryLists.DURABILITY_DEATH_MODE_BLACKLIST_ITEMS);
         IronsRpgTweaks.LOGGER.debug("ENTITY_IFRAME_BLACKLIST: {} {}", ENTITY_IFRAME_BLACKLIST.get(), RegistryLists.ENTITY_IFRAME_BLACKLIST);
+        /*
+         * Handle components patch (currently only used for stack size)
+         */
+        DEFAULT_COMPONENTS_PATCH.clear();
         CommonHungerEvents.modifyDefaultStackSize(ServerConfigs::modifyDefaultComponent);
-
     }
 
-    private static void modifyDefaultComponent(Item item, Consumer<DataComponentPatch.Builder> patchWorker) {
-        var patchBuilder = DataComponentPatch.builder();
-        patchWorker.accept(patchBuilder);
-        var patch = patchBuilder.build();
-        var builder = DataComponentMap.builder().addAll(item.components());
-        patch.entrySet().forEach(entry -> builder.set((DataComponentType) entry.getKey(), entry.getValue().orElse(null)));
-        item.components = Item.Properties.COMPONENT_INTERNER.intern(Item.Properties.validateComponents(builder.build()));
+    private static final Map<Holder<Item>, Consumer<DataComponentPatch.Builder>> DEFAULT_COMPONENTS_PATCH = new HashMap<>();
+
+    public static void handleDefaultStackComponents(ItemStack stack) {
+        var patch = DEFAULT_COMPONENTS_PATCH.get(stack.getItemHolder());
+        if (patch != null) {
+            var patchBuilder = DataComponentPatch.builder();
+            patch.accept(patchBuilder);
+            stack.applyComponentsAndValidate(patchBuilder.build());
+        }
+    }
+
+    private static void modifyDefaultComponent(Holder<Item> item, Consumer<DataComponentPatch.Builder> patch) {
+        DEFAULT_COMPONENTS_PATCH.put(item, patch);
     }
 
     private static <T> void cacheRegistryList(Registry<T> registry, List<? extends String> ids, Set<T> output) {

@@ -1,6 +1,7 @@
 package io.redspace.hunger_module;
 
 import io.redspace.config.ServerConfigs;
+import net.minecraft.core.Holder;
 import net.minecraft.core.component.DataComponentPatch;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.registries.BuiltInRegistries;
@@ -22,16 +23,16 @@ public class CommonHungerEvents {
     /**
      * manually call event via on config reload
      */
-    public static void modifyDefaultStackSize(BiConsumer<Item, Consumer<DataComponentPatch.Builder>> modifyCallback) {
+    public static void modifyDefaultStackSize(BiConsumer<Holder<Item>, Consumer<DataComponentPatch.Builder>> modifyCallback) {
         if (!ServerConfigs.HUNGER_MODULE_ENABLED.get()) {
             return;
         }
         int food = ServerConfigs.FOOD_STACK_SIZE.get();
         int potions = ServerConfigs.POTION_STACK_SIZE.get();
         if (potions > 1) {
-            modifyCallback.accept(Items.POTION, builder -> builder.set(DataComponents.MAX_STACK_SIZE, Math.min(potions, 99)));
-            modifyCallback.accept(Items.SPLASH_POTION, builder -> builder.set(DataComponents.MAX_STACK_SIZE, Math.min(potions, 99)));
-            modifyCallback.accept(Items.LINGERING_POTION, builder -> builder.set(DataComponents.MAX_STACK_SIZE, Math.min(potions, 99)));
+            modifyCallback.accept(BuiltInRegistries.ITEM.wrapAsHolder(Items.POTION), builder -> builder.set(DataComponents.MAX_STACK_SIZE, Math.min(potions, 99)));
+            modifyCallback.accept(BuiltInRegistries.ITEM.wrapAsHolder(Items.SPLASH_POTION), builder -> builder.set(DataComponents.MAX_STACK_SIZE, Math.min(potions, 99)));
+            modifyCallback.accept(BuiltInRegistries.ITEM.wrapAsHolder(Items.LINGERING_POTION), builder -> builder.set(DataComponents.MAX_STACK_SIZE, Math.min(potions, 99)));
         }
         if (food > 0) {
             for (Item item : BuiltInRegistries.ITEM) {
@@ -40,8 +41,7 @@ public class CommonHungerEvents {
                     // min nutrition = 5 to prevent resource-like foods (rotten flesh, raw carrot/potatoes, etc) from being limited
                     // however, ensure anything with positive effects (golden apples) is limited no matter the nutrition value
                     if (fooddata.nutrition() >= 5 || fooddata.effects().stream().anyMatch(possibleEffect -> possibleEffect.effect().getEffect().value().isBeneficial())) {
-                        // using default stack size as min-limiter creates a feedback loop if the stack size is limited via this config, then the cap is increased, requiring world restart.
-                        modifyCallback.accept(item, builder -> builder.set(DataComponents.MAX_STACK_SIZE, Math.min(food, Math.min(item.getDefaultMaxStackSize(), 99))));
+                        modifyCallback.accept(BuiltInRegistries.ITEM.wrapAsHolder(item), builder -> builder.set(DataComponents.MAX_STACK_SIZE, Math.min(food, Math.min(item.getDefaultMaxStackSize(), 99))));
                     }
                 }
             }

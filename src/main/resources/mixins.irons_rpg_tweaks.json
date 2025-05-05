@@ -1,6 +1,6 @@
 {
   "required": true,
-  "package": "io.redspace.mixin",
+  "package": "io.redspace.ironsrpgtweaks.mixin",
   "refmap": "irons_spellbooks.refmap.json",
   "compatibilityLevel": "JAVA_17",
   "mixins": [

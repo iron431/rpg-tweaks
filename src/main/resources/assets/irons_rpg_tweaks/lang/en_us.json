@@ -16,6 +16,7 @@
   "ui.irons_rpg_tweaks.item_damaged_critical": "%s took %d damage and is at critical durability!",
   "ui.irons_rpg_tweaks.sleep_failure": "You are not Drowsy and cannot sleep.",
   "ui.irons_rpg_tweaks.bed_tooltip": "Must be affected by Drowsiness to sleep.",
+  "ui.irons_rpg_tweaks.natural_drowsy_message": "You begin to feel naturally drowsy...",
 
   "effect.irons_rpg_tweaks.drowsy": "Drowsy",
   "effect.irons_rpg_tweaks.drowsy.description": "Grants ability to Sleep",

@@ -1,38 +1,35 @@
 package io.redspace.ironsrpgtweaks.durability_module;
 
-import io.redspace.ironsrpgtweaks.IronsRpgTweaks;
 import io.redspace.ironsrpgtweaks.config.ConfigHelper;
 import io.redspace.ironsrpgtweaks.config.ServerConfigs;
 import net.minecraft.ChatFormatting;
+import net.minecraft.core.RegistryAccess;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.network.chat.Style;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.item.ArmorItem;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.enchantment.Enchantments;
-import net.minecraftforge.event.entity.living.LivingDeathEvent;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.common.Mod;
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.common.EventBusSubscriber;
+import net.neoforged.neoforge.event.entity.living.LivingDeathEvent;
 
 import java.util.ArrayList;
 import java.util.List;
 
-@Mod.EventBusSubscriber
+@EventBusSubscriber
 public class DurabilityServerEvents {
-
-//    @SubscribeEvent
-//    public static void onTakeDamage(LivingDamageEvent event) {
-//
-//    }
-
     @SubscribeEvent
     public static void onPlayerDeath(LivingDeathEvent event) {
         if (event.getEntity() instanceof ServerPlayer serverPlayer) {
-            if ((ServerConfigs.DURABILITY_LOST_ON_DEATH.get() == 0 && ServerConfigs.ADDITIONAL_DURABILITY_LOST_ON_DEATH.get() == 0) || !ServerConfigs.DURABILITY_MODULE_ENABLED.get() || serverPlayer.gameMode.isCreative())
+            if ((ServerConfigs.DURABILITY_LOST_ON_DEATH.get() == 0 && ServerConfigs.ADDITIONAL_DURABILITY_LOST_ON_DEATH.get() == 0) || !ServerConfigs.DURABILITY_MODULE_ENABLED.get() || serverPlayer.gameMode.isCreative()) {
                 return;
+            }
             //IronsRpgTweaks.LOGGER.debug("{} died! ({})", serverPlayer.getName().getString(), printInventory(serverPlayer.getInventory()));
             DeathDurabilityMode mode = ServerConfigs.DURABILITY_DEATH_MODE.get();
             var inventory = serverPlayer.getInventory();
@@ -49,7 +46,7 @@ public class DurabilityServerEvents {
         for (ItemStack itemstack : items) {
             //IronsRpgTweaks.LOGGER.debug("{}", itemstack.getHoverName().getString());
             if (itemstack.isDamageableItem() && ConfigHelper.Durability.shouldTakeDeathDamage(itemstack)) {
-                int i = itemstack.getEnchantmentLevel(Enchantments.UNBREAKING) + 1;
+                int i = getUnbreakingDivisor(itemstack, serverPlayer.registryAccess());
                 int damageAmount = (int) (itemstack.getMaxDamage() * ServerConfigs.DURABILITY_LOST_ON_DEATH.get()) + ServerConfigs.ADDITIONAL_DURABILITY_LOST_ON_DEATH.get();
                 damageAmount /= i;
                 itemstack.setDamageValue(itemstack.getDamageValue() + damageAmount);
@@ -61,19 +58,31 @@ public class DurabilityServerEvents {
                             serverPlayer.sendSystemMessage(Component.translatable("ui.irons_rpg_tweaks.item_damaged", itemName.withStyle(Style.EMPTY.withColor(ChatFormatting.GRAY).withItalic(false)), damageAmount).setStyle(Style.EMPTY.withColor(ChatFormatting.GRAY).withItalic(true)));
                         }
                     }
-                    itemstack.hurtAndBreak(0, serverPlayer, (player) -> {
-                        //TODO: sounds/particles of non-mainhand items too
-                        player.sendSystemMessage(Component.translatable("ui.irons_rpg_tweaks.item_broken", itemName.withStyle(Style.EMPTY.withColor(ChatFormatting.RED).withItalic(false))).setStyle(Style.EMPTY.withColor(ChatFormatting.RED).withItalic(true)));
-                        if (itemstack.getItem() instanceof ArmorItem armorItem) {
-                            player.broadcastBreakEvent(armorItem.getEquipmentSlot());
-                        } else {
-                            player.broadcastBreakEvent(EquipmentSlot.MAINHAND);
-                        }
-                    });
+                    if(serverPlayer.level() instanceof ServerLevel serverLevel){
+                        itemstack.hurtAndBreak(0, serverLevel, serverPlayer, (item) -> {
+                            serverPlayer.sendSystemMessage(Component.translatable("ui.irons_rpg_tweaks.item_broken", itemName.withStyle(Style.EMPTY.withColor(ChatFormatting.RED).withItalic(false))).setStyle(Style.EMPTY.withColor(ChatFormatting.RED).withItalic(true)));
+                            if (item instanceof ArmorItem armorItem) {
+                                serverPlayer.onEquippedItemBroken(armorItem, armorItem.getEquipmentSlot());
+                            } else {
+                                serverPlayer.onEquippedItemBroken(item, EquipmentSlot.MAINHAND);
+                            }
+                        });
+                    }
                 }
             }
         }
-        ;
+    }
+
+    private static int getUnbreakingDivisor(ItemStack itemstack, RegistryAccess access) {
+        int i = 1;
+        var registry = access.registry(Registries.ENCHANTMENT).orElse(null);
+        if (registry != null) {
+            var unbreaking = registry.getHolder(Enchantments.UNBREAKING);
+            if (unbreaking.isPresent()) {
+                i += itemstack.getEnchantmentLevel(unbreaking.get());
+            }
+        }
+        return i;
     }
 
     private static List<ItemStack> getHotbarItems(Inventory inventory) {

@@ -1,15 +1,17 @@
 {
   "required": true,
   "package": "io.redspace.ironsrpgtweaks.mixin",
-  "refmap": "irons_rpg_tweaks.refmap.json",
+  "refmap": "irons_spellbooks.refmap.json",
   "compatibilityLevel": "JAVA_17",
   "mixins": [
     "FoodDataMixin",
-    "ItemMixin",
     "ItemStackMixin",
-    "LivingEntityMixin"
+    "LivingEntityMixin",
+    "PlayerMixin"
   ],
   "client": [
+    "GuiMixin",
+    "LocalPlayerMixin"
   ],
   "injectors": {
     "defaultRequire": 1

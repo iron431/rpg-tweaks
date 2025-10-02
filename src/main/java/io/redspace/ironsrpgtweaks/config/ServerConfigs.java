@@ -4,72 +4,70 @@ import io.redspace.ironsrpgtweaks.IronsRpgTweaks;
 import io.redspace.ironsrpgtweaks.damage_module.PlayerDamageMode;
 import io.redspace.ironsrpgtweaks.durability_module.DeathDurabilityMode;
 import io.redspace.ironsrpgtweaks.durability_module.VanillaDurabilityMode;
-import io.redspace.ironsrpgtweaks.hunger_module.CommonHungerEvents;
 import io.redspace.ironsrpgtweaks.hunger_module.RegistryGetter;
-import net.minecraft.core.Holder;
 import net.minecraft.core.Registry;
-import net.minecraft.core.component.DataComponentPatch;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.item.Item;
-import net.minecraft.world.item.ItemStack;
-import net.neoforged.neoforge.common.ModConfigSpec;
+import net.minecraft.world.item.PotionItem;
+import net.minecraftforge.common.ForgeConfigSpec;
 
-import java.util.*;
-import java.util.function.Consumer;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 public class ServerConfigs {
 
-    private static final ModConfigSpec.Builder BUILDER = new ModConfigSpec.Builder();
-    public static final ModConfigSpec SPEC;
+    private static final ForgeConfigSpec.Builder BUILDER = new ForgeConfigSpec.Builder();
+    public static final ForgeConfigSpec SPEC;
 
-    public static final ModConfigSpec.ConfigValue<Boolean> DAMAGE_MODULE_ENABLED;
-    public static final ModConfigSpec.ConfigValue<Integer> IFRAME_COUNT;
-    public static final ModConfigSpec.ConfigValue<PlayerDamageMode> PLAYER_DAMAGE_MODE;
-    public static final ModConfigSpec.ConfigValue<List<? extends String>> SAME_TICK_DAMAGE_TYPE_WHITELIST;
-    private static final ModConfigSpec.ConfigValue<List<? extends String>> ENTITY_IFRAME_BLACKLIST; //private so the cache must be used
-    public static final ModConfigSpec.ConfigValue<Boolean> ALLOW_NON_MINIMUM_STRENGTH_ATTACKS;
-    public static final ModConfigSpec.ConfigValue<Double> MINIMUM_ATTACK_STRENGTH;
-    public static final ModConfigSpec.ConfigValue<Double> KNOCKBACK_MODIFIER;
-    public static final ModConfigSpec.ConfigValue<Boolean> ENABLE_COMBAT_SNAPSHOT;
+    public static final ForgeConfigSpec.ConfigValue<Boolean> DAMAGE_MODULE_ENABLED;
+    public static final ForgeConfigSpec.ConfigValue<Integer> IFRAME_COUNT;
+    public static final ForgeConfigSpec.ConfigValue<PlayerDamageMode> PLAYER_DAMAGE_MODE;
+    public static final ForgeConfigSpec.ConfigValue<List<? extends String>> SAME_TICK_DAMAGE_TYPE_WHITELIST;
+    private static final ForgeConfigSpec.ConfigValue<List<? extends String>> ENTITY_IFRAME_BLACKLIST; //private so the cache must be used
+    public static final ForgeConfigSpec.ConfigValue<Boolean> ALLOW_NON_MINIMUM_STRENGTH_ATTACKS;
+    public static final ForgeConfigSpec.ConfigValue<Double> MINIMUM_ATTACK_STRENGTH;
+    public static final ForgeConfigSpec.ConfigValue<Double> KNOCKBACK_MODIFIER;
+//    public static final ForgeConfigSpec.ConfigValue<Boolean> ENABLE_COMBAT_SNAPSHOT;
 
-    public static final ModConfigSpec.ConfigValue<Boolean> DURABILITY_MODULE_ENABLED;
-    public static final ModConfigSpec.ConfigValue<VanillaDurabilityMode> DURABILITY_VANILLA_MODE;
-    private static final ModConfigSpec.ConfigValue<List<? extends String>> DURABILITY_VANILLA_MODE_WHITELIST; //private so the cache must be used
-    private static final ModConfigSpec.ConfigValue<List<? extends String>> DURABILITY_VANILLA_MODE_BLACKLIST; //private so the cache must be used
-    public static final ModConfigSpec.ConfigValue<DeathDurabilityMode> DURABILITY_DEATH_MODE;
-    private static final ModConfigSpec.ConfigValue<List<? extends String>> DURABILITY_DEATH_MODE_WHITELIST; //private so the cache must be used
-    private static final ModConfigSpec.ConfigValue<List<? extends String>> DURABILITY_DEATH_MODE_BLACKLIST; //private so the cache must be used
-    public static final ModConfigSpec.ConfigValue<Double> DURABILITY_LOST_ON_DEATH;
-    public static final ModConfigSpec.ConfigValue<Integer> ADDITIONAL_DURABILITY_LOST_ON_DEATH;
+    public static final ForgeConfigSpec.ConfigValue<Boolean> DURABILITY_MODULE_ENABLED;
+    public static final ForgeConfigSpec.ConfigValue<VanillaDurabilityMode> DURABILITY_VANILLA_MODE;
+    private static final ForgeConfigSpec.ConfigValue<List<? extends String>> DURABILITY_VANILLA_MODE_WHITELIST; //private so the cache must be used
+    private static final ForgeConfigSpec.ConfigValue<List<? extends String>> DURABILITY_VANILLA_MODE_BLACKLIST; //private so the cache must be used
+    public static final ForgeConfigSpec.ConfigValue<DeathDurabilityMode> DURABILITY_DEATH_MODE;
+    private static final ForgeConfigSpec.ConfigValue<List<? extends String>> DURABILITY_DEATH_MODE_WHITELIST; //private so the cache must be used
+    private static final ForgeConfigSpec.ConfigValue<List<? extends String>> DURABILITY_DEATH_MODE_BLACKLIST; //private so the cache must be used
+    public static final ForgeConfigSpec.ConfigValue<Double> DURABILITY_LOST_ON_DEATH;
+    public static final ForgeConfigSpec.ConfigValue<Integer> ADDITIONAL_DURABILITY_LOST_ON_DEATH;
 
-    public static final ModConfigSpec.ConfigValue<Boolean> XP_MODULE_ENABLED;
-    public static final ModConfigSpec.ConfigValue<Boolean> XP_IGNORE_KEEPINVENTORY;
-    public static final ModConfigSpec.ConfigValue<Boolean> XP_ONLY_ALLOW_OWNER;
-    public static final ModConfigSpec.ConfigValue<Double> ENTITY_XP_MODIFIER;
-    public static final ModConfigSpec.ConfigValue<Double> BLOCK_XP_MODIFIER;
+    public static final ForgeConfigSpec.ConfigValue<Boolean> XP_MODULE_ENABLED;
+    public static final ForgeConfigSpec.ConfigValue<Boolean> XP_IGNORE_KEEPINVENTORY;
+    public static final ForgeConfigSpec.ConfigValue<Boolean> XP_ONLY_ALLOW_OWNER;
+    public static final ForgeConfigSpec.ConfigValue<Double> ENTITY_XP_MODIFIER;
+    public static final ForgeConfigSpec.ConfigValue<Double> BLOCK_XP_MODIFIER;
 
-    public static final ModConfigSpec.ConfigValue<Boolean> HUNGER_MODULE_ENABLED;
-    public static final ModConfigSpec.ConfigValue<Boolean> HUNGER_DISABLED;
-    public static final ModConfigSpec.ConfigValue<Boolean> ALLOW_SPRINTING;
-    public static final ModConfigSpec.ConfigValue<Boolean> HUNGER_PREVENTS_SPRINTING;
-    public static final ModConfigSpec.ConfigValue<Double> HUNGER_NUTRITION_MULTIPLIER;
-    public static final ModConfigSpec.ConfigValue<Double> FOOD_TO_HEALTH_MODIFIER;
-    public static final ModConfigSpec.ConfigValue<Integer> NATURAL_REGENERATION_TICK_RATE;
-    public static final ModConfigSpec.ConfigValue<Boolean> NATURAL_REGENERATION_DURING_COMBAT;
-    public static final ModConfigSpec.ConfigValue<Double> SPLASH_POTION_COOLDOWN;
-    public static final ModConfigSpec.ConfigValue<Double> LINGERING_POTION_COOLDOWN;
-    public static final ModConfigSpec.ConfigValue<Double> DRINKABLE_POTION_COOLDOWN;
-    public static final ModConfigSpec.ConfigValue<Double> FOOD_COOLDOWN;
-    public static final ModConfigSpec.ConfigValue<Double> EAT_TIME_MULTIPLIER;
-    public static final ModConfigSpec.ConfigValue<Double> POTION_DRINK_TIME_MULTIPLER;
-    public static final ModConfigSpec.ConfigValue<Integer> POTION_STACK_SIZE;
-    public static final ModConfigSpec.ConfigValue<Integer> FOOD_STACK_SIZE;
+    public static final ForgeConfigSpec.ConfigValue<Boolean> HUNGER_MODULE_ENABLED;
+    public static final ForgeConfigSpec.ConfigValue<Boolean> HUNGER_DISABLED;
+    public static final ForgeConfigSpec.ConfigValue<Boolean> ALLOW_SPRINTING;
+    public static final ForgeConfigSpec.ConfigValue<Boolean> HUNGER_PREVENTS_SPRINTING;
+    public static final ForgeConfigSpec.ConfigValue<Double> HUNGER_NUTRITION_MULTIPLIER;
+    public static final ForgeConfigSpec.ConfigValue<Double> FOOD_TO_HEALTH_MODIFIER;
+    public static final ForgeConfigSpec.ConfigValue<Integer> NATURAL_REGENERATION_TICK_RATE;
+    public static final ForgeConfigSpec.ConfigValue<Boolean> NATURAL_REGENERATION_DURING_COMBAT;
+    public static final ForgeConfigSpec.ConfigValue<Double> SPLASH_POTION_COOLDOWN;
+    public static final ForgeConfigSpec.ConfigValue<Double> LINGERING_POTION_COOLDOWN;
+    public static final ForgeConfigSpec.ConfigValue<Double> DRINKABLE_POTION_COOLDOWN;
+    public static final ForgeConfigSpec.ConfigValue<Double> FOOD_COOLDOWN;
+    public static final ForgeConfigSpec.ConfigValue<Double> EAT_TIME_MULTIPLIER;
+    public static final ForgeConfigSpec.ConfigValue<Double> POTION_DRINK_TIME_MULTIPLER;
+    public static final ForgeConfigSpec.ConfigValue<Integer> POTION_STACK_SIZE;
+    public static final ForgeConfigSpec.ConfigValue<Integer> FOOD_STACK_SIZE;
 
-    public static final ModConfigSpec.ConfigValue<Boolean> SLEEP_MODULE_ENABLED;
-    public static final ModConfigSpec.ConfigValue<Integer> NATURAL_DROWSINESS_DELAY;
+    public static final ForgeConfigSpec.ConfigValue<Boolean> SLEEP_MODULE_ENABLED;
+    public static final ForgeConfigSpec.ConfigValue<Integer> NATURAL_DROWSINESS_DELAY;
 
 
     static {
@@ -101,10 +99,10 @@ public class ServerConfigs {
         KNOCKBACK_MODIFIER = BUILDER
                 .comment("Global multiplier to all knockback. Default: 1.0")
                 .define("globalKnockbackMultiplier", 1.0);
-        ENABLE_COMBAT_SNAPSHOT = BUILDER
-                .comment("Enable Combat Snapshot Inspired Changes (experimental): Attack cooldown no longer affects damage, but instead affects weapon reach")
-                .comment("!THIS SETTING IS AFFECTED BY \"minimumAttackStrength\" AND \"allowNonMinStrengthAttacks\" WHICH SHOULD BE CONFIGURED ACCORDINGLY!")
-                .define("enableCombatSnapshot", false);
+//        ENABLE_COMBAT_SNAPSHOT = BUILDER
+//                .comment("Enable Combat Snapshot Inspired Changes (experimental): Attack cooldown no longer affects damage, but instead affects weapon reach")
+//                .comment("!THIS SETTING IS AFFECTED BY \"minimumAttackStrength\" AND \"allowNonMinStrengthAttacks\" WHICH SHOULD BE CONFIGURED ACCORDINGLY!")
+//                .define("enableCombatSnapshot", false);
         BUILDER.pop();
 
         /*
@@ -262,24 +260,41 @@ public class ServerConfigs {
         /*
          * Handle components patch (currently only used for stack size)
          */
-        DEFAULT_COMPONENTS_PATCH.clear();
-        CommonHungerEvents.modifyDefaultStackSize(ServerConfigs::modifyDefaultComponent);
-    }
-
-    private static final Map<Holder<Item>, Consumer<DataComponentPatch.Builder>> DEFAULT_COMPONENTS_PATCH = new HashMap<>();
-
-    public static void handleDefaultStackComponents(ItemStack stack) {
-        var patch = DEFAULT_COMPONENTS_PATCH.get(stack.getItemHolder());
-        if (patch != null) {
-            var patchBuilder = DataComponentPatch.builder();
-            patch.accept(patchBuilder);
-            stack.applyComponentsAndValidate(patchBuilder.build());
+//        DEFAULT_COMPONENTS_PATCH.clear();
+//        CommonHungerEvents.modifyDefaultStackSize(ServerConfigs::modifyDefaultComponent);
+        if (ServerConfigs.HUNGER_MODULE_ENABLED.get()) {
+            int potionStack = Math.min(ServerConfigs.POTION_STACK_SIZE.get(), 64);
+            int foodStack = Math.min(ServerConfigs.FOOD_STACK_SIZE.get(), 64);
+            if (foodStack <= 0 && potionStack <= 0) {
+                return;
+            }
+            Registry<Item> registry = RegistryGetter.getItem();
+            registry.forEach((item) -> {
+                if (!RegistryLists.FOOD_STACK_BLACKLIST_ITEMS.contains(item)) {
+                    if (potionStack > 0 && item instanceof PotionItem) {
+                        item.maxStackSize = potionStack;
+                    } else if (foodStack > 0 && item.getFoodProperties() != null) {
+                        item.maxStackSize = Math.min(item.maxStackSize, foodStack);
+                    }
+                }
+            });
         }
     }
 
-    private static void modifyDefaultComponent(Holder<Item> item, Consumer<DataComponentPatch.Builder> patch) {
-        DEFAULT_COMPONENTS_PATCH.put(item, patch);
-    }
+//    private static final Map<Holder<Item>, Consumer<DataComponentPatch.Builder>> DEFAULT_COMPONENTS_PATCH = new HashMap<>();
+
+//    public static void handleDefaultStackComponents(ItemStack stack) {
+//        var patch = DEFAULT_COMPONENTS_PATCH.get(stack.getItemHolder());
+//        if (patch != null) {
+//            var patchBuilder = DataComponentPatch.builder();
+//            patch.accept(patchBuilder);
+//            stack.applyComponentsAndValidate(patchBuilder.build());
+//        }
+//    }
+//
+//    private static void modifyDefaultComponent(Holder<Item> item, Consumer<DataComponentPatch.Builder> patch) {
+//        DEFAULT_COMPONENTS_PATCH.put(item, patch);
+//    }
 
     private static <T> void cacheRegistryList(Registry<T> registry, List<? extends String> ids, Set<T> output) {
         output.clear();

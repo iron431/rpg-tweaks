@@ -25,9 +25,12 @@ import org.joml.Matrix4f;
 
 public class XpCatalystRenderer extends EntityRenderer<XpCatalyst> {
 
-    public static final ModelLayerLocation MODEL_LAYER_LOCATION = new ModelLayerLocation(IronsRpgTweaks.id("xp_catalyst_model"), "main");
-    private static final ResourceLocation ORB_TEXTURE = IronsRpgTweaks.id("textures/entity/xp_catalyst/xp_catalyst_orb.png");
-    private static final ResourceLocation SOLID_TEXTURE = IronsRpgTweaks.id("textures/entity/xp_catalyst/solid.png");
+    private static final ResourceLocation EXPERIENCE_ORB_LOCATION = new ResourceLocation("textures/entity/experience_orb.png");
+    private static final RenderType RENDER_TYPE = RenderType.itemEntityTranslucentCull(EXPERIENCE_ORB_LOCATION);
+
+    public static final ModelLayerLocation MODEL_LAYER_LOCATION = new ModelLayerLocation(new ResourceLocation(IronsRpgTweaks.MODID, "xp_catalyst_model"), "main");
+    private static ResourceLocation ORB_TEXTURE = IronsRpgTweaks.id("textures/entity/xp_catalyst/xp_catalyst_orb.png");
+    private static ResourceLocation SOLID_TEXTURE = IronsRpgTweaks.id("textures/entity/xp_catalyst/solid.png");
 
     private final ModelPart orb;
     private final ModelPart swirl;
@@ -60,6 +63,7 @@ public class XpCatalystRenderer extends EntityRenderer<XpCatalyst> {
         poseStack.pushPose();
         poseStack.translate(0, entity.getBoundingBox().getYsize() * .5f + entity.getVisualYOffset(partialTicks), 0);
         float scale = 1 + Mth.sin((entity.tickCount + partialTicks) * .06f) * .05f;
+        renderXpOrb(poseStack, bufferSource, entity.tickCount, partialTicks);
         poseStack.scale(scale, scale, scale);
         poseStack.scale(.6f, .6f, .6f);
         float f = entity.tickCount + partialTicks;
@@ -78,7 +82,7 @@ public class XpCatalystRenderer extends EntityRenderer<XpCatalyst> {
         poseStack.mulPose(Axis.YP.rotationDegrees(swirlY * .45f));
         poseStack.mulPose(Axis.ZP.rotationDegrees(swirlZ * .45f));
         VertexConsumer consumer = bufferSource.getBuffer(RenderType.entityCutoutNoCull(SOLID_TEXTURE));
-        this.orb.render(poseStack, consumer, LightTexture.FULL_BRIGHT, OverlayTexture.NO_OVERLAY, colorf((float) orbGradient3.x, (float) orbGradient3.y, (float) orbGradient3.z, 1f));
+        this.orb.render(poseStack, consumer, LightTexture.FULL_BRIGHT, OverlayTexture.NO_OVERLAY, (float) orbGradient3.x, (float) orbGradient3.y, (float) orbGradient3.z, 1f);
         poseStack.popPose();
 
 
@@ -90,14 +94,14 @@ public class XpCatalystRenderer extends EntityRenderer<XpCatalyst> {
 
         Vec3 rimGradient = green.add((yellow.subtract(green)).scale(colorPeriod));
         Vec3 rimGradientInverted = green.add((yellow.subtract(green)).scale(1 - colorPeriod));
-        this.orb.render(poseStack, consumer, LightTexture.FULL_BRIGHT, OverlayTexture.NO_OVERLAY, colorf((float) rimGradient.x, (float) rimGradient.y, (float) rimGradient.z, 1f));
+        this.orb.render(poseStack, consumer, LightTexture.FULL_BRIGHT, OverlayTexture.NO_OVERLAY, (float) rimGradient.x, (float) rimGradient.y, (float) rimGradient.z, 1f);
 
         poseStack.mulPose(Axis.XP.rotationDegrees(swirlZ));
         poseStack.mulPose(Axis.YP.rotationDegrees(swirlX));
         poseStack.mulPose(Axis.ZP.rotationDegrees(swirlY));
 
         poseStack.scale(1.5f, 1.5f, 1.5f);
-        this.swirl.render(poseStack, consumer, LightTexture.FULL_BRIGHT, OverlayTexture.NO_OVERLAY, colorf((float) rimGradientInverted.x, (float) rimGradientInverted.y, (float) rimGradientInverted.z, 1f));
+        this.swirl.render(poseStack, consumer, LightTexture.FULL_BRIGHT, OverlayTexture.NO_OVERLAY, (float) rimGradientInverted.x, (float) rimGradientInverted.y, (float) rimGradientInverted.z, 1f);
 
         poseStack.popPose();
 
@@ -109,23 +113,39 @@ public class XpCatalystRenderer extends EntityRenderer<XpCatalyst> {
         return ORB_TEXTURE;
     }
 
+    private void renderXpOrb(PoseStack pMatrixStack, MultiBufferSource pBuffer, float tickCount, float pPartialTicks) {
+        pMatrixStack.pushPose();
+        float scale = Mth.sin((tickCount + pPartialTicks) * .4f) * .125f + 1;
+        float scale2 = Mth.cos((tickCount + pPartialTicks + 345) * .6f) * .06f + 1;
+        scale *= scale2;
+        pMatrixStack.scale(scale, scale, scale);
+        int i = 6;
+        float f = (float) (i % 4 * 16 + 0) / 64.0F;
+        float f1 = (float) (i % 4 * 16 + 16) / 64.0F;
+        float f2 = (float) (i / 4 * 16 + 0) / 64.0F;
+        float f3 = (float) (i / 4 * 16 + 16) / 64.0F;
+        float f8 = (tickCount + pPartialTicks) / 2.0F;
+        int j = (int) ((Mth.sin(f8 + 0.0F) + 1.0F) * 0.5F * 255.0F);
+        int l = (int) ((Mth.sin(f8 + 4.1887903F) + 1.0F) * 0.1F * 255.0F);
+        pMatrixStack.translate(0.0D, (double) 0.1F, 0.0D);
+        //camera orientation
+        pMatrixStack.mulPose(this.entityRenderDispatcher.cameraOrientation());
+        //pMatrixStack.mulPose(Axis.YP.rotationDegrees(180.0F));
+        pMatrixStack.mulPose(Axis.YP.rotationDegrees(180.0F));
+        float f9 = 0.3F;
+        pMatrixStack.scale(0.3F, 0.3F, 0.3F);
+        VertexConsumer vertexconsumer = pBuffer.getBuffer(RENDER_TYPE);
+        PoseStack.Pose posestack$pose = pMatrixStack.last();
+        Matrix4f matrix4f = posestack$pose.pose();
+        Matrix3f matrix3f = posestack$pose.normal();
+        vertex(vertexconsumer, matrix4f, matrix3f, -0.5F, -.75F, j, 255, l, f, f3, LightTexture.FULL_BRIGHT);
+        vertex(vertexconsumer, matrix4f, matrix3f, 0.5F, -.75F, j, 255, l, f1, f3, LightTexture.FULL_BRIGHT);
+        vertex(vertexconsumer, matrix4f, matrix3f, 0.5F, 0.25F, j, 255, l, f1, f2, LightTexture.FULL_BRIGHT);
+        vertex(vertexconsumer, matrix4f, matrix3f, -0.5F, 0.25F, j, 255, l, f, f2, LightTexture.FULL_BRIGHT);
+        pMatrixStack.popPose();
+    }
+
     private static void vertex(VertexConsumer pBuffer, Matrix4f pMatrix, Matrix3f pMatrixNormal, float pX, float pY, int pRed, int pGreen, int pBlue, float pTexU, float pTexV, int pPackedLight) {
-        pBuffer.addVertex(/*pMatrix,*/ pX, pY, 0.0F).setColor(pRed, pGreen, pBlue, 128).setUv(pTexU, pTexV).setOverlay(OverlayTexture.NO_OVERLAY).setLight(pPackedLight).setNormal(/*pMatrixNormal,*/ 0.0F, 1.0F, 0.0F);
-    }
-
-    public static int color255(int pRed, int pGreen, int pBlue, int pAlpha) {
-        return pAlpha << 24 | pRed << 16 | pGreen << 8 | pBlue;
-    }
-
-    public static int color255(int pRed, int pGreen, int pBlue) {
-        return color255(pRed, pGreen, pBlue, 255);
-    }
-
-    public static int colorf(float pRed, float pGreen, float pBlue, float pAlpha) {
-        return color255((int) (255 * pRed), (int) (255 * pGreen), (int) (255 * pBlue), (int) (255 * pAlpha));
-    }
-
-    public static int colorf(float pRed, float pGreen, float pBlue) {
-        return colorf(pRed, pGreen, pBlue, 1f);
+        pBuffer.vertex(/*pMatrix,*/ pX, pY, 0.0F).color(pRed, pGreen, pBlue, 128).uv(pTexU, pTexV).overlayCoords(OverlayTexture.NO_OVERLAY).uv2(pPackedLight).normal(/*pMatrixNormal,*/ 0.0F, 1.0F, 0.0F).endVertex();
     }
 }

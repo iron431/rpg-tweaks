@@ -7,21 +7,21 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.projectile.AbstractArrow;
 import net.minecraft.world.level.Level;
-import net.neoforged.bus.api.EventPriority;
-import net.neoforged.bus.api.SubscribeEvent;
-import net.neoforged.fml.common.EventBusSubscriber;
-import net.neoforged.neoforge.common.util.FakePlayer;
-import net.neoforged.neoforge.event.entity.living.LivingDamageEvent;
-import net.neoforged.neoforge.event.entity.living.LivingIncomingDamageEvent;
-import net.neoforged.neoforge.event.entity.living.LivingKnockBackEvent;
-import net.neoforged.neoforge.event.entity.player.AttackEntityEvent;
-import net.neoforged.neoforge.event.tick.EntityTickEvent;
+import net.minecraftforge.common.util.FakePlayer;
+import net.minecraftforge.event.entity.living.LivingAttackEvent;
+import net.minecraftforge.event.entity.living.LivingDamageEvent;
+import net.minecraftforge.event.entity.living.LivingEvent;
+import net.minecraftforge.event.entity.living.LivingKnockBackEvent;
+import net.minecraftforge.event.entity.player.AttackEntityEvent;
+import net.minecraftforge.eventbus.api.EventPriority;
+import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.minecraftforge.fml.common.Mod;
 
-@EventBusSubscriber
+@Mod.EventBusSubscriber
 public class DamageServerEvents {
 
     @SubscribeEvent(priority = EventPriority.LOWEST) // fire after all other modifier events from other mods
-    public static void onIncomingDamage(LivingIncomingDamageEvent event) {
+    public static void onIncomingDamage(LivingAttackEvent event) {
         if (ServerConfigs.DAMAGE_MODULE_ENABLED.get()) {
             var source = event.getSource();
             var entity = event.getEntity();
@@ -29,7 +29,7 @@ public class DamageServerEvents {
                 return;
             }
             if(source.getDirectEntity() instanceof AbstractArrow arrow){
-                event.getContainer().setPostAttackInvulnerabilityTicks(0);
+                event.getEntity().invulnerableTime = 0;
             }
             if (!shouldProcess(source, entity)) {
                 return;
@@ -47,7 +47,7 @@ public class DamageServerEvents {
                     event.getEntity().invulnerableTime > 0 ||
                     ((isDamageRepeatTick || isDamageSameTick) && currentTick - lastActuallyHurtTimestamp < 10);
             // further, if a mod already is doing custom iframe bypassing, let the damage pass
-            if (ignoreDamage && event.getContainer().getPostAttackInvulnerabilityTicks() != 0) {
+            if (ignoreDamage) {
                 event.setCanceled(true);
             }
             livingExtension.rpg_tweaks$updateLastRequest(source.typeHolder(), currentTick);
@@ -55,7 +55,7 @@ public class DamageServerEvents {
     }
 
     private static boolean canBypassSameTick(DamageSource source) {
-        var key = source.typeHolder().getKey();
+        var key = source.typeHolder().unwrapKey().orElse(null);
         if (key != null) {
             return ServerConfigs.SAME_TICK_DAMAGE_TYPE_WHITELIST.get().contains(key.location().toString());
         }
@@ -63,7 +63,7 @@ public class DamageServerEvents {
     }
 
     @SubscribeEvent
-    public static void onTakeDamage(LivingDamageEvent.Post event) {
+    public static void onTakeDamage(LivingDamageEvent event) {
         if (ServerConfigs.DAMAGE_MODULE_ENABLED.get()) {
             if (shouldProcess(event.getSource(), event.getEntity()) /*&& legacyTestDamageSource(event.getSource())*/) {
                 event.getEntity().invulnerableTime = ServerConfigs.IFRAME_COUNT.get();
@@ -95,9 +95,9 @@ public class DamageServerEvents {
     }
 
     @SubscribeEvent
-    public static void onLivingTick(EntityTickEvent.Post event) {
-        if (ServerConfigs.DAMAGE_MODULE_ENABLED.get() && event.getEntity() instanceof LivingEntity livingEntity && livingEntity.tickCount % 600 == 0) {
-            ((IRpgLivingEntityExtension) livingEntity).rpg_tweaks$garbageCollect(livingEntity.tickCount);
+    public static void onLivingTick(LivingEvent.LivingTickEvent event) {
+        if (ServerConfigs.DAMAGE_MODULE_ENABLED.get() && event.getEntity().tickCount % 600 == 0) {
+            ((IRpgLivingEntityExtension) event.getEntity()).rpg_tweaks$garbageCollect(event.getEntity().tickCount);
         }
     }
 

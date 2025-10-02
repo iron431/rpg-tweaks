@@ -7,7 +7,7 @@ import net.minecraft.world.effect.MobEffectCategory;
 import net.minecraft.world.effect.MobEffectInstance;
 
 public class DrowsyMobEffect extends MobEffect implements ICustomMobEffectDescription {
-    protected DrowsyMobEffect(MobEffectCategory category, int color) {
+    public DrowsyMobEffect(MobEffectCategory category, int color) {
         super(category, color);
     }
 

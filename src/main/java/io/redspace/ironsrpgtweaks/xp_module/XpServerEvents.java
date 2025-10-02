@@ -6,14 +6,14 @@ import io.redspace.ironsrpgtweaks.xp_module.entity.XpCatalyst;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.level.GameRules;
 import net.minecraft.world.level.Level;
-import net.neoforged.bus.api.SubscribeEvent;
-import net.neoforged.fml.common.EventBusSubscriber;
-import net.neoforged.neoforge.event.entity.living.LivingDeathEvent;
-import net.neoforged.neoforge.event.entity.living.LivingExperienceDropEvent;
-import net.neoforged.neoforge.event.entity.player.PlayerEvent;
-import net.neoforged.neoforge.event.level.BlockDropsEvent;
+import net.minecraftforge.event.entity.living.LivingDeathEvent;
+import net.minecraftforge.event.entity.living.LivingExperienceDropEvent;
+import net.minecraftforge.event.entity.player.PlayerEvent;
+import net.minecraftforge.event.level.BlockEvent;
+import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.minecraftforge.fml.common.Mod;
 
-@EventBusSubscriber
+@Mod.EventBusSubscriber
 public class XpServerEvents {
 
     @SubscribeEvent
@@ -51,9 +51,9 @@ public class XpServerEvents {
     }
 
     @SubscribeEvent
-    public static void modifyBlockXp(BlockDropsEvent event) {
+    public static void modifyBlockXp(BlockEvent.BreakEvent event) {
         if (ServerConfigs.XP_MODULE_ENABLED.get()) {
-            event.setDroppedExperience((int) (event.getDroppedExperience() * ServerConfigs.BLOCK_XP_MODIFIER.get()));
+            event.setExpToDrop((int) (event.getExpToDrop() * ServerConfigs.BLOCK_XP_MODIFIER.get()));
         }
     }
 

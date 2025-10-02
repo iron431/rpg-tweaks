@@ -2,7 +2,6 @@ package io.redspace.ironsrpgtweaks.config;
 
 import io.redspace.ironsrpgtweaks.durability_module.DeathDurabilityMode;
 import io.redspace.ironsrpgtweaks.durability_module.VanillaDurabilityMode;
-import net.minecraft.core.component.DataComponents;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.ArmorItem;
@@ -68,7 +67,7 @@ public class ConfigHelper {
     public static class Hunger {
         public static double useDurationMultiplier(ItemStack item) {
             if (ServerConfigs.HUNGER_MODULE_ENABLED.get()) {
-                if (item.has(DataComponents.FOOD)) {
+                if (item.isEdible()) {
                     return ServerConfigs.EAT_TIME_MULTIPLIER.get();
                 } else if (item.getItem() instanceof PotionItem) {
                     return ServerConfigs.POTION_DRINK_TIME_MULTIPLER.get();

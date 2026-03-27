@@ -19,6 +19,18 @@ group = mod_group_id
 
 repositories {
     mavenLocal()
+    maven {
+        url = "https://code.redspace.io/releases"
+    }
+    maven {
+        url = "https://code.redspace.io/snapshots"
+    }
+    maven {
+        url = "https://dl.cloudsmith.io/public/geckolib3/geckolib/maven/"
+        content {
+            includeGroup("software.bernie.geckolib")
+        }
+    }
 }
 
 base {
@@ -38,7 +50,7 @@ neoForge {
     }
 
     // This line is optional. Access Transformers are automatically detected
-     accessTransformers = project.files('src/main/resources/META-INF/accesstransformer.cfg')
+    accessTransformers = project.files('src/main/resources/META-INF/accesstransformer.cfg')
 
     // Default run configurations.
     // These can be tweaked, removed, or duplicated as needed.
@@ -108,7 +120,8 @@ configurations {
 }
 
 dependencies {
-
+    localRuntime "software.bernie.geckolib:geckolib-neoforge-${minecraft_version}:${geckolib_version}"
+    localRuntime "io.redspace:irons_patreon_lib:1.21.1-1.0.0-SNAPSHOT"
 }
 
 // This block of code expands all declared replace properties in the specified resource targets.
@@ -125,7 +138,8 @@ var generateModMetadata = tasks.register("generateModMetadata", ProcessResources
             mod_license            : mod_license,
             mod_version            : mod_version,
             mod_authors            : mod_authors,
-            mod_description        : mod_description
+            mod_description        : mod_description,
+            geckolib_version       : geckolib_version
     ]
     inputs.properties replaceProperties
     expand replaceProperties

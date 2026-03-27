@@ -17,7 +17,7 @@ apply plugin: 'org.spongepowered.mixin'
 apply plugin: 'org.parchmentmc.librarian.forgegradle'
 apply plugin: 'maven-publish'
 
-version = '1.20.1-2.2.1'
+version = '1.20.1-2.2.2'
 group = 'io.redspace.ironsrpgtweaks'
 archivesBaseName = 'irons_rpg_tweaks'
 
@@ -159,7 +159,12 @@ repositories {
     maven { url = "https://cursemaven.com" }
     maven { url = "https://maven.blamejared.com" }
     maven { url = "https://maven.kosmx.dev/" }
-
+    maven {
+        url = "https://code.redspace.io/releases"
+    }
+    maven {
+        url = "https://code.redspace.io/snapshots"
+    }
     //    maven {
     //        name "REI"
     //        url "https://maven.shedaniel.me"
@@ -177,7 +182,7 @@ dependencies {
     //implementation both
 
     // FORGE ******************************************************************************************************
-    minecraft 'net.minecraftforge:forge:1.20.1-47.3.22'
+    minecraft 'net.minecraftforge:forge:1.20.1-47.4.0'
 
     // MIXINS *****************************************************************************************************
     annotationProcessor 'org.spongepowered:mixin:0.8.5:processor'
@@ -186,6 +191,11 @@ dependencies {
     compileOnly fg.deobf("net.darkhax.enchdesc:EnchantmentDescriptions-Forge-1.20.1:17.0.9")
     runtimeOnly fg.deobf("net.darkhax.enchdesc:EnchantmentDescriptions-Forge-1.20.1:17.0.9")
     runtimeOnly fg.deobf("net.darkhax.bookshelf:Bookshelf-Forge-1.20.1:20.1.6")
+
+    // fg.deobf: remap dependency mixins/refmaps to this project's mappings (Parchment) in userdev
+    runtimeOnly fg.deobf("io.redspace:irons_patreon_lib:1.20.1-0.0.4-SNAPSHOT")
+    runtimeOnly fg.deobf("software.bernie.geckolib:geckolib-forge-1.20.1:4.8.2")
+
 
 }
 

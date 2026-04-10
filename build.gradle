@@ -121,7 +121,7 @@ configurations {
 
 dependencies {
     localRuntime "software.bernie.geckolib:geckolib-neoforge-${minecraft_version}:${geckolib_version}"
-    localRuntime "io.redspace:irons_patreon_lib:1.21.1-1.0.0-SNAPSHOT"
+    localRuntime "io.redspace:irons_lib:1.21.1-1.0.2-SNAPSHOT"
 }
 
 // This block of code expands all declared replace properties in the specified resource targets.

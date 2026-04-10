@@ -17,7 +17,7 @@ apply plugin: 'org.spongepowered.mixin'
 apply plugin: 'org.parchmentmc.librarian.forgegradle'
 apply plugin: 'maven-publish'
 
-version = '1.20.1-2.2.2'
+version = '1.20.1-2.2.2.1'
 group = 'io.redspace.ironsrpgtweaks'
 archivesBaseName = 'irons_rpg_tweaks'
 
@@ -193,7 +193,7 @@ dependencies {
     runtimeOnly fg.deobf("net.darkhax.bookshelf:Bookshelf-Forge-1.20.1:20.1.6")
 
     // fg.deobf: remap dependency mixins/refmaps to this project's mappings (Parchment) in userdev
-    runtimeOnly fg.deobf("io.redspace:irons_patreon_lib:1.20.1-0.0.4-SNAPSHOT")
+    runtimeOnly fg.deobf("io.redspace:irons_lib:1.20.1-1.0.2-SNAPSHOT")
     runtimeOnly fg.deobf("software.bernie.geckolib:geckolib-forge-1.20.1:4.8.2")
 
 

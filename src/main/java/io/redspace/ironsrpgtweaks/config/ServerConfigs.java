@@ -222,10 +222,10 @@ public class ServerConfigs {
         /*
         Sleep Module
          */
-        BUILDER.push("Sleep-Module");
+        BUILDER.push("Sleep-Module (Experimental)");
         SLEEP_MODULE_ENABLED = BUILDER
                 .comment("The sleep module addresses imbalance caused by the ease of skipping nights via sleeping. Disabling will nullify every feature listed under this module.")
-                .define("sleepModuleEnabled", true);
+                .define("sleepModuleEnabled", false);
         NATURAL_DROWSINESS_DELAY = BUILDER
                 .comment("After a set tick delay of not sleeping, players will automatically become drowsy. Set to -1 to disable feature. Default: 72000 (delay before phantoms start spawning)")
                 .define("naturalDrowsinessDelay", 72000);

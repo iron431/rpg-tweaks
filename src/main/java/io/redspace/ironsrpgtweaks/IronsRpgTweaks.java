@@ -3,6 +3,7 @@ package io.redspace.ironsrpgtweaks;
 
 import com.mojang.logging.LogUtils;
 import io.redspace.ironsrpgtweaks.config.ServerConfigs;
+import io.redspace.ironsrpgtweaks.compat.CompatHandler;
 import io.redspace.ironsrpgtweaks.registry.AttributeRegistry;
 import io.redspace.ironsrpgtweaks.registry.EntityRegistry;
 import io.redspace.ironsrpgtweaks.registry.PotionEffectsRegistry;
@@ -13,6 +14,7 @@ import net.minecraftforge.fml.ModLoadingContext;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.config.ModConfig;
 import net.minecraftforge.fml.event.config.ModConfigEvent;
+import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
@@ -37,7 +39,11 @@ public class IronsRpgTweaks {
 
         modEventBus.addListener(this::onConfigReload);
         modEventBus.addListener(this::onConfigLoad);
-        //modEventBus.addListener(CommonHungerEvents::changeStackSize);
+        modEventBus.addListener(IronsRpgTweaks::commonSetup);
+    }
+
+    public static void commonSetup(FMLCommonSetupEvent event) {
+        event.enqueueWork(CompatHandler::init);
     }
 
     public void onConfigReload(ModConfigEvent.Reloading event) {

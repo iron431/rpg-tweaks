@@ -27,6 +27,7 @@ public class DrowsyMobEffect extends MobEffect implements ICustomMobEffectDescri
     public void applyEffectTick(@NotNull LivingEntity livingEntity, int amplifier) {
         if (livingEntity.level().dimensionType().hasFixedTime() || livingEntity.level().isDay()) {
             // remove drowsiness from player during the day, or in dimensions without day/night cycle
+            livingEntity.removeEffect(this);
             return;
         }
         super.applyEffectTick(livingEntity, amplifier);

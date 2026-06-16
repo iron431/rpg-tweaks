@@ -193,9 +193,9 @@ dependencies {
     runtimeOnly fg.deobf("net.darkhax.bookshelf:Bookshelf-Forge-1.20.1:20.1.6")
 
     // fg.deobf: remap dependency mixins/refmaps to this project's mappings (Parchment) in userdev
-    runtimeOnly fg.deobf("io.redspace:irons_lib:1.20.1-1.0.2-SNAPSHOT")
-    runtimeOnly fg.deobf("software.bernie.geckolib:geckolib-forge-1.20.1:4.8.2")
-
+//    runtimeOnly fg.deobf("io.redspace:irons_lib:1.20.1-1.0.2-SNAPSHOT")
+//    runtimeOnly fg.deobf("software.bernie.geckolib:geckolib-forge-1.20.1:4.8.2")
+    runtimeOnly fg.deobf("curse.maven:farmers-delight-398521:8083474")
 
 }
 

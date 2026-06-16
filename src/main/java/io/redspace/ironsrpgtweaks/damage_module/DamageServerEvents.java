@@ -1,5 +1,6 @@
 package io.redspace.ironsrpgtweaks.damage_module;
 
+import io.redspace.ironsrpgtweaks.IronsRpgTweaks;
 import io.redspace.ironsrpgtweaks.config.ServerConfigs;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.damagesource.DamageSource;
@@ -28,29 +29,24 @@ public class DamageServerEvents {
             if (!(entity.level() instanceof ServerLevel serverLevel)) {
                 return;
             }
-            if(source.getDirectEntity() instanceof AbstractArrow arrow){
-                event.getContainer().setPostAttackInvulnerabilityTicks(0);
-            }
+            long currentGameTime = serverLevel.getGameTime();
             if (!shouldProcess(source, entity)) {
                 return;
             }
+            if (event.getContainer().getPostAttackInvulnerabilityTicks() == 0) {
+                // pass on custom iframe handling from other mods
+                return;
+            }
             var livingExtension = (IRpgLivingEntityExtension) entity;
-            int lastActuallyHurtTimestamp = livingExtension.rpg_tweaks$getHurtTracker().getOrDefault(source.typeHolder(), -1);
-            int lastDamageRequestTimestamp = livingExtension.rpg_tweaks$getRequestDamageTracker().getOrDefault(source.typeHolder(), -1);
-            int currentTick = entity.tickCount;
-            // some damage types apply damage every tick use entity iframes to space out their damage, like lava or cactus
-            // therefore, if we detect a source attempting to damage every tick, we want to ignore until the default tick delay has passed
-            // ergo: ignore = requestDelta <= 1 && hurtDelta < 10
-            boolean isDamageRepeatTick = currentTick - lastDamageRequestTimestamp == 1;
-            boolean isDamageSameTick = currentTick - lastDamageRequestTimestamp <= 0 && !canBypassSameTick(event.getSource());
-            boolean ignoreDamage =
-                    event.getEntity().invulnerableTime > 0 ||
-                    ((isDamageRepeatTick || isDamageSameTick) && currentTick - lastActuallyHurtTimestamp < 10);
-            // further, if a mod already is doing custom iframe bypassing, let the damage pass
-            if (ignoreDamage && event.getContainer().getPostAttackInvulnerabilityTicks() != 0) {
+            long lastActuallyHurtTimestamp = livingExtension.rpg_tweaks$getHurtTracker().getOrDefault(source.typeHolder(), -1L);
+            long lastDamageRequestTimestamp = livingExtension.rpg_tweaks$getRequestDamageTracker().getOrDefault(source.typeHolder(), -1L);
+            long ticksSinceDamaged = currentGameTime - lastActuallyHurtTimestamp;
+            long ticksSinceAttemptedDamage = currentGameTime - lastDamageRequestTimestamp;
+            if (ticksSinceDamaged == 1 || (ticksSinceAttemptedDamage == 1 && ticksSinceDamaged < 10)) {
+                // block sequential tick damage, up to a full duration of 10 ticks
+                livingExtension.rpg_tweaks$updateLastRequest(source.typeHolder(), currentGameTime);
                 event.setCanceled(true);
             }
-            livingExtension.rpg_tweaks$updateLastRequest(source.typeHolder(), currentTick);
         }
     }
 
@@ -65,10 +61,10 @@ public class DamageServerEvents {
     @SubscribeEvent
     public static void onTakeDamage(LivingDamageEvent.Post event) {
         if (ServerConfigs.DAMAGE_MODULE_ENABLED.get()) {
-            if (shouldProcess(event.getSource(), event.getEntity()) /*&& legacyTestDamageSource(event.getSource())*/) {
+            if (shouldProcess(event.getSource(), event.getEntity())) {
                 event.getEntity().invulnerableTime = ServerConfigs.IFRAME_COUNT.get();
                 IRpgLivingEntityExtension entityExtension = (IRpgLivingEntityExtension) event.getEntity();
-                entityExtension.rpg_tweaks$updateLastHurt(event.getSource().typeHolder(), event.getEntity().tickCount);
+                entityExtension.rpg_tweaks$updateLastHurt(event.getSource().typeHolder(), event.getEntity().level().getGameTime());
             }
         }
     }
@@ -96,8 +92,8 @@ public class DamageServerEvents {
 
     @SubscribeEvent
     public static void onLivingTick(EntityTickEvent.Post event) {
-        if (ServerConfigs.DAMAGE_MODULE_ENABLED.get() && event.getEntity() instanceof LivingEntity livingEntity && livingEntity.tickCount % 600 == 0) {
-            ((IRpgLivingEntityExtension) livingEntity).rpg_tweaks$garbageCollect(livingEntity.tickCount);
+        if (ServerConfigs.DAMAGE_MODULE_ENABLED.get() && event.getEntity() instanceof LivingEntity livingEntity && livingEntity.level().getGameTime() % 600 == 0) {
+            ((IRpgLivingEntityExtension) livingEntity).rpg_tweaks$garbageCollect(livingEntity.level().getGameTime());
         }
     }
 

@@ -31,6 +31,12 @@ repositories {
             includeGroup("software.bernie.geckolib")
         }
     }
+    maven {
+        url = "https://cursemaven.com"
+        content {
+            includeGroup("curse.maven")
+        }
+    }
 }
 
 base {
@@ -120,8 +126,11 @@ configurations {
 }
 
 dependencies {
-    localRuntime "software.bernie.geckolib:geckolib-neoforge-${minecraft_version}:${geckolib_version}"
-    localRuntime "io.redspace:irons_lib:1.21.1-1.0.2-SNAPSHOT"
+    implementation "curse.maven:vics-point-blank-961053:7713179"
+    implementation "curse.maven:geckolib-388172:7707149"
+//    localRuntime "curse.maven:farmers-delight-398521:8001010"
+    //    localRuntime "software.bernie.geckolib:geckolib-neoforge-${minecraft_version}:${geckolib_version}"
+//    localRuntime "io.redspace:irons_lib:1.21.1-1.0.2-SNAPSHOT"
 }
 
 // This block of code expands all declared replace properties in the specified resource targets.

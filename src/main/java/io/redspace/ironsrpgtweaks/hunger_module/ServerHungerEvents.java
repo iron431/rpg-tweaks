@@ -1,5 +1,6 @@
 package io.redspace.ironsrpgtweaks.hunger_module;
 
+import io.redspace.ironsrpgtweaks.compat.CompatHandler;
 import io.redspace.ironsrpgtweaks.config.ConfigHelper;
 import io.redspace.ironsrpgtweaks.config.ServerConfigs;
 import net.minecraft.server.level.ServerPlayer;
@@ -19,9 +20,15 @@ public class ServerHungerEvents {
         if (ConfigHelper.Hunger.shouldDisableVanillaHunger() && event.getEntity() instanceof ServerPlayer player) {
             player.getFoodData().setFoodLevel(10);
             if (Double.compare(player.getAttributeValue(NATURAL_REGEN_SPEED), 0.0D) > 0) {
-                int i = (int) (ServerConfigs.NATURAL_REGENERATION_TICK_RATE.get() / player.getAttributeValue(NATURAL_REGEN_SPEED));
-                if ((i <= 1 || player.tickCount % i == 0) && player.level().getGameRules().getBoolean(GameRules.RULE_NATURAL_REGENERATION) && (ServerConfigs.NATURAL_REGENERATION_DURING_COMBAT.get() || !player.getCombatTracker().inCombat)) {
-                    player.heal((float) player.getAttributeValue(NATURAL_REGEN_AMOUNT));
+                int regenTickDelay = (int) (ServerConfigs.NATURAL_REGENERATION_TICK_RATE.get() / player.getAttributeValue(NATURAL_REGEN_SPEED));
+                if ((regenTickDelay <= 1 || player.tickCount % regenTickDelay == 0)) {
+                    boolean allowedToRegen =
+                            CompatHandler.FARMERS_DELIGHT_PROXY.forceNaturalRegen(player) ||
+                                    (player.level().getGameRules().getBoolean(GameRules.RULE_NATURAL_REGENERATION) &&
+                                            (ServerConfigs.NATURAL_REGENERATION_DURING_COMBAT.get() || !player.getCombatTracker().inCombat));
+                    if (allowedToRegen) {
+                        player.heal((float) player.getAttributeValue(NATURAL_REGEN_AMOUNT) * CompatHandler.FARMERS_DELIGHT_PROXY.naturalRegenAmountMultiplier(player));
+                    }
                 }
             }
         }

@@ -3,6 +3,7 @@ package io.redspace.ironsrpgtweaks;
 
 import com.mojang.logging.LogUtils;
 import io.redspace.ironsrpgtweaks.config.ServerConfigs;
+import io.redspace.ironsrpgtweaks.compat.CompatHandler;
 import io.redspace.ironsrpgtweaks.registry.AttributeRegistry;
 import io.redspace.ironsrpgtweaks.registry.EntityRegistry;
 import io.redspace.ironsrpgtweaks.registry.PotionEffectsRegistry;
@@ -13,6 +14,7 @@ import net.neoforged.fml.ModContainer;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.config.ModConfig;
 import net.neoforged.fml.event.config.ModConfigEvent;
+import net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent;
 import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 
@@ -32,6 +34,11 @@ public class IronsRpgTweaks {
 
         modEventBus.addListener(this::onConfigReload);
         modEventBus.addListener(this::onConfigLoad);
+        modEventBus.addListener(IronsRpgTweaks::commonSetup);
+    }
+
+    public static void commonSetup(FMLCommonSetupEvent event) {
+        event.enqueueWork(CompatHandler::init);
     }
 
     public void onConfigReload(ModConfigEvent.Reloading event) {

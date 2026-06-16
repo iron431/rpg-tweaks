@@ -2,6 +2,7 @@ package io.redspace.ironsrpgtweaks.mixin;
 
 import io.redspace.ironsrpgtweaks.config.ConfigHelper;
 import io.redspace.ironsrpgtweaks.config.ServerConfigs;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.food.FoodData;
@@ -14,11 +15,6 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(FoodData.class)
 public class FoodDataMixin {
-
-    @Shadow
-    int foodLevel;
-    @Shadow
-    int lastFoodLevel;
 
     @Unique
     float rpg_tweaks$toHeal;
@@ -33,15 +29,15 @@ public class FoodDataMixin {
     }
 
     @Inject(method = "tick", at = @At(value = "HEAD"))
-    public void heal(Player pPlayer, CallbackInfo ci) {
+    public void heal(ServerPlayer player, CallbackInfo ci) {
         if (!ConfigHelper.Hunger.shouldDisableVanillaHunger()) {
             return;
         }
         if (rpg_tweaks$toHeal > 0) {
-            if (pPlayer.hasEffect(MobEffects.HUNGER)) {
-                pPlayer.heal(rpg_tweaks$toHeal * ServerConfigs.HUNGER_NUTRITION_MULTIPLIER.get().floatValue());
+            if (player.hasEffect(MobEffects.HUNGER)) {
+                player.heal(rpg_tweaks$toHeal * ServerConfigs.HUNGER_NUTRITION_MULTIPLIER.get().floatValue());
             } else {
-                pPlayer.heal(rpg_tweaks$toHeal);
+                player.heal(rpg_tweaks$toHeal);
             }
             rpg_tweaks$toHeal = 0;
         }

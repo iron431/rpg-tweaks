@@ -12,7 +12,9 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.player.Inventory;
-import net.minecraft.world.item.ArmorItem;
+import net.minecraft.core.component.DataComponents;
+import net.minecraft.world.item.equipment.Equippable;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.enchantment.Enchantments;
 import net.neoforged.bus.api.SubscribeEvent;
@@ -37,7 +39,7 @@ public class DurabilityServerEvents {
                 damageItems(getHotbarItems(inventory), serverPlayer);
             }
             if (mode.shouldDamageArmor()) {
-                damageItems(getArmorItems(inventory), serverPlayer);
+                damageItems(getArmorItems(serverPlayer), serverPlayer);
             }
         }
     }
@@ -61,11 +63,9 @@ public class DurabilityServerEvents {
                     if(serverPlayer.level() instanceof ServerLevel serverLevel){
                         itemstack.hurtAndBreak(0, serverLevel, serverPlayer, (item) -> {
                             serverPlayer.sendSystemMessage(Component.translatable("ui.irons_rpg_tweaks.item_broken", itemName.withStyle(Style.EMPTY.withColor(ChatFormatting.RED).withItalic(false))).setStyle(Style.EMPTY.withColor(ChatFormatting.RED).withItalic(true)));
-                            if (item instanceof ArmorItem armorItem) {
-                                serverPlayer.onEquippedItemBroken(armorItem, armorItem.getEquipmentSlot());
-                            } else {
-                                serverPlayer.onEquippedItemBroken(item, EquipmentSlot.MAINHAND);
-                            }
+                            Equippable equippable = itemstack.get(DataComponents.EQUIPPABLE);
+                            EquipmentSlot slot = equippable != null ? equippable.slot() : EquipmentSlot.MAINHAND;
+                            serverPlayer.onEquippedItemBroken(item, slot);
                         });
                     }
                 }
@@ -75,12 +75,10 @@ public class DurabilityServerEvents {
 
     private static int getUnbreakingDivisor(ItemStack itemstack, RegistryAccess access) {
         int i = 1;
-        var registry = access.registry(Registries.ENCHANTMENT).orElse(null);
-        if (registry != null) {
-            var unbreaking = registry.getHolder(Enchantments.UNBREAKING);
-            if (unbreaking.isPresent()) {
-                i += itemstack.getEnchantmentLevel(unbreaking.get());
-            }
+        var registry = access.lookupOrThrow(Registries.ENCHANTMENT);
+        var unbreaking = registry.get(Enchantments.UNBREAKING);
+        if (unbreaking.isPresent()) {
+            i += itemstack.getEnchantmentLevel(unbreaking.get());
         }
         return i;
     }
@@ -93,18 +91,21 @@ public class DurabilityServerEvents {
                 hotbarItems.add(item);
             }
         }
-        if (!inventory.offhand.get(0).isEmpty()) {
-            hotbarItems.add(inventory.offhand.get(0));
+        if (!inventory.getItem(Inventory.SLOT_OFFHAND).isEmpty()) {
+            hotbarItems.add(inventory.getItem(Inventory.SLOT_OFFHAND));
         }
         return hotbarItems;
     }
 
-    private static List<ItemStack> getArmorItems(Inventory inventory) {
+    private static List<ItemStack> getArmorItems(ServerPlayer player) {
         List<ItemStack> armorItems = new ArrayList<>();
-        for (int i = 0; i < inventory.armor.size(); i++) {
-            var item = inventory.armor.get(i);
-            if (!item.isEmpty())
-                armorItems.add(item);
+        for (EquipmentSlot slot : EquipmentSlot.values()) {
+            if (slot.getType() == EquipmentSlot.Type.HUMANOID_ARMOR) {
+                var item = player.getItemBySlot(slot);
+                if (!item.isEmpty()) {
+                    armorItems.add(item);
+                }
+            }
         }
         return armorItems;
     }

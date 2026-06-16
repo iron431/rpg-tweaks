@@ -11,7 +11,7 @@ import net.neoforged.neoforge.event.entity.EntityAttributeModificationEvent;
 import net.neoforged.neoforge.registries.DeferredHolder;
 import net.neoforged.neoforge.registries.DeferredRegister;
 
-@EventBusSubscriber(modid = IronsRpgTweaks.MODID, bus = EventBusSubscriber.Bus.MOD)
+@EventBusSubscriber(modid = IronsRpgTweaks.MODID)
 public class AttributeRegistry {
 
     private static final DeferredRegister<Attribute> ATTRIBUTES = DeferredRegister.create(Registries.ATTRIBUTE, IronsRpgTweaks.MODID);

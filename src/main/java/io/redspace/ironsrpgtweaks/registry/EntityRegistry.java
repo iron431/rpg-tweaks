@@ -3,7 +3,8 @@ package io.redspace.ironsrpgtweaks.registry;
 import io.redspace.ironsrpgtweaks.IronsRpgTweaks;
 import io.redspace.ironsrpgtweaks.xp_module.entity.XpCatalyst;
 import net.minecraft.core.registries.Registries;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.MobCategory;
 import net.neoforged.bus.api.IEventBus;
@@ -21,6 +22,6 @@ public class EntityRegistry {
             ENTITIES.register("xp_catalyst", () -> EntityType.Builder.<XpCatalyst>of(XpCatalyst::new, MobCategory.MISC)
                     .sized(.6f, .6f)
                     .clientTrackingRange(64)
-                    .build(ResourceLocation.fromNamespaceAndPath(IronsRpgTweaks.MODID, "xp_catalyst").toString()));
+                    .build(ResourceKey.create(Registries.ENTITY_TYPE, IronsRpgTweaks.id("xp_catalyst"))));
 
 }

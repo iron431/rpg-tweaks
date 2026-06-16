@@ -2,6 +2,7 @@ package io.redspace.ironsrpgtweaks.mixin;
 
 import io.redspace.ironsrpgtweaks.config.ConfigHelper;
 import io.redspace.ironsrpgtweaks.config.ServerConfigs;
+import net.minecraft.core.Holder;
 import net.minecraft.core.component.PatchedDataComponentMap;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.LivingEntity;
@@ -19,8 +20,8 @@ import java.util.function.Consumer;
 @Mixin(ItemStack.class)
 public class ItemStackMixin {
 
-    @Inject(method = "Lnet/minecraft/world/item/ItemStack;<init>(Lnet/minecraft/world/level/ItemLike;ILnet/minecraft/core/component/PatchedDataComponentMap;)V", at = @At(value = "RETURN"))
-    void irons_rpg_tweaks$applyDefaultStackComponents(ItemLike item, int count, PatchedDataComponentMap components, CallbackInfo ci) {
+    @Inject(method = "Lnet/minecraft/world/item/ItemStack;<init>(Lnet/minecraft/core/Holder;ILnet/minecraft/core/component/PatchedDataComponentMap;)V", at = @At(value = "RETURN"))
+    void irons_rpg_tweaks$applyDefaultStackComponents(Holder<Item> item, int count, PatchedDataComponentMap components, CallbackInfo ci) {
         ServerConfigs.handleDefaultStackComponents((ItemStack) (Object) this);
     }
 

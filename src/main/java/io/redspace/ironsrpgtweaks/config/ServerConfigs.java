@@ -10,7 +10,7 @@ import net.minecraft.core.Holder;
 import net.minecraft.core.Registry;
 import net.minecraft.core.component.DataComponentPatch;
 import net.minecraft.core.registries.BuiltInRegistries;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.item.Item;
@@ -269,7 +269,7 @@ public class ServerConfigs {
     private static final Map<Holder<Item>, Consumer<DataComponentPatch.Builder>> DEFAULT_COMPONENTS_PATCH = new HashMap<>();
 
     public static void handleDefaultStackComponents(ItemStack stack) {
-        var patch = DEFAULT_COMPONENTS_PATCH.get(stack.getItemHolder());
+        var patch = DEFAULT_COMPONENTS_PATCH.get(stack.typeHolder());
         if (patch != null) {
             var patchBuilder = DataComponentPatch.builder();
             patch.accept(patchBuilder);
@@ -286,12 +286,12 @@ public class ServerConfigs {
         for (String name : ids) {
             try {
                 if (name.startsWith("#")) {
-                    var tag = new TagKey<T>(registry.key(), ResourceLocation.parse(name.substring(1)));
+                    var tag = TagKey.create(registry.key(), Identifier.parse(name.substring(1)));
                     output.addAll(registry.stream().filter(item -> registry.wrapAsHolder(item).is(tag)).toList());
                 } else {
-                    var item = registry.get(ResourceLocation.parse(name));
-                    if (item != null) {
-                        output.add(item);
+                    var item = registry.get(Identifier.parse(name));
+                    if (item.isPresent()) {
+                        output.add(item.get().value());
                     } else {
                         IronsRpgTweaks.LOGGER.warn("Unable to add item to config, no such item id: {}", name);
                     }
@@ -303,7 +303,7 @@ public class ServerConfigs {
     }
 
     private static boolean validateItemName(final Object obj) {
-        return obj instanceof final String itemName && ResourceLocation.isValidNamespace(itemName) && ResourceLocation.isValidPath(itemName) && BuiltInRegistries.ITEM.containsKey(ResourceLocation.parse(itemName));
+        return obj instanceof final String itemName && Identifier.isValidNamespace(itemName) && Identifier.isValidPath(itemName) && BuiltInRegistries.ITEM.containsKey(Identifier.parse(itemName));
     }
 
     private static String getDefaultEntries(List<? extends String> list) {

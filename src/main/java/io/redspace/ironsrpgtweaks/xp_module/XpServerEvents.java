@@ -4,7 +4,8 @@ import io.redspace.ironsrpgtweaks.IronsRpgTweaks;
 import io.redspace.ironsrpgtweaks.config.ServerConfigs;
 import io.redspace.ironsrpgtweaks.xp_module.entity.XpCatalyst;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.world.level.GameRules;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.level.gamerules.GameRules;
 import net.minecraft.world.level.Level;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
@@ -58,8 +59,11 @@ public class XpServerEvents {
     }
 
     public static boolean shouldCreateCatalyst(Level level) {
+        if (!(level instanceof ServerLevel serverLevel)) {
+            return false;
+        }
         return ServerConfigs.XP_MODULE_ENABLED.get()
-                && (ServerConfigs.XP_IGNORE_KEEPINVENTORY.get() || !level.getGameRules().getBoolean(GameRules.RULE_KEEPINVENTORY));
+                && (ServerConfigs.XP_IGNORE_KEEPINVENTORY.get() || !serverLevel.getGameRules().get(GameRules.KEEP_INVENTORY));
 
     }
 }

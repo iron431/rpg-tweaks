@@ -6,7 +6,7 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.entity.projectile.AbstractArrow;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.Level;
 import net.neoforged.bus.api.EventPriority;
 import net.neoforged.bus.api.SubscribeEvent;
@@ -53,7 +53,7 @@ public class DamageServerEvents {
     private static boolean canBypassSameTick(DamageSource source) {
         var key = source.typeHolder().getKey();
         if (key != null) {
-            return ServerConfigs.SAME_TICK_DAMAGE_TYPE_WHITELIST.get().contains(key.location().toString());
+            return ServerConfigs.SAME_TICK_DAMAGE_TYPE_WHITELIST.get().contains(key.identifier().toString());
         }
         return false;
     }
@@ -74,7 +74,7 @@ public class DamageServerEvents {
         if (ServerConfigs.DAMAGE_MODULE_ENABLED.get()) {
 
             Level level = event.getEntity().level();
-            if (level.isClientSide) {
+            if (level.isClientSide()) {
                 return;
             }
             if (!(event.getEntity() instanceof FakePlayer) && event.getEntity().getAttackStrengthScale(0) < ServerConfigs.MINIMUM_ATTACK_STRENGTH.get()) {

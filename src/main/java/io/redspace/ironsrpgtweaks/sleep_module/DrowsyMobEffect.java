@@ -4,12 +4,13 @@ import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.effect.MobEffectCategory;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.entity.LivingEntity;
 import org.jetbrains.annotations.NotNull;
 
 public class DrowsyMobEffect extends MobEffect implements ICustomMobEffectDescription {
-    protected DrowsyMobEffect(MobEffectCategory category, int color) {
+    public DrowsyMobEffect(MobEffectCategory category, int color) {
         super(category, color);
     }
 
@@ -24,11 +25,15 @@ public class DrowsyMobEffect extends MobEffect implements ICustomMobEffectDescri
     }
 
     @Override
-    public boolean applyEffectTick(@NotNull LivingEntity livingEntity, int amplifier) {
-        if (livingEntity.level().dimensionType().hasFixedTime() || livingEntity.level().isDay()) {
-            // remove drownsiess from player during the day, or in dimensions without day/night cycle
+    public boolean applyEffectTick(@NotNull ServerLevel serverLevel, @NotNull LivingEntity livingEntity, int amplifier) {
+        if (livingEntity.level().dimensionType().hasFixedTime()) {
             return false;
         }
-        return super.applyEffectTick(livingEntity, amplifier);
+        long dayTime = serverLevel.getDefaultClockTime() % 24000L;
+        if (dayTime < 12000L) {
+            // remove drowsiness from player during the day
+            return false;
+        }
+        return super.applyEffectTick(serverLevel, livingEntity, amplifier);
     }
 }

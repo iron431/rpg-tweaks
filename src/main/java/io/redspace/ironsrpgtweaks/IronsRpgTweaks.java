@@ -8,7 +8,7 @@ import io.redspace.ironsrpgtweaks.registry.AttributeRegistry;
 import io.redspace.ironsrpgtweaks.registry.EntityRegistry;
 import io.redspace.ironsrpgtweaks.registry.PotionEffectsRegistry;
 import io.redspace.ironsrpgtweaks.registry.SoundRegistry;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.ModContainer;
 import net.neoforged.fml.common.Mod;
@@ -53,7 +53,7 @@ public class IronsRpgTweaks {
         }
     }
 
-    public static ResourceLocation id(@NotNull String path) {
-        return ResourceLocation.fromNamespaceAndPath(IronsRpgTweaks.MODID, path);
+    public static Identifier id(@NotNull String path) {
+        return Identifier.fromNamespaceAndPath(IronsRpgTweaks.MODID, path);
     }
 }

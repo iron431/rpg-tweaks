@@ -7,6 +7,7 @@ import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.alchemy.PotionContents;
 import net.neoforged.bus.api.SubscribeEvent;
@@ -40,7 +41,7 @@ public class CommonHungerEvents {
                 if (fooddata != null) {
                     // min nutrition = 5 to prevent resource-like foods (rotten flesh, raw carrot/potatoes, etc) from being limited
                     // however, ensure anything with positive effects (golden apples) is limited no matter the nutrition value
-                    if (fooddata.nutrition() >= 5 || fooddata.effects().stream().anyMatch(possibleEffect -> possibleEffect.effect().getEffect().value().isBeneficial())) {
+                    if (fooddata.nutrition() >= 5 || item.components().has(DataComponents.CONSUMABLE)) {
                         modifyCallback.accept(BuiltInRegistries.ITEM.wrapAsHolder(item), builder -> builder.set(DataComponents.MAX_STACK_SIZE, Math.min(food, Math.min(item.getDefaultMaxStackSize(), 99))));
                     }
                 }
@@ -55,9 +56,9 @@ public class CommonHungerEvents {
         }
         var player = event.getEntity();
         if (event.getItemStack().is(Items.SPLASH_POTION) && ServerConfigs.SPLASH_POTION_COOLDOWN.get() > 0) {
-            player.getCooldowns().addCooldown(Items.SPLASH_POTION, (int) (ServerConfigs.SPLASH_POTION_COOLDOWN.get() * 20));
+            player.getCooldowns().addCooldown(new ItemStack(Items.SPLASH_POTION), (int) (ServerConfigs.SPLASH_POTION_COOLDOWN.get() * 20));
         } else if (event.getItemStack().is(Items.LINGERING_POTION) && ServerConfigs.LINGERING_POTION_COOLDOWN.get() > 0) {
-            player.getCooldowns().addCooldown(Items.LINGERING_POTION, (int) (ServerConfigs.LINGERING_POTION_COOLDOWN.get() * 20));
+            player.getCooldowns().addCooldown(new ItemStack(Items.LINGERING_POTION), (int) (ServerConfigs.LINGERING_POTION_COOLDOWN.get() * 20));
         }
     }
 
@@ -69,10 +70,10 @@ public class CommonHungerEvents {
         if (event.getEntity() instanceof Player player) {
             var stack = event.getItem();
             if (stack.is(Items.POTION) && ServerConfigs.DRINKABLE_POTION_COOLDOWN.get() > 0 && stack.getOrDefault(DataComponents.POTION_CONTENTS, PotionContents.EMPTY).hasEffects()) {
-                player.getCooldowns().addCooldown(Items.POTION, (int) (ServerConfigs.DRINKABLE_POTION_COOLDOWN.get() * 20));
+                player.getCooldowns().addCooldown(new ItemStack(Items.POTION), (int) (ServerConfigs.DRINKABLE_POTION_COOLDOWN.get() * 20));
             }
             if (stack.has(DataComponents.FOOD) && ServerConfigs.FOOD_COOLDOWN.get() > 0) {
-                player.getCooldowns().addCooldown(stack.getItem(), (int) (ServerConfigs.FOOD_COOLDOWN.get() * 20));
+                player.getCooldowns().addCooldown(stack, (int) (ServerConfigs.FOOD_COOLDOWN.get() * 20));
             }
         }
     }

@@ -4,10 +4,11 @@ import io.redspace.ironsrpgtweaks.durability_module.DeathDurabilityMode;
 import io.redspace.ironsrpgtweaks.durability_module.VanillaDurabilityMode;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.world.effect.MobEffects;
+import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.item.ArmorItem;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.PotionItem;
+import net.minecraft.world.item.equipment.Equippable;
 
 public class ConfigHelper {
     public static class Durability {
@@ -29,7 +30,7 @@ public class ConfigHelper {
             if (mode == VanillaDurabilityMode.ALL) {
                 return true;
             }
-            return itemStack.getItem() instanceof ArmorItem ? mode == VanillaDurabilityMode.ARMOR : mode == VanillaDurabilityMode.TOOLS;
+            return isArmor(itemStack) ? mode == VanillaDurabilityMode.ARMOR : mode == VanillaDurabilityMode.TOOLS;
         }
 
         public static boolean shouldTakeDeathDamage(ItemStack itemStack) {
@@ -50,7 +51,7 @@ public class ConfigHelper {
             if (mode == DeathDurabilityMode.ALL) {
                 return true;
             }
-            return itemStack.getItem() instanceof ArmorItem ? mode == DeathDurabilityMode.ARMOR : mode == DeathDurabilityMode.TOOLS;
+            return isArmor(itemStack) ? mode == DeathDurabilityMode.ARMOR : mode == DeathDurabilityMode.TOOLS;
         }
 
         public static boolean shouldHideDurabilityBar(ItemStack itemStack) {
@@ -59,6 +60,11 @@ public class ConfigHelper {
             }
             return (!shouldTakeDeathDamage(itemStack) || (ServerConfigs.ADDITIONAL_DURABILITY_LOST_ON_DEATH.get() == 0 && ServerConfigs.DURABILITY_LOST_ON_DEATH.get() == 0))
                     && (!shouldTakeVanillaDamage(itemStack));
+        }
+
+        private static boolean isArmor(ItemStack itemStack) {
+            Equippable equippable = itemStack.get(DataComponents.EQUIPPABLE);
+            return equippable != null && equippable.slot().getType() == EquipmentSlot.Type.HUMANOID_ARMOR;
         }
     }
 

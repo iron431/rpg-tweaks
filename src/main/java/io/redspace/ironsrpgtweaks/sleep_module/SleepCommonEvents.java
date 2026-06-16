@@ -30,7 +30,7 @@ public class SleepCommonEvents {
         if (!event.getEntity().hasEffect(PotionEffectsRegistry.DROWSY_EFFECT) && !event.getEntity().isCreative()) {
             if (event.getProblem() == null) {
                 event.setProblem(Player.BedSleepingProblem.OTHER_PROBLEM);
-                event.getEntity().displayClientMessage(Component.translatable("ui.irons_rpg_tweaks.sleep_failure").withStyle(ChatFormatting.RED), true);
+                event.getEntity().sendSystemMessage(Component.translatable("ui.irons_rpg_tweaks.sleep_failure").withStyle(ChatFormatting.RED), true);
             }
         }
     }
@@ -56,7 +56,7 @@ public class SleepCommonEvents {
             int timeSinceLastRest = Mth.clamp(serverPlayer.getStats().getValue(Stats.CUSTOM.get(Stats.TIME_SINCE_REST)), 1, Integer.MAX_VALUE);
             if (timeSinceLastRest > drowsinessDelay && !serverPlayer.hasEffect(PotionEffectsRegistry.DROWSY_EFFECT)) {
                 serverPlayer.addEffect(new MobEffectInstance(PotionEffectsRegistry.DROWSY_EFFECT, 20 * 60 * 20, 0, false, false, true));
-                serverPlayer.displayClientMessage(Component.translatable("ui.irons_rpg_tweaks.natural_drowsy_message").withColor(0xAAAAFF), true);
+                serverPlayer.sendSystemMessage(Component.translatable("ui.irons_rpg_tweaks.natural_drowsy_message").withColor(0xAAAAFF), true);
             }
         }
     }

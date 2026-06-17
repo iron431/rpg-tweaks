@@ -32,8 +32,7 @@ public class PotionEffectsRegistry {
             = MOB_EFFECTS.register("drowsy", () -> new DrowsyMobEffect(MobEffectCategory.BENEFICIAL, 0xAAAAFF) {
         @Override
         public boolean isEnabled(FeatureFlagSet enabledFeatures) {
-            //fixme: ok configs not loaded here yet either
-            return super.isEnabled(enabledFeatures) /*&& ServerConfigs.SLEEP_MODULE_ENABLED.get()*/;
+            return super.isEnabled(enabledFeatures) && (!ServerConfigs.SPEC.isLoaded() || ServerConfigs.SLEEP_MODULE_ENABLED.get());
         }
     });
 
@@ -41,20 +40,14 @@ public class PotionEffectsRegistry {
             "drowsy", () -> new Potion("drowsy", new MobEffectInstance(DROWSY_EFFECT, 20 * 60)) {
                 @Override
                 public boolean isEnabled(FeatureFlagSet enabledFeatures) {
-                    //fixme: ok configs not loaded here yet either
-                    return super.isEnabled(enabledFeatures) /*&& ServerConfigs.SLEEP_MODULE_ENABLED.get()*/;
+                    return super.isEnabled(enabledFeatures) && (!ServerConfigs.SPEC.isLoaded() || ServerConfigs.SLEEP_MODULE_ENABLED.get());
                 }
             }
     );
 
     @SubscribeEvent
     public static void addRecipes(RegisterBrewingRecipesEvent event) {
-//        ItemStack awkward = new ItemStack(Items.POTION);
-//        awkward.set(DataComponents.POTION_CONTENTS, new PotionContents(Potions.AWKWARD));
-//        ItemStack potion = new ItemStack(Items.POTION);
-//        potion.set(DataComponents.POTION_CONTENTS, new PotionContents(DROWSY_POTION));
-//        event.getBuilder().addRecipe(Ingredient.of(awkward), Ingredient.of(ItemTags.LEAVES), potion);
-        // fixme: how the hell are ingredients supposed to work now :sob:
+        // fixme: recipe still gets registered because config isn't loaded in time to prevent it, but the potion features should still be "disabled"
         event.getBuilder().addMix(Potions.AWKWARD, Items.OAK_LEAVES, DROWSY_POTION);
     }
 

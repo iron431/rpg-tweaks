@@ -97,6 +97,7 @@ configurations {
 dependencies {
     localRuntime "com.geckolib:geckolib-neoforge-${minecraft_version}:${geckolib_version}"
 //    localRuntime "curse.maven:farmers-delight-398521:8001010"
+    localRuntime "curse.maven:jei-238222:8108851"
 }
 
 var generateModMetadata = tasks.register("generateModMetadata", ProcessResources) {
